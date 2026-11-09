@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $note = post('note');
 
     if ($action == 'ticketed_by_hand') {
-        // Staff issued the ticket outside the site (e.g. on the Duffel dashboard)
+        // Staff issued the ticket outside the site (e.g. in Galileo Smartpoint or on the Duffel dashboard)
         $pnr = strtoupper(post('pnr'));
         if (!preg_match('/^[A-Z0-9]{5,8}$/', $pnr)) {
             flash('Enter the airline booking reference (5–8 letters and numbers).', 'error');
@@ -28,6 +28,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             flash('That change is not allowed from the current status.', 'error');
         }
     } elseif ($action == 'retry') {
+        // Galileo: after an unclear answer, staff must confirm there's no PNR before booking again
+        if ($b['supplier'] == 'galileo' && $b['gds_state'] == 'booking' && !$b['gds_reservation']) {
+            if (post('no_pnr') != '1') {
+                flash('First check Galileo for a PNR in this name, then tick "No PNR exists".', 'error');
+                redirect('booking.php?id=' . $id);
+            }
+            db_query("UPDATE flight_bookings SET gds_state = NULL WHERE id = ?", [$id]);
+        }
         issue_ticket($id);
         $now = db_one("SELECT status, status_reason FROM flight_bookings WHERE id = ?", [$id]);
         flash($now['status'] == 'confirmed' ? 'Ticket issued.' : 'Still not ticketed: ' . $now['status_reason'], $now['status'] == 'confirmed' ? 'success' : 'error');
@@ -69,7 +77,12 @@ $small = 'font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-n
       <div class="flex flex-wrap justify-between gap-4">
         <div><p class="<?= $small ?>">Airline</p><p class="mt-1 font-semibold"><?= e($offer['owner']['name']) ?></p></div>
         <div><p class="<?= $small ?>">PNR</p><p class="mt-1 font-mono text-xl font-bold tracking-widest"><?= e($b['pnr'] ?: '—') ?></p></div>
-        <div><p class="<?= $small ?>">Duffel order</p><p class="mt-1 font-mono text-xs"><?= e($b['duffel_order_id'] ?: '—') ?></p></div>
+        <?php if ($b['supplier'] == 'galileo'): ?>
+          <div><p class="<?= $small ?>">Galileo PNR</p><p class="mt-1 font-mono font-semibold"><?= e($b['gds_pnr'] ?: '—') ?></p></div>
+          <div><p class="<?= $small ?>">Universal record</p><p class="mt-1 font-mono text-xs"><?= e($b['gds_record'] ?: '—') ?><br><?= e($b['gds_reservation'] ? 'Air ' . $b['gds_reservation'] : '') ?></p></div>
+        <?php else: ?>
+          <div><p class="<?= $small ?>">Duffel order</p><p class="mt-1 font-mono text-xs"><?= e($b['duffel_order_id'] ?: '—') ?></p></div>
+        <?php endif; ?>
         <div><p class="<?= $small ?>">Offer</p><p class="mt-1 font-mono text-xs"><?= e($b['offer_id']) ?></p></div>
       </div>
       <div class="mt-5 divide-y divide-cloud-200 border-t border-cloud-200">
@@ -119,7 +132,8 @@ $small = 'font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-n
     <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-navy-900/5">
       <h2 class="font-display text-lg font-bold">Money</h2>
       <dl class="mt-3 space-y-1.5 text-sm">
-        <div class="flex justify-between"><dt class="text-navy-600">Airline price</dt><dd class="num"><?= e($b['supplier_currency'] . ' ' . number_format($b['supplier_amount'], 2)) ?></dd></div>
+        <div class="flex justify-between"><dt class="text-navy-600">Airline price (when paid)</dt><dd class="num"><?= e($b['supplier_currency'] . ' ' . number_format($b['supplier_amount'], 2)) ?></dd></div>
+        <?php if ($b['charged_amount'] !== null): ?><div class="flex justify-between"><dt class="text-navy-600">Airline charged (when booked)</dt><dd class="num"><?= e($b['charged_currency'] . ' ' . number_format($b['charged_amount'], 2)) ?></dd></div><?php endif; ?>
         <div class="flex justify-between"><dt class="text-navy-600">Rate used (incl. <?= (float) $b['fx_buffer_pct'] ?>% buffer)</dt><dd class="num">₦<?= number_format($b['fx_rate'], 2) ?></dd></div>
         <div class="flex justify-between"><dt class="text-navy-600">Airline price in naira</dt><dd class="num"><?= naira($b['base_kobo']) ?></dd></div>
         <div class="flex justify-between"><dt class="text-navy-600">Our fee (<?= e(str_replace('_', ' ', $b['markup_type'])) ?>)</dt><dd class="num"><?= naira($b['markup_kobo']) ?></dd></div>
@@ -143,11 +157,26 @@ $small = 'font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-n
           <input name="note" placeholder="Note (optional)" class="field mt-0">
           <button class="btn btn-dark w-full">Mark as ticketed and email the customer</button>
         </form>
+        <?php if ($b['supplier'] == 'galileo'): ?>
+          <form method="post" class="mt-3">
+            <?= csrf_field() ?><input type="hidden" name="action" value="retry">
+            <?php if ($b['gds_reservation']): ?>
+              <button class="btn btn-ghost w-full">Try again (ticket PNR <?= e($b['gds_pnr']) ?>)</button>
+              <p class="mt-1 text-xs text-navy-600">The PNR exists, so this only issues the ticket. It never books twice.</p>
+            <?php else: ?>
+              <?php if ($b['gds_state'] == 'booking'): ?>
+                <label class="flex items-start gap-2 text-sm"><input type="checkbox" name="no_pnr" value="1" class="mt-1"> No PNR exists: I checked Galileo for this traveller's name and these flights.</label>
+              <?php endif; ?>
+              <button class="btn btn-ghost mt-2 w-full">Try again (book and ticket)</button>
+            <?php endif; ?>
+          </form>
+        <?php else: ?>
         <form method="post" class="mt-3" onsubmit="return confirm('Have you checked the Duffel dashboard? If an order already exists, trying again can book twice.')">
           <?= csrf_field() ?><input type="hidden" name="action" value="retry">
           <button class="btn btn-ghost w-full">Try the airline order again</button>
           <p class="mt-1 text-xs text-navy-600">Only after checking the Duffel dashboard that no order exists.</p>
         </form>
+        <?php endif; ?>
       <?php endif; ?>
       <?php if ($b['status'] == 'confirmed'): ?>
         <form method="post" class="mt-4"><?= csrf_field() ?><input type="hidden" name="action" value="resend"><button class="btn btn-ghost w-full">Resend confirmation email</button></form>

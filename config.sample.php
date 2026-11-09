@@ -12,17 +12,31 @@ define('DEBUG', false);              // true shows PHP errors on screen; only on
 
 // Database
 define('DB_HOST', 'localhost');
-define('DB_USER', 'mickey');
+define('DB_USER', 'fanel');
 define('DB_PASS', '');
-define('DB_NAME', 'mickey');
+define('DB_NAME', 'fanel');
 
 // Set to false only when testing on http://localhost (the live site must use https)
 define('COOKIE_SECURE', true);
 
-// 'live' = real Duffel API, 'demo' = sample results from database/fixtures (shows a "Demo data" banner)
+// 'live' = real fares from the flight supplier below, 'demo' = sample results (shows a "Demo data" banner)
 define('FLIGHT_DATA', 'live');
 
-// Duffel (flights and hotels): https://app.duffel.com
+// Flights: 'galileo' = Travelport Universal API, tickets issued on Fanel's Galileo office (docs/GALILEO.md)
+//          'duffel'  = Duffel, paid from the Duffel balance
+define('FLIGHT_SUPPLIER', 'galileo');
+
+// Travelport Universal API (Galileo / 1G). Details come from Travelport when the account is set up.
+// Pre-production: https://emea.universal-api.pp.travelport.com/B2BGateway/connect/uAPI/
+// Production:     https://emea.universal-api.travelport.com/B2BGateway/connect/uAPI/
+define('TRAVELPORT_ENDPOINT', 'https://emea.universal-api.pp.travelport.com/B2BGateway/connect/uAPI/');
+define('TRAVELPORT_USERNAME', '');   // Universal API/uAPI...
+define('TRAVELPORT_PASSWORD', '');
+define('TRAVELPORT_BRANCH', '');     // Target branch, e.g. P7123456
+define('TRAVELPORT_SCHEMA', 'v52_0'); // schema version your account is enabled for
+define('TRAVELPORT_TICKETING', 'auto'); // 'auto' = issue the ticket as soon as the customer pays; 'hold' = book the PNR, staff issue it
+
+// Duffel (hotels, and flights when FLIGHT_SUPPLIER is 'duffel'): https://app.duffel.com
 define('DUFFEL_TOKEN', '');          // duffel_test_... or duffel_live_...
 define('DUFFEL_WEBHOOK_SECRET', '');
 

@@ -3,7 +3,7 @@
 // Called by assets/js/results.js from flight-results.php, with the same ?trip=...&from[]=... query.
 
 require '../includes/init.php';
-require '../includes/duffel.php';
+require '../includes/flights.php';
 require '../includes/flight-search.php';
 
 header('Content-Type: application/json');
@@ -23,7 +23,7 @@ if ($search['error']) {
 }
 
 // Re-use results for the same search for up to 15 minutes (but never after the prices expire)
-$key = md5(json_encode([$search, FLIGHT_DATA]));
+$key = md5(json_encode([$search, FLIGHT_DATA, flight_supplier()]));
 $cache_file = __DIR__ . '/../storage/cache/search-' . $key . '.json';
 $offers = null;
 if (file_exists($cache_file) && filemtime($cache_file) > time() - 15 * 60) {
@@ -34,7 +34,7 @@ if (file_exists($cache_file) && filemtime($cache_file) > time() - 15 * 60) {
 }
 
 if ($offers === null) {
-    $result = duffel_search_flights($search['slices'], $search['adults'], $search['children'], $search['infants'], $search['cabin']);
+    $result = flight_search($search['slices'], $search['adults'], $search['children'], $search['infants'], $search['cabin']);
 
     if (!$result['ok']) {
         write_log('search', 'Flight search failed', ['code' => $result['error_code'], 'error' => $result['error']]);

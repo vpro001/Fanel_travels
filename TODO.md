@@ -213,7 +213,10 @@ Demo target: Monday (internal review) → Tuesday (client presentation)
 - 2026-11-07 — `cookie_secure` is false only in the local config (http://localhost); example config defaults to true.
 - 2026-11-07 — Storage is writable by Apache (`daemon`) through ACLs locally; DEPLOY.md must cover permissions on cPanel.
 
+- 2026-11-09 — **User: flights through Galileo (Fanel uses Amadeus and Galileo), fully automated; Amadeus maybe later** (its self-service API closed 17 Jul 2026). Travelport Universal API: price check → PNR (Cash FOP) → ticket after Paystack confirms. Duffel stays for hotels. Docs: docs/GALILEO.md.
+
 ## Open questions / risks
+- **Galileo:** needs Travelport uAPI credentials (username, password, target branch) with API ticketing rights for Fanel's PCC. Tested only against a stand-in server; see the checklist in docs/GALILEO.md.
 - **Unverified in Duffel's docs:** whether passengers aged 12–17 can be booked as `adult` (our search treats 12+ as adult), and whether a child's real date of birth must match the age (10) used in the search. Check on the first live test booking; if Duffel rejects it, the order goes to `needs_attention` (no money is lost).
 - **Tailwind CDN vs Lighthouse 90+:** the browser build is a ~74 KB (brotli) render-blocking script that compiles CSS on every page load, which will hurt mobile performance on slow connections. If Phase 1 misses 90+, the fallback is to save the generated CSS once into a static file (no build tool on the server). Needs a user decision then.
 - No Duffel / Paystack test keys yet. Fixtures mode is the fallback for the demo, but Phase 3 acceptance (real Paystack test checkout) needs keys.
@@ -236,3 +239,5 @@ Demo target: Monday (internal review) → Tuesday (client presentation)
 - [x] Applications remember the post they came from (`visa_applications.offer_id`), shown to staff
 - [x] Visa destinations for every country on Fanel's flyers (Qatar, Kenya, East Africa, Uganda, Indonesia, Mexico, Kuwait, Oman, Morocco, China)
 - [ ] **Client input:** full requirements, document checklists and service fees for those new countries (they start with passport page + photo only and "Confirmed after review")
+- [x] Visa page country cards carry a picture (own upload in Admin → Visa destinations, else the country's first flyer, else a placeholder) and one "Apply" button per visa type; the flyer slider was removed from the Visa page (the homepage keeps it)
+- [x] Booking requires a customer account: flight-book, hotel-book, visa-apply (and the tour booking form) send signed-out visitors to sign in (`require_login()`), then straight back to the same fare / room / visa form / tour; registering from there returns too (`safe_next()`). Forms pre-fill name, email and phone from the account. Viewing, searching, tracking and tour questions stay open to everyone

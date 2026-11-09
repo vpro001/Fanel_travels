@@ -1,6 +1,7 @@
 <?php
 require 'includes/init.php';
 require 'includes/paystack.php';
+require_once 'includes/account.php';
 
 $tour = db_one("SELECT * FROM tour_packages WHERE slug = ? AND is_published = 1", [get('slug')]);
 if (!$tour) {
@@ -9,7 +10,10 @@ if (!$tour) {
 $departures = db_all("SELECT * FROM tour_departures WHERE package_id = ? AND status = 'open' AND start_date > CURDATE() ORDER BY start_date", [$tour['id']]);
 $itinerary = json_decode((string) $tour['itinerary_json'], true) ?: [];
 
-$f = ['departure' => '', 'travellers' => 2, 'option' => $tour['deposit_pct'] > 0 ? 'deposit' : 'full', 'name' => '', 'email' => '', 'phone' => '', 'notes' => ''];
+$me = current_user();   // only signed-in customers can book
+$f = ['departure' => '', 'travellers' => 2, 'option' => $tour['deposit_pct'] > 0 ? 'deposit' : 'full',
+      'name' => $me ? $me['full_name'] : '', 'email' => $me ? $me['email'] : '', 'phone' => $me ? (string) $me['phone'] : '', 'notes' => ''];
+$book_return = 'tour.php?slug=' . $tour['slug'] . '#book';
 $errors = [];
 $enquiry_sent = false;
 
@@ -29,7 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         $errors['enquiry'] = 'Please enter your name, a valid email and your question.';
     } else {
-        // Booking
+        // Booking: signed-in customers only
+        if (!$me) {
+            flash('Please sign in or create an account to book this holiday.', 'error');
+            redirect('login.php?next=' . urlencode($book_return));
+        }
         foreach ($f as $key => $v) $f[$key] = post($key);
         $dep = db_one("SELECT * FROM tour_departures WHERE id = ? AND package_id = ? AND status = 'open' AND start_date > CURDATE()", [(int) $f['departure'], $tour['id']]);
         $travellers = (int) $f['travellers'];
@@ -179,6 +187,14 @@ $label = 'block font-mono text-[11px] font-semibold uppercase tracking-[0.16em] 
               <?= isset($errors['departure']) ? '<p class="field-error">' . e($errors['departure']) . '</p>' : '' ?>
             </fieldset>
 
+            <?php if (!$me): ?>
+            <div class="rounded-2xl bg-cloud-100 p-5 text-center">
+              <p class="font-display text-lg font-semibold">Sign in to book</p>
+              <p class="mt-1 text-sm text-navy-600">You need a free account to book, so you can follow your booking and payments in one place.</p>
+              <a class="btn btn-accent mt-4 w-full py-3" href="login.php?next=<?= e(urlencode($book_return)) ?>">Sign in</a>
+              <a class="btn btn-ghost mt-2 w-full bg-white py-3" href="register.php?next=<?= e(urlencode($book_return)) ?>">Create an account</a>
+            </div>
+            <?php else: ?>
             <div>
               <label class="<?= $label ?>" for="travellers">Travellers</label>
               <input id="travellers" type="number" name="travellers" min="1" max="10" value="<?= (int) $f['travellers'] ?>" class="<?= $field ?> num">
@@ -210,6 +226,7 @@ $label = 'block font-mono text-[11px] font-semibold uppercase tracking-[0.16em] 
             </div>
             <button class="btn btn-primary w-full py-4 text-base"><?= icon('card', 'size-5') ?> Book and pay securely</button>
             <p class="text-center text-xs text-navy-600">Card, bank transfer or USSD through Paystack.</p>
+            <?php endif; ?>
           <?php endif; ?>
         </div>
       </form>

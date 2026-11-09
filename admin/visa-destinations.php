@@ -2,6 +2,7 @@
 require '../includes/init.php';
 require '../includes/admin.php';
 require '../includes/visa.php';
+require '../includes/uploads.php';
 
 // Visa destinations shown on the site: requirements, fee, processing time.
 $types = visa_type_names();
@@ -30,10 +31,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!$chosen) $errors[] = 'Tick at least one visa type.';
     if ($data['summary'] == '' || $data['requirements'] == '') $errors[] = 'Write a summary and the list of requirements.';
     if (db_one("SELECT id FROM visa_destinations WHERE slug = ? AND id <> ?", [$data['slug'], $id])) $errors[] = 'Another destination already uses that web address.';
+
+    // Card picture: a new upload replaces the old one; "remove" goes back to the country's flyer
+    $old_image = $edit ? $edit['image'] : null;
+    $new_image = null;
+    if (!$errors && !empty($_FILES['image']['name'])) {
+        list($new_image, $err) = save_site_image($_FILES['image'], 'destinations');
+        if ($err) $errors[] = $err;
+        else $data['image'] = $new_image;
+    } elseif (post('remove_image')) {
+        $data['image'] = null;
+    }
     if (!$errors) {
         if ($id) {
             $sets = implode(', ', array_map(function ($c) { return "$c = ?"; }, array_keys($data)));
             db_query("UPDATE visa_destinations SET $sets WHERE id = ?", array_merge(array_values($data), [$id]));
+            if (array_key_exists('image', $data) && $old_image && $old_image != $data['image']) delete_site_image($old_image);
         } else {
             $id = db_insert('visa_destinations', $data);
         }
@@ -44,6 +57,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $edit = array_merge($edit ?: [], $data);
 }
 
+require '../includes/posters.php';
+$card_images = visa_destination_images();
 $all = db_all("SELECT d.*, (SELECT COUNT(*) FROM visa_applications a WHERE a.destination_id = d.id) AS apps FROM visa_destinations d ORDER BY d.sort_order, d.country_name");
 $show_form = $edit || get('new') || $errors;
 $e = $edit ?: ['country_name' => '', 'slug' => '', 'country_code' => '', 'visa_types' => 'tourist', 'summary' => '', 'requirements' => '', 'checklist' => "*Passport photo (bio-data) page\n*Passport photograph\n", 'processing_time' => '', 'service_fee_kobo' => 0, 'is_active' => 1, 'sort_order' => 100];
@@ -60,7 +75,7 @@ include '../includes/admin-header.php';
 
 <?php if ($show_form): ?>
   <?php if ($errors): ?><div class="mt-5 rounded-xl bg-bad-100 p-4 text-sm text-bad-700"><?php foreach ($errors as $er): ?><p><?= e($er) ?></p><?php endforeach; ?></div><?php endif; ?>
-  <form method="post" action="visa-destinations.php<?= $id ? '?id=' . $id : '' ?>" class="mt-6 grid gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-navy-900/5 lg:grid-cols-2">
+  <form method="post" enctype="multipart/form-data" action="visa-destinations.php<?= $id ? '?id=' . $id : '' ?>" class="mt-6 grid gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-navy-900/5 lg:grid-cols-2">
     <?= csrf_field() ?>
     <div><label class="field-label" for="country_name">Country</label><input id="country_name" name="country_name" class="field" value="<?= e($e['country_name']) ?>"></div>
     <div class="grid grid-cols-2 gap-3">
@@ -81,6 +96,15 @@ include '../includes/admin-header.php';
         <?php foreach ($types as $k => $l): ?><label class="flex items-center gap-2"><input type="checkbox" name="types[]" value="<?= $k ?>" class="size-4 accent-navy-900" <?= in_array($k, explode(',', $e['visa_types'])) ? 'checked' : '' ?>> <?= $l ?></label><?php endforeach; ?>
       </div>
     </fieldset>
+    <div class="flex items-start gap-4 lg:col-span-2">
+      <?php if ($id && isset($card_images[$id])): ?><img src="../<?= e(offer_image_url($card_images[$id], 480)) ?>" alt="" class="size-24 shrink-0 rounded-xl object-cover ring-1 ring-cloud-200"><?php endif; ?>
+      <div>
+        <label class="field-label" for="image">Card picture</label>
+        <input id="image" type="file" name="image" accept=".jpg,.jpeg,.png" class="mt-1.5 block text-sm file:mr-3 file:rounded-full file:border-0 file:bg-navy-900 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white">
+        <p class="mt-1 text-xs text-navy-600">JPG or PNG, square works best. Without one, the card shows this country's first visa flyer<?= $id && !empty($e['image']) ? '' : ' (or a plain placeholder if it has none)' ?>.</p>
+        <?php if (!empty($e['image'])): ?><label class="mt-2 flex items-center gap-2 text-sm"><input type="checkbox" name="remove_image" value="1" class="size-4 accent-brand-600"> Remove this picture (use the flyer instead)</label><?php endif; ?>
+      </div>
+    </div>
     <label class="flex items-center gap-2 text-sm lg:col-span-2"><input type="checkbox" name="is_active" value="1" class="size-4 accent-navy-900" <?= $e['is_active'] ? 'checked' : '' ?>> Show on the site</label>
     <div class="flex gap-3 lg:col-span-2"><button class="btn btn-dark">Save</button><a class="btn btn-ghost" href="visa-destinations.php">Cancel</a></div>
   </form>
@@ -88,11 +112,12 @@ include '../includes/admin-header.php';
 
 <div class="mt-6 overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-navy-900/5">
   <table class="w-full text-left text-sm">
-    <thead class="border-b border-cloud-200 text-xs text-navy-600"><tr><th class="px-5 py-3 font-medium">Country</th><th class="px-3 py-3 font-medium">Fee</th><th class="px-3 py-3 font-medium">Processing</th><th class="px-3 py-3 font-medium">Applications</th><th class="px-3 py-3 font-medium">On site</th><th class="px-5 py-3"></th></tr></thead>
+    <thead class="border-b border-cloud-200 text-xs text-navy-600"><tr><th class="px-5 py-3 font-medium">Country</th><th class="px-3 py-3 font-medium">Picture</th><th class="px-3 py-3 font-medium">Fee</th><th class="px-3 py-3 font-medium">Processing</th><th class="px-3 py-3 font-medium">Applications</th><th class="px-3 py-3 font-medium">On site</th><th class="px-5 py-3"></th></tr></thead>
     <tbody class="divide-y divide-cloud-200">
       <?php foreach ($all as $d): ?>
         <tr class="hover:bg-cloud-50">
           <td class="px-5 py-3 font-semibold"><?= e($d['country_name']) ?> <span class="font-mono text-xs text-navy-500"><?= e($d['country_code']) ?></span></td>
+          <td class="px-3 py-2"><?php if (isset($card_images[$d['id']])): ?><img src="../<?= e(offer_image_url($card_images[$d['id']], 480)) ?>" alt="" class="size-12 rounded-lg object-cover" loading="lazy"><span class="ml-2 align-middle text-xs text-navy-500"><?= $d['image'] ? 'Own picture' : 'From flyer' ?></span><?php else: ?><span class="text-xs text-warn-700">None yet</span><?php endif; ?></td>
           <td class="px-3 py-3 num"><?= visa_fee_text($d['service_fee_kobo']) ?></td>
           <td class="px-3 py-3 text-navy-700"><?= e($d['processing_time']) ?></td>
           <td class="px-3 py-3"><?= (int) $d['apps'] ?></td>

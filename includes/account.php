@@ -19,12 +19,20 @@ function current_user()
     return $user;
 }
 
-function require_login()
+// Send visitors who aren't signed in to the sign-in page, and back here afterwards.
+// Booking pages call this: only signed-in customers can book.
+function require_login($message = 'Please sign in first.')
 {
     if (!current_user()) {
-        flash('Please sign in first.', 'error');
+        flash($message, 'error');
         redirect('login.php?next=' . urlencode(basename($_SERVER['REQUEST_URI'])));
     }
+}
+
+// The page to go back to after signing in or registering (only pages on this site)
+function safe_next($value, $default = 'account.php')
+{
+    return preg_match('/^[a-z0-9-]+\.php(\?[^\s"<>]*)?(#[a-z0-9-]*)?$/i', (string) $value) ? $value : $default;
 }
 
 function log_in_user($user)

@@ -3,11 +3,11 @@ require 'includes/init.php';
 require 'includes/account.php';
 
 if (current_user()) {
-    redirect('account.php');
+    redirect(safe_next(get('next')));
 }
 
 // Where to go after signing in (only pages on this site)
-$next = preg_match('/^[a-z0-9-]+\.php(\?[^\s"<>]*)?$/i', get('next')) ? get('next') : 'account.php';
+$next = safe_next(get('next'));
 $email = '';
 $error = '';
 
@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     csrf_check();
     $email = strtolower(post('email'));
     $password = isset($_POST['password']) ? (string) $_POST['password'] : '';
-    $next = preg_match('/^[a-z0-9-]+\.php(\?[^\s"<>]*)?$/i', post('next')) ? post('next') : 'account.php';
+    $next = safe_next(post('next'));
 
     if (login_locked($email)) {
         $error = 'Too many attempts. Please wait 15 minutes, or reset your password.';
@@ -52,7 +52,7 @@ $field = 'mt-1 block w-full rounded-lg border-0 bg-cloud-50 px-3.5 py-3 text-bas
       </div>
       <button class="btn btn-dark w-full py-3">Sign in</button>
     </form>
-    <p class="mt-4 text-sm text-navy-700">New here? <a class="link" href="register.php">Create an account</a>. You can also book without one.</p>
+    <p class="mt-4 text-sm text-navy-700">New here? <a class="link" href="register.php<?= $next != 'account.php' ? '?next=' . urlencode($next) : '' ?>">Create an account</a>. It takes a minute, and you need one to book.</p>
   </div>
 </section>
 <?php include 'includes/footer.php'; ?>

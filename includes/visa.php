@@ -40,6 +40,19 @@ function visa_service_names()
     ];
 }
 
+// The picture for each country card: the image staff set on the destination, otherwise the
+// country's first visa post (flyer). Countries with neither aren't in the list.
+function visa_destination_images()
+{
+    $images = [];
+    $posts = db_all("SELECT destination_id, image FROM visa_offers
+                     WHERE kind = 'visa' AND destination_id IS NOT NULL AND is_active = 1 AND (expires_on IS NULL OR expires_on >= CURDATE())
+                     ORDER BY sort_order DESC, id ASC");
+    foreach ($posts as $p) $images[$p['destination_id']] = $p['image'];   // lowest sort order wins
+    foreach (db_all("SELECT id, image FROM visa_destinations WHERE image IS NOT NULL AND image <> ''") as $d) $images[$d['id']] = $d['image'];
+    return $images;
+}
+
 // Our fee, or a note that it's confirmed later (destinations with no fixed fee have 0)
 function visa_fee_text($kobo)
 {

@@ -8,7 +8,7 @@ For the client presentation. Follow it top to bottom; every click is written out
 
 1. **Fresh install** (skip if the site is already running):
    - Copy the project folder to the server (local: `htdocs/fanel`).
-   - In phpMyAdmin, create a database `mickey` (collation `utf8mb4_unicode_ci`) and import, in this order: `database/schema.sql`, `database/airports.sql`, `database/demo-content.sql`.
+   - In phpMyAdmin, create a database `fanel` (collation `utf8mb4_unicode_ci`) and import, in this order: `database/schema.sql`, `database/airports.sql`, `database/demo-content.sql`.
    - Copy `config.sample.php` to `config.php` and fill in the database login and `SITE_URL`.
    - Make sure the web server can write to `storage/` and `assets/img/tours/`.
 2. **Choose the flight mode** in `config.php`:

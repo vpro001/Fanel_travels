@@ -11,6 +11,7 @@ require 'includes/posters.php';
 $visa_posts = visa_offers('visa');
 require_once 'includes/visa.php';
 $type_names = visa_type_names();
+$card_images = visa_destination_images();
 
 $title = $country ? $country['country_name'] . ' visa' : 'Visa services';
 $page = 'visa';
@@ -19,12 +20,12 @@ include 'includes/header.php';
 
 <section class="relative isolate overflow-hidden bg-navy-900 text-cloud-50">
   <div class="absolute inset-0 -z-20 bg-[radial-gradient(110%_100%_at_90%_0%,#1d55d0_0%,#0f2c5c_50%,#0a1f44_80%)]"></div>
-  <?php if ($visa_posts): ?>
+  <?php if ($visa_posts && !$country): ?>
   <div class="absolute bottom-0 right-[6%] hidden w-64 translate-y-16 rotate-[5deg] overflow-hidden rounded-3xl shadow-2xl ring-4 ring-white/90 lg:block" aria-hidden="true">
     <?= photo($visa_posts[0]['image'], '', 'aspect-square w-full object-cover', false, [480, 800], '16rem') ?>
   </div>
   <?php endif; ?>
-  <div class="container-page py-14 sm:py-20 lg:pr-96">
+  <div class="container-page py-14 sm:py-20 <?= $country ? '' : 'lg:pr-96' ?>">
     <p class="eyebrow text-sun-300"><?= $country ? 'Visa · ' . e($country['country_name']) : 'Visa services' ?></p>
     <h1 class="mt-4 max-w-3xl text-4xl font-bold leading-[1.05] sm:text-6xl">
       <?= $country ? e($country['country_name']) . ' visa' : 'Get your visa application right the first time.' ?>
@@ -50,7 +51,10 @@ include 'includes/header.php';
     </div>
 
     <aside class="lg:sticky lg:top-24 lg:self-start">
-      <div class="overflow-hidden rounded-2xl bg-navy-950 text-cloud-50">
+      <div class="overflow-hidden rounded-3xl bg-navy-950 text-cloud-50">
+        <?php if (isset($card_images[$country['id']])): ?>
+          <?= photo($card_images[$country['id']], $country['country_name'] . ' visa', 'w-full ' . (preg_match('#^(fanel|offers)/#', $card_images[$country['id']]) ? 'h-auto' : 'aspect-square object-cover'), false, [480, 800], '(min-width: 1024px) 26rem, 100vw') ?>
+        <?php endif; ?>
         <div class="p-6">
           <p class="text-[11px] uppercase tracking-wider text-navy-300 font-semibold">Our service fee</p>
           <p class="mt-1 font-display text-4xl font-bold num"><?= visa_fee_text($country['service_fee_kobo']) ?></p>
@@ -75,41 +79,46 @@ include 'includes/header.php';
 <section id="countries" class="scroll-mt-24 <?= $country ? 'bg-cloud-100' : '' ?>">
   <div class="container-page py-12 sm:py-16">
     <h2 class="text-2xl font-extrabold sm:text-3xl"><?= $country ? 'Other destinations' : 'Where are you going?' ?></h2>
-    <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      <?php foreach ($countries as $c): if ($country && $c['id'] == $country['id']) continue; ?>
-        <a href="visa.php?country=<?= e($c['slug']) ?>" class="group flex flex-col rounded-2xl bg-white p-5 ring-1 ring-cloud-200 transition hover:-translate-y-0.5 hover:shadow-lg">
-          <div class="flex items-start justify-between gap-3">
-            <p class="font-display text-xl font-bold"><?= e($c['country_name']) ?></p>
-            <span class="rounded-full bg-cloud-100 px-2 py-0.5 text-xs font-bold text-navy-600"><?= e($c['country_code']) ?></span>
+    <div class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <?php foreach ($countries as $c): if ($country && $c['id'] == $country['id']) continue;
+          $img = isset($card_images[$c['id']]) ? $card_images[$c['id']] : null;
+          $c_types = array_intersect_key($type_names, array_flip(explode(',', $c['visa_types'])));
+      ?>
+        <article class="group relative flex flex-col overflow-hidden rounded-3xl bg-white shadow-[0_8px_30px_-12px_rgba(10,31,68,0.18)] ring-1 ring-navy-900/5 transition hover:-translate-y-1 hover:shadow-[0_24px_50px_-20px_rgba(29,85,208,0.45)]">
+          <div class="relative aspect-square overflow-hidden bg-navy-900">
+            <?php if ($img && preg_match('#^(fanel|offers)/#', $img)): ?>
+              <!-- A flyer: show all of it (its text matters) over a blurred copy that fills the square -->
+              <?= photo($img, '', 'absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl', true, [480], '1px') ?>
+              <?= photo($img, $c['country_name'] . ' visa', 'relative h-full w-full object-contain transition duration-500 group-hover:scale-[1.03]', true, [480, 800], '(min-width: 1024px) 26rem, (min-width: 640px) 50vw, 100vw') ?>
+            <?php elseif ($img): ?>
+              <?= photo($img, $c['country_name'] . ' visa', 'h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]', true, [480, 800], '(min-width: 1024px) 26rem, (min-width: 640px) 50vw, 100vw') ?>
+            <?php else: ?>
+              <!-- No picture yet: country code on the brand gradient -->
+              <div class="flex h-full w-full items-center justify-center bg-[radial-gradient(110%_100%_at_80%_0%,#1d55d0_0%,#0f2c5c_55%,#0a1f44_90%)]">
+                <svg class="absolute size-[85%] text-white/10" viewBox="0 0 200 200" fill="none" aria-hidden="true"><circle cx="100" cy="100" r="90" stroke="currentColor" stroke-width="2"/><ellipse cx="100" cy="100" rx="40" ry="90" stroke="currentColor" stroke-width="2"/><path d="M10 100h180M22 55h156M22 145h156" stroke="currentColor" stroke-width="2"/></svg>
+                <span class="relative font-display text-7xl font-bold text-white"><?= e($c['country_code']) ?></span>
+              </div>
+            <?php endif; ?>
+            <span class="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-navy-900"><?= $c['service_fee_kobo'] > 0 ? 'From ' . naira($c['service_fee_kobo']) : 'Fee on request' ?></span>
           </div>
-          <p class="mt-2 flex-1 text-sm text-navy-700"><?= e($c['summary']) ?></p>
-          <div class="mt-4 flex items-end justify-between border-t border-cloud-200 pt-3 text-sm">
-            <span class="text-navy-600"><?= e($c['processing_time']) ?></span>
-            <span class="font-semibold num"><?= $c['service_fee_kobo'] > 0 ? 'from ' . naira($c['service_fee_kobo']) : 'Fee on request' ?></span>
+          <div class="flex flex-1 flex-col p-5">
+            <h3 class="font-display text-xl font-bold">
+              <a href="visa.php?country=<?= e($c['slug']) ?>" class="after:absolute after:inset-0"><?= e($c['country_name']) ?></a>
+            </h3>
+            <p class="mt-1 flex-1 text-sm text-navy-600"><?= e($c['summary']) ?></p>
+            <p class="mt-3 flex items-center gap-1.5 text-xs text-navy-500"><?= icon('clock', 'size-4 shrink-0') ?> <?= e($c['processing_time']) ?></p>
+            <!-- One button per visa type: straight to the application with that type chosen -->
+            <div class="relative z-10 mt-4 flex flex-wrap gap-2 border-t border-cloud-200 pt-4">
+              <?php foreach ($c_types as $t => $t_name): ?>
+                <a href="visa-apply.php?country=<?= e($c['slug']) ?>&amp;type=<?= $t ?>" class="rounded-full bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700 transition hover:bg-brand-600 hover:text-white">Apply: <?= e($t_name) ?></a>
+              <?php endforeach; ?>
+            </div>
           </div>
-        </a>
+        </article>
       <?php endforeach; ?>
     </div>
-    <p class="mt-6 text-sm text-navy-700">Already applied? <a class="link" href="visa-track.php">Track your application</a>. Going somewhere not listed? Call us on <a class="link" href="tel:<?= preg_replace('/\D/', '', setting('contact_phone')) ?>"><?= e(contact('phone')) ?></a> and we'll set up your application.</p>
+    <p class="mt-8 text-sm text-navy-700">Already applied? <a class="link" href="visa-track.php">Track your application</a>. Going somewhere not listed? Call us on <a class="link" href="tel:<?= preg_replace('/\D/', '', setting('contact_phone')) ?>"><?= e(contact('phone')) ?></a> and we'll set up your application.</p>
   </div>
 </section>
-
-<!-- Posts from the Fanel visa desk (Admin → Visa & holiday posts) -->
-<?php if ($visa_posts): ?>
-<section class="py-12 sm:py-16">
-  <div class="container-page flex flex-wrap items-end justify-between gap-4">
-    <div>
-      <p class="eyebrow text-sun-700">From our visa desk</p>
-      <h2 class="mt-3 text-2xl font-bold sm:text-3xl">Visa opportunities</h2>
-      <p class="mt-2 max-w-xl text-navy-600">Tourist, work and residence visas. Tap a flyer to see it in full, then apply online.</p>
-    </div>
-    <a class="btn btn-primary" href="#countries">See all countries</a>
-  </div>
-  <div class="snap-row snap-row-page mt-8 flex gap-5 overflow-x-auto pb-4">
-    <?php foreach ($visa_posts as $o) echo poster_card($o); ?>
-  </div>
-</section>
-<?= poster_viewer() ?>
-<?php endif; ?>
 
 <?php include 'includes/footer.php'; ?>

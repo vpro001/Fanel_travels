@@ -2,6 +2,11 @@
 require 'includes/init.php';
 require 'includes/visa.php';
 require 'includes/uploads.php';
+require_once 'includes/account.php';
+
+// Only signed-in customers can apply (they come back to this form after signing in)
+require_login('Please sign in or create an account to apply for your visa.');
+$me = current_user();
 
 $country = db_one("SELECT * FROM visa_destinations WHERE slug = ? AND is_active = 1", [get('country')]);
 if (!$country) {
@@ -17,7 +22,7 @@ $checklist = visa_checklist_lines($country);
 $offer = (int) get('offer') ? db_one("SELECT * FROM visa_offers WHERE id = ? AND kind = 'visa' AND destination_id = ?", [(int) get('offer'), $country['id']]) : null;
 $start_type = isset($types[get('type')]) ? get('type') : ($offer && isset($types[$offer['visa_type']]) ? $offer['visa_type'] : key($types));
 
-$f = ['service' => 'application', 'visa_type' => $start_type, 'full_name' => '', 'email' => '', 'phone' => '', 'passport_number' => '', 'travel_date' => '', 'return_date' => '', 'purpose' => ''];
+$f = ['service' => 'application', 'visa_type' => $start_type, 'full_name' => $me['full_name'], 'email' => $me['email'], 'phone' => (string) $me['phone'], 'passport_number' => '', 'travel_date' => '', 'return_date' => '', 'purpose' => ''];
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

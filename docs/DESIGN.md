@@ -46,6 +46,7 @@ Never put white text on `sun-500` (contrast too low); use `navy-950`.
 | Footer | `includes/footer.php` | Navy-950 with an orange swoosh edge, full logo, services, contact |
 | Search box | `includes/search-box.php` + `assets/js/search.js` | White rounded card, pill tabs with icons, soft field boxes |
 | Poster gallery | `includes/posters.php` (`visa_offers()`, `poster_card()`, `poster_viewer()`) | Sideways-scrolling row of the posts staff manage in Admin → Visa & holiday posts (table `visa_offers`); tapping opens a `<dialog>` viewer (`assets/js/site.js`) |
+| Visa country card | `visa.php` | Picture (own upload in Visa destinations → else the country's first visa flyer, shown whole over a blurred copy → else the country code on the brand gradient), summary, processing time, and an "Apply: <type>" button per visa type |
 | Floating contact | `includes/footer.php` | WhatsApp when the number is set in admin, otherwise "Call us" |
 | Status badge | `badge` + `bg-ok-100 text-ok-700` etc. | Text always states the status |
 

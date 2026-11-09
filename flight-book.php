@@ -1,6 +1,11 @@
 <?php
 require 'includes/init.php';
 require 'includes/booking.php';
+require_once 'includes/account.php';
+
+// Only signed-in customers can book (they come back to this fare after signing in)
+require_login('Please sign in or create an account to book this flight.');
+$me = current_user();
 
 // Step 2 of booking: traveller details, then off to Paystack.
 // The fare is fetched again from the airline every time this page loads and again when
@@ -8,10 +13,10 @@ require 'includes/booking.php';
 
 $offer_id = get('offer');
 $error = '';
-if (!preg_match('/^off_[A-Za-z0-9_]{4,60}$/', $offer_id)) {
+if (!valid_offer_id($offer_id)) {
     $error = "We couldn't find that fare. Please search again.";
 } else {
-    $result = duffel('GET', '/air/offers/' . $offer_id);
+    $result = flight_get_offer($offer_id);
     if (!$result['ok']) {
         $error = in_array($result['error_code'], ['offer_expired', 'offer_no_longer_available'])
             ? 'This fare is no longer available. Airlines only hold prices for a short time.'
@@ -58,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     $_SESSION['quote'][$offer_id] = $price['total_kobo'];
 }
 
-$form = ['email' => '', 'phone' => '', 'passengers' => []];
+$form = ['email' => $me['email'], 'phone' => (string) $me['phone'], 'passengers' => []];
 $errors = [];
 $notice = '';
 
@@ -164,6 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 'contact_email' => $form['email'],
                 'contact_phone' => $phone,
                 'offer_id' => $offer_id,
+                'supplier' => offer_supplier($offer_id),
                 'offer_snapshot' => json_encode($raw),
                 'offer_expires_at' => date('Y-m-d H:i:s', strtotime($raw['expires_at'])),
                 'passengers_json' => json_encode(array_values($duffel_passengers)),

@@ -3,6 +3,11 @@ require 'includes/init.php';
 require 'includes/stays.php';
 require 'includes/paystack.php';
 require 'includes/hotel-search.php';
+require_once 'includes/account.php';
+
+// Only signed-in customers can book (they come back to this room after signing in)
+require_login('Please sign in or create an account to book this room.');
+$me = current_user();
 
 // Guest details for one hotel rate, then off to Paystack.
 // We ask Duffel for a quote (a confirmed price) when the page opens and again when the form is
@@ -47,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     $_SESSION['hotel_quote'][$rate_id] = $price['total_kobo'];
 }
 
-$f = ['email' => '', 'phone' => '', 'requests' => '', 'guests' => []];
+$f = ['email' => $me['email'], 'phone' => (string) $me['phone'], 'requests' => '', 'guests' => []];
 $errors = [];
 $notice = '';
 

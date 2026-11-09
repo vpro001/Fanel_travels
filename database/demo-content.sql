@@ -216,3 +216,12 @@ WHERE NOT EXISTS (SELECT 1 FROM visa_offers WHERE title = 'Oman work visa');
 UPDATE visa_offers SET title = 'Kuwait work visa' WHERE image = 'fanel/kuwait-oman-work-visa' AND title = 'Kuwait and Oman work visas';
 UPDATE visa_offers SET title = 'Visas for more countries', summary = 'Pick your country to apply: Qatar, South Africa, Morocco, Indonesia, Uganda, China, Kenya, East Africa, Dubai, Oman and more.'
 WHERE image = 'fanel/visa-countries';
+
+-- Countries without a flyer get one of the site's existing city photos
+UPDATE visa_destinations SET image = CASE slug
+    WHEN 'united-kingdom' THEN 'london'
+    WHEN 'united-states' THEN 'new-york'
+    WHEN 'canada' THEN 'toronto'
+    WHEN 'south-africa' THEN 'cape-town'
+  END
+WHERE slug IN ('united-kingdom', 'united-states', 'canada', 'south-africa') AND image IS NULL;

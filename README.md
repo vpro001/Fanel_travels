@@ -10,9 +10,9 @@ Plain PHP pages and a MySQL database. No framework and no build step.
    2. `database/airports.sql`
    3. `database/demo-content.sql` (sample tours and visa destinations for the demo)
 
-   A database created from an older `schema.sql` needs `database/fanel-update.sql`, then `database/visa-upgrade.sql`, `database/visa-offers.sql` and `database/visa-offers-apply.sql`.
+   A database created from an older `schema.sql` needs `database/fanel-update.sql`, then `database/visa-upgrade.sql`, `database/visa-offers.sql`, `database/visa-offers-apply.sql` `database/visa-destination-images.sql` and `database/galileo.sql`.
 3. Copy `config.sample.php` to `config.php` and fill in your database login, `SITE_URL`, a random `APP_SECRET` and the API keys.
-4. Make sure the web server can write to `storage/`, `assets/img/tours/` and `assets/img/offers/`.
+4. Make sure the web server can write to `storage/`, `assets/img/tours/`, `assets/img/offers/` and `assets/img/destinations/`.
 5. Open the site, e.g. http://localhost/fanel/
 6. Open `/admin/`. The first visit asks you to create the admin account.
 
@@ -27,7 +27,9 @@ For the client demo, follow `docs/DEMO_SCRIPT.md`.
 | `includes/functions.php` | Shared functions: database (`db_all`, `db_one`, `db_insert`), `e()` for safe output, CSRF, formatting |
 | `includes/header.php`, `footer.php` | Top and bottom of every page |
 | `includes/search-box.php` | The Flights / Hotels / Visa / Tours search box |
-| `includes/http.php`, `duffel.php` | Calls to the flight and hotel API |
+| `includes/flights.php` | Picks the flight supplier (Galileo or Duffel) |
+| `includes/galileo.php` | Galileo flights through the Travelport Universal API (docs/GALILEO.md) |
+| `includes/http.php`, `duffel.php` | Calls to Duffel (hotels; flights if chosen) |
 | `api/airport-suggest.php` | Airport suggestions for the search box |
 | `assets/` | CSS (fonts), JavaScript, fonts, icons |
 | `database/` | SQL files to import |

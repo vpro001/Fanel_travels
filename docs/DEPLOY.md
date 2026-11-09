@@ -12,7 +12,7 @@ A step-by-step guide for putting the site on a normal cPanel host (Apache + PHP)
 
 1. Zip the project folder **without** `config.php`, `storage/logs/*`, `storage/cache/*` and `storage/uploads/*`.
 2. In cPanel **File Manager**, upload the zip to `public_html` (or a subfolder) and extract it.
-3. Folder permissions: folders `755`, files `644`. The web server must be able to write to `storage/`, `assets/img/tours/` and `assets/img/offers/` (on most cPanel hosts PHP runs as your user, so `755` is enough).
+3. Folder permissions: folders `755`, files `644`. The web server must be able to write to `storage/`, `assets/img/tours/`, `assets/img/offers/` and `assets/img/destinations/` (on most cPanel hosts PHP runs as your user, so `755` is enough).
 4. Check that these return **403 Forbidden** in a browser: `/config.php`, `/includes/functions.php`, `/storage/`, `/database/schema.sql`, `/docs/DEPLOY.md`.
 
 ## 3. Database
@@ -35,7 +35,9 @@ Copy `config.sample.php` to `config.php` and set:
 | `DB_HOST` / `DB_USER` / `DB_PASS` / `DB_NAME` | from step 3 (`DB_HOST` is usually `localhost`) |
 | `COOKIE_SECURE` | `true` |
 | `FLIGHT_DATA` | `'live'` |
-| `DUFFEL_TOKEN` | `duffel_live_…` (see section 6) |
+| `FLIGHT_SUPPLIER` | `'galileo'` (see docs/GALILEO.md) |
+| `TRAVELPORT_ENDPOINT` / `TRAVELPORT_USERNAME` / `TRAVELPORT_PASSWORD` / `TRAVELPORT_BRANCH` / `TRAVELPORT_SCHEMA` | from Travelport (see docs/GALILEO.md) |
+| `DUFFEL_TOKEN` | `duffel_live_…`, for hotels (see section 6) |
 | `PAYSTACK_SECRET_KEY` / `PAYSTACK_PUBLIC_KEY` | `sk_live_…` / `pk_live_…` |
 | `MAIL_METHOD` | `'smtp'` with an email account made in cPanel **Email Accounts** (`SMTP_HOST` like `mail.your-domain.com`, port `465` or `587`) |
 | `MAIL_FROM` | an address on your domain, e.g. `bookings@your-domain.com` |
@@ -55,9 +57,11 @@ Copy `config.sample.php` to `config.php` and set:
 3. **Settings → API Keys & Webhooks**: set the live webhook URL to `https://your-domain.com/webhooks/paystack.php`.
 4. Make one real small payment (for example a cheap domestic flight or a tour deposit) and refund it from the dashboard.
 
-**Duffel**
+**Galileo (flights)**: follow the "Going live" steps in docs/GALILEO.md. Tickets are issued on Fanel's own office and settled with BSP / the consolidator as usual; there is no balance to top up.
+
+**Duffel (hotels)**
 1. Activate live mode in the Duffel dashboard (company details, agreement).
-2. **Top up the Duffel balance**. Every flight and hotel is paid from it, so a low balance means bookings fail (they go to "needs attention"; no customer money is lost).
+2. **Top up the Duffel balance**. Every hotel (and any flight booked while `FLIGHT_SUPPLIER` is `'duffel'`) is paid from it, so a low balance means bookings fail (they go to "needs attention"; no customer money is lost).
 3. Create a **live** access token and put it in `DUFFEL_TOKEN`.
 4. Hotels: Duffel Stays must be switched on for the live account too.
 5. Do one real booking end to end and cancel it in the Duffel dashboard if needed.
@@ -70,7 +74,7 @@ Copy `config.sample.php` to `config.php` and set:
 - **Daily database backup** with cPanel **Cron Jobs** (once a day, e.g. 02:00). Replace the user, password and database name:
 
   ```
-  mkdir -p ~/backups && mysqldump --single-transaction -u DBUSER -p'DBPASS' DBNAME | gzip > ~/backups/mickey-$(date +\%F).sql.gz && find ~/backups -name 'mickey-*.sql.gz' -mtime +14 -delete
+  mkdir -p ~/backups && mysqldump --single-transaction -u DBUSER -p'DBPASS' DBNAME | gzip > ~/backups/fanel-$(date +\%F).sql.gz && find ~/backups -name 'fanel-*.sql.gz' -mtime +14 -delete
   ```
 
   This keeps 14 days. `~/backups` is outside `public_html`, so it isn't public.

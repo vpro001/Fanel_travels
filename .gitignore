@@ -5,3 +5,5 @@ storage/cache/*
 !storage/**/.gitkeep
 assets/img/offers/*
 !assets/img/offers/.gitkeep
+assets/img/destinations/*
+!assets/img/destinations/.gitkeep

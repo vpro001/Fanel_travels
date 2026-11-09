@@ -2,7 +2,7 @@
 // Flight bookings: status changes, confirming payment, and issuing the ticket.
 // The allowed status changes are listed in docs/STATE_MACHINES.md.
 
-require_once __DIR__ . '/duffel.php';
+require_once __DIR__ . '/flights.php';
 require_once __DIR__ . '/paystack.php';
 require_once __DIR__ . '/mail.php';
 
@@ -157,16 +157,22 @@ function confirm_payment($reference, $verified)
     return $booking_id;
 }
 
-// Create the airline order with Duffel and save the ticket details.
+// Book and ticket the flight with the supplier the fare came from, and save the ticket details.
 // Only one process can move a booking from "paid" to "ticketing", so this runs once per booking.
 function issue_ticket($booking_id)
 {
     if (!flight_status($booking_id, 'ticketing', 'Creating the airline order')) {
         return;   // someone else is already doing it, or it's done
     }
-    set_time_limit(200);   // creating an order can take up to 2 minutes (Duffel docs)
+    set_time_limit(300);   // booking and ticketing can each take up to 2 minutes
 
     $booking = db_one("SELECT * FROM flight_bookings WHERE id = ?", [$booking_id]);
+
+    // Galileo: PNR + ticket on Fanel's own office (includes/galileo.php)
+    if ($booking['supplier'] == 'galileo') {
+        galileo_fulfil($booking_id);
+        return;
+    }
 
     // 1. Check the offer again: the amount we pay Duffel must match its latest price
     $offer = duffel('GET', '/air/offers/' . rawurlencode($booking['offer_id']));
@@ -203,8 +209,8 @@ function issue_ticket($booking_id)
     $data = $order['data'];
     $documents = isset($data['documents']) ? $data['documents'] : [];
     db_query(
-        "UPDATE flight_bookings SET duffel_order_id = ?, pnr = ?, documents_json = ?, confirmed_at = NOW() WHERE id = ?",
-        [$data['id'], $data['booking_reference'], json_encode($documents), $booking_id]
+        "UPDATE flight_bookings SET duffel_order_id = ?, pnr = ?, documents_json = ?, charged_amount = ?, charged_currency = ?, confirmed_at = NOW() WHERE id = ?",
+        [$data['id'], $data['booking_reference'], json_encode($documents), $new_amount, $currency, $booking_id]
     );
     foreach ($documents as $doc) {
         foreach ($doc['passenger_ids'] as $passenger_id) {
