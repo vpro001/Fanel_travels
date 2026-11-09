@@ -10,6 +10,7 @@ $admin_menu = [
     'tours-bookings' => ['tour-bookings.php', 'Tour bookings'],
     'visas'          => ['visas.php', 'Visa applications'],
     'visa-destinations' => ['visa-destinations.php', 'Visa destinations'],
+    'visa-offers'    => ['visa-offers.php', 'Visa & holiday posts'],
     'tours'          => ['tours.php', 'Tour packages'],
     'enquiries'      => ['enquiries.php', 'Enquiries'],
     'settings'       => ['settings.php', 'Fees, rates & contact'],

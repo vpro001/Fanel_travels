@@ -336,7 +336,7 @@ CREATE TABLE `visa_applications` (
   `reference` varchar(20) NOT NULL,
   `user_id` int(10) unsigned DEFAULT NULL,
   `destination_id` int(10) unsigned NOT NULL,
-  `visa_type` enum('tourist','business','visit','student','transit','other') NOT NULL,
+  `visa_type` enum('tourist','business','visit','student','transit','work','residence','other') NOT NULL,
   `service` enum('application','support','visit') NOT NULL DEFAULT 'application',
   `full_name` varchar(120) NOT NULL,
   `email` varchar(254) NOT NULL,
@@ -349,6 +349,12 @@ CREATE TABLE `visa_applications` (
   `status` enum('submitted','under_review','documents_requested','processing','approved','refused','completed') NOT NULL DEFAULT 'submitted',
   `assigned_to` int(10) unsigned DEFAULT NULL,
   `service_fee_kobo` bigint(20) NOT NULL DEFAULT 0,
+  `fee_status` enum('unpaid','paid','waived') NOT NULL DEFAULT 'unpaid',
+  `fee_paid_at` datetime DEFAULT NULL,
+  `fee_method` varchar(30) DEFAULT NULL,
+  `appointment_at` datetime DEFAULT NULL,
+  `appointment_place` varchar(200) DEFAULT NULL,
+  `visa_valid_until` date DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
@@ -358,9 +364,25 @@ CREATE TABLE `visa_applications` (
   KEY `fk_va_dest` (`destination_id`),
   KEY `fk_va_user` (`user_id`),
   KEY `fk_va_staff` (`assigned_to`),
+  KEY `ix_va_travel` (`travel_date`),
   CONSTRAINT `fk_va_dest` FOREIGN KEY (`destination_id`) REFERENCES `visa_destinations` (`id`),
   CONSTRAINT `fk_va_staff` FOREIGN KEY (`assigned_to`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_va_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `visa_checklist` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `application_id` int(10) unsigned NOT NULL,
+  `label` varchar(200) NOT NULL,
+  `required` tinyint(1) NOT NULL DEFAULT 1,
+  `status` enum('missing','received','accepted','rejected') NOT NULL DEFAULT 'missing',
+  `note` varchar(500) DEFAULT NULL,
+  `added_by` enum('system','staff') NOT NULL DEFAULT 'system',
+  `sort_order` smallint(6) NOT NULL DEFAULT 0,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `ix_vcl_app` (`application_id`,`sort_order`),
+  CONSTRAINT `fk_vcl_app` FOREIGN KEY (`application_id`) REFERENCES `visa_applications` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `visa_destinations` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -370,6 +392,7 @@ CREATE TABLE `visa_destinations` (
   `visa_types` varchar(255) NOT NULL DEFAULT 'tourist',
   `summary` varchar(300) NOT NULL,
   `requirements` text NOT NULL,
+  `checklist` text DEFAULT NULL,
   `processing_time` varchar(80) DEFAULT NULL,
   `service_fee_kobo` bigint(20) NOT NULL DEFAULT 0,
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
@@ -382,6 +405,7 @@ CREATE TABLE `visa_destinations` (
 CREATE TABLE `visa_documents` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `application_id` int(10) unsigned NOT NULL,
+  `checklist_id` int(10) unsigned DEFAULT NULL,
   `doc_type` varchar(40) NOT NULL,
   `original_name` varchar(200) NOT NULL,
   `stored_name` char(40) NOT NULL,
@@ -389,11 +413,34 @@ CREATE TABLE `visa_documents` (
   `size_bytes` int(10) unsigned NOT NULL,
   `sha256` char(64) NOT NULL,
   `uploaded_by` enum('customer','staff') NOT NULL DEFAULT 'customer',
+  `shared` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_vdoc_stored` (`stored_name`),
   KEY `ix_vdoc_app` (`application_id`),
-  CONSTRAINT `fk_vdoc_app` FOREIGN KEY (`application_id`) REFERENCES `visa_applications` (`id`) ON DELETE CASCADE
+  KEY `ix_vdoc_check` (`checklist_id`),
+  CONSTRAINT `fk_vdoc_app` FOREIGN KEY (`application_id`) REFERENCES `visa_applications` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vdoc_check` FOREIGN KEY (`checklist_id`) REFERENCES `visa_checklist` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `visa_offers` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `kind` enum('visa','holiday') NOT NULL DEFAULT 'visa',
+  `title` varchar(150) NOT NULL,
+  `summary` varchar(500) DEFAULT NULL,
+  `image` varchar(100) NOT NULL,
+  `destination_id` int(10) unsigned DEFAULT NULL,
+  `expires_on` date DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `sort_order` smallint(6) NOT NULL DEFAULT 100,
+  `created_by` int(10) unsigned DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `ix_vo_list` (`kind`,`is_active`,`sort_order`),
+  KEY `fk_vo_dest` (`destination_id`),
+  KEY `fk_vo_user` (`created_by`),
+  CONSTRAINT `fk_vo_dest` FOREIGN KEY (`destination_id`) REFERENCES `visa_destinations` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_vo_user` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `visa_status_history` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,

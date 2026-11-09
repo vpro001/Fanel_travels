@@ -8,13 +8,10 @@ if (!$country) {
     redirect('visa.php');
 }
 
-$services = [
-    'application' => ['Full application', 'We handle everything: document check, forms, appointment and interview preparation.'],
-    'support'     => ['Document check only', 'You apply yourself; we review your documents and forms first.'],
-    'visit'       => ['Visit visa', 'For visiting family or friends, with help preparing the invitation documents.'],
-];
-$type_names = ['tourist' => 'Tourist', 'business' => 'Business', 'visit' => 'Family visit', 'student' => 'Student', 'transit' => 'Transit'];
+$services = visa_service_names();
+$type_names = visa_type_names();
 $types = array_intersect_key($type_names, array_flip(explode(',', $country['visa_types'])));
+$checklist = visa_checklist_lines($country);
 
 $f = ['service' => 'application', 'visa_type' => key($types), 'full_name' => '', 'email' => '', 'phone' => '', 'passport_number' => '', 'travel_date' => '', 'return_date' => '', 'purpose' => ''];
 $errors = [];
@@ -24,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     foreach ($f as $key => $v) {
         $f[$key] = post($key);
     }
-    if (!rate_limit('visa-apply:' . $_SERVER['REMOTE_ADDR'], 5, 3600)) $errors['full_name'] = 'You have sent several applications in the last hour. Please contact us if you need help.';
+    if (!rate_limit('visa-apply:' . $_SERVER['REMOTE_ADDR'], 5, 3600)) $errors['form'] = 'You have sent several applications in the last hour. Please call us if you need help.';
     if (!isset($services[$f['service']])) $errors['service'] = 'Choose a service.';
     if (!isset($types[$f['visa_type']])) $errors['visa_type'] = 'Choose a visa type.';
     if (strlen($f['full_name']) < 3) $errors['full_name'] = 'Enter your full name as it is on your passport.';
@@ -34,30 +31,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!valid_date($f['travel_date']) || $f['travel_date'] <= date('Y-m-d')) $errors['travel_date'] = 'Enter the date you plan to travel.';
     if ($f['return_date'] != '' && (!valid_date($f['return_date']) || $f['return_date'] < $f['travel_date'])) $errors['return_date'] = 'The return date must be after the travel date.';
 
-    // Required documents
-    $required = ['passport_page' => 'Passport photo page', 'photo' => 'Passport photograph'];
-    foreach ($required as $field => $label) {
-        if (empty($_FILES[$field]['name'])) $errors[$field] = "Please upload your $label.";
+    // One upload per checklist item; the ones marked required must be there
+    $files = list_files('doc');
+    foreach ($checklist as $n => $item) {
+        $given = isset($files[$n]) && $files[$n]['error'] != UPLOAD_ERR_NO_FILE;
+        if ($item['required'] && !$given) $errors["doc$n"] = 'Please upload this document.';
     }
 
-    $saved = [];
+    $saved = [];   // [checklist index or null, upload result]
     if (!$errors) {
-        foreach ($required as $field => $label) {
-            $r = save_upload($_FILES[$field], 'visa');
-            if (!$r['ok']) { $errors[$field] = $r['error']; break; }
-            $r['doc_type'] = $field;
-            $saved[] = $r;
+        foreach ($checklist as $n => $item) {
+            if (!isset($files[$n]) || $files[$n]['error'] == UPLOAD_ERR_NO_FILE) continue;
+            $r = save_upload($files[$n], 'visa');
+            if (!$r['ok']) { $errors["doc$n"] = $r['error']; break; }
+            $saved[] = [$n, $r];
         }
         foreach (array_slice(list_files('other'), 0, 5) as $file) {
             if ($errors || $file['error'] == UPLOAD_ERR_NO_FILE) continue;
             $r = save_upload($file, 'visa');
             if (!$r['ok']) { $errors['other'] = $file['name'] . ': ' . $r['error']; break; }
-            $r['doc_type'] = 'supporting';
-            $saved[] = $r;
+            $saved[] = [null, $r];
         }
         if ($errors) {
             // Something failed: don't keep half an application's files
-            foreach ($saved as $s) @unlink(__DIR__ . '/storage/uploads/visa/' . $s['stored_name']);
+            foreach ($saved as $s) @unlink(__DIR__ . '/storage/uploads/visa/' . $s[1]['stored_name']);
         }
     }
 
@@ -79,16 +76,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'purpose' => substr($f['purpose'], 0, 500),
             'service_fee_kobo' => $country['service_fee_kobo'],
         ]);
+        // This application's own copy of the checklist
+        $item_ids = [];
+        foreach ($checklist as $n => $item) {
+            $item_ids[$n] = db_insert('visa_checklist', ['application_id' => $id, 'label' => $item['label'], 'required' => $item['required'] ? 1 : 0, 'sort_order' => $n]);
+        }
         foreach ($saved as $s) {
-            db_insert('visa_documents', [
-                'application_id' => $id, 'doc_type' => $s['doc_type'], 'original_name' => $s['original_name'],
-                'stored_name' => $s['stored_name'], 'mime' => $s['mime'], 'size_bytes' => $s['size_bytes'], 'sha256' => $s['sha256'],
-            ]);
+            visa_save_document($id, $s[1], $s[0] === null ? null : $item_ids[$s[0]], 'customer', 0, $s[0] === null ? 'supporting' : 'checklist');
         }
         db_insert('visa_status_history', ['application_id' => $id, 'to_status' => 'submitted', 'note' => 'We have your application and documents.', 'is_public' => 1]);
         db_commit();
 
-        visa_email($id, 'submitted', "We'll review your documents and contact you within two working days with the next steps and how to pay our service fee.");
+        visa_email($id, 'submitted', "We'll review your documents and contact you within two working days with the next steps"
+            . ($country['service_fee_kobo'] > 0 ? ' and how to pay our service fee.' : ', including our service fee.'));
+        admin_visa_alert($id, 'New application', $country['country_name'] . ' visa, travelling ' . nice_date($f['travel_date']));
         $_SESSION['visa_access'][] = $reference;
         redirect('visa-track.php?ref=' . urlencode($reference) . '&new=1');
     }
@@ -98,7 +99,8 @@ $title = 'Apply: ' . $country['country_name'] . ' visa';
 $page = 'visa';
 include 'includes/header.php';
 
-$field = 'mt-1 block w-full rounded-lg border-0 bg-cloud-50 px-3.5 py-3 text-base ring-1 ring-navy-300 focus:outline-none focus:ring-2 focus:ring-sun-500';
+$field = 'field';
+$file_input = 'mt-2 block w-full rounded-xl bg-cloud-50 p-2 text-sm ring-1 ring-cloud-300 file:mr-3 file:rounded-full file:border-0 file:bg-brand-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-700';
 $label = 'block font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-navy-600';
 function show_error($errors, $key) { return isset($errors[$key]) ? '<p class="field-error">' . e($errors[$key]) . '</p>' : ''; }
 ?>
@@ -114,17 +116,17 @@ function show_error($errors, $key) { return isset($errors[$key]) ? '<p class="fi
   <form method="post" enctype="multipart/form-data" novalidate class="mx-auto max-w-3xl space-y-6">
     <?= csrf_field() ?>
     <?php if ($errors): ?>
-      <div class="rounded-xl bg-bad-100 p-4 text-bad-700" role="alert"><p class="font-semibold">Please check the highlighted details.</p></div>
+      <div class="rounded-xl bg-bad-100 p-4 text-bad-700" role="alert"><p class="font-semibold"><?= isset($errors['form']) ? e($errors['form']) : 'Please check the highlighted details.' ?></p></div>
     <?php endif; ?>
 
-    <fieldset class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-navy-900/5 sm:p-6">
+    <fieldset class="card p-5 sm:p-6">
       <legend class="sr-only">Service</legend>
       <p class="font-display text-xl font-bold">1. How can we help?</p>
       <div class="mt-4 grid gap-3 sm:grid-cols-3">
         <?php foreach ($services as $key => $s): ?>
           <label class="relative">
             <input type="radio" name="service" value="<?= $key ?>" class="peer sr-only" <?= $f['service'] == $key ? 'checked' : '' ?>>
-            <span class="block h-full rounded-xl p-4 ring-1 ring-navy-300 transition peer-checked:bg-navy-950 peer-checked:text-cloud-50 peer-checked:ring-navy-950 peer-focus-visible:outline peer-focus-visible:outline-3 peer-focus-visible:outline-sun-500">
+            <span class="block h-full rounded-2xl p-4 ring-1 ring-cloud-300 transition peer-checked:bg-brand-600 peer-checked:text-white peer-checked:ring-brand-600 peer-focus-visible:outline peer-focus-visible:outline-3 peer-focus-visible:outline-brand-500">
               <b class="block"><?= $s[0] ?></b><span class="mt-1 block text-sm opacity-80"><?= $s[1] ?></span>
             </span>
           </label>
@@ -139,7 +141,7 @@ function show_error($errors, $key) { return isset($errors[$key]) ? '<p class="fi
       </div>
     </fieldset>
 
-    <fieldset class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-navy-900/5 sm:p-6">
+    <fieldset class="card p-5 sm:p-6">
       <legend class="sr-only">Your details</legend>
       <p class="font-display text-xl font-bold">2. About you and your trip</p>
       <div class="mt-4 grid gap-4 sm:grid-cols-2">
@@ -182,33 +184,37 @@ function show_error($errors, $key) { return isset($errors[$key]) ? '<p class="fi
       </div>
     </fieldset>
 
-    <fieldset class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-navy-900/5 sm:p-6">
+    <fieldset class="card p-5 sm:p-6">
       <legend class="sr-only">Documents</legend>
       <p class="font-display text-xl font-bold">3. Documents</p>
-      <p class="mt-1 text-sm text-navy-700">PDF, JPG or PNG, up to 5 MB each. A clear phone photo is fine. Only our visa staff can see these files.</p>
-      <div class="mt-4 grid gap-4 sm:grid-cols-2">
-        <?php foreach (['passport_page' => 'Passport photo page', 'photo' => 'Passport photograph'] as $name => $text): ?>
-          <div>
-            <label class="<?= $label ?>" for="<?= $name ?>"><?= $text ?></label>
-            <input id="<?= $name ?>" type="file" name="<?= $name ?>" accept=".pdf,.jpg,.jpeg,.png" class="mt-1 block w-full rounded-lg bg-cloud-50 p-2 text-sm ring-1 ring-navy-300 file:mr-3 file:rounded-md file:border-0 file:bg-navy-900 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-cloud-50">
-            <?= show_error($errors, $name) ?>
-          </div>
+      <p class="mt-1 text-sm text-navy-600">PDF, JPG or PNG, up to 5 MB each. A clear phone photo is fine. Only our visa staff can see these files.
+        Items marked <span class="font-semibold text-bad-700">Required</span> must come with the application; you can send the rest later from your tracking page.</p>
+      <ul class="mt-5 divide-y divide-cloud-200 rounded-2xl ring-1 ring-cloud-200">
+        <?php foreach ($checklist as $n => $item): ?>
+          <li class="p-4 <?= isset($errors["doc$n"]) ? 'bg-bad-100/50' : '' ?>">
+            <label class="flex flex-wrap items-center gap-2 font-semibold" for="doc<?= $n ?>">
+              <?= icon('document', 'size-5 text-brand-600') ?> <?= e($item['label']) ?>
+              <?php if ($item['required']): ?><span class="badge bg-bad-100 text-bad-700">Required</span><?php else: ?><span class="badge bg-cloud-100 text-navy-600">Now or later</span><?php endif; ?>
+            </label>
+            <input id="doc<?= $n ?>" type="file" name="doc[<?= $n ?>]" accept=".pdf,.jpg,.jpeg,.png" class="<?= $file_input ?>">
+            <?= show_error($errors, "doc$n") ?>
+          </li>
         <?php endforeach; ?>
-        <div class="sm:col-span-2">
-          <label class="<?= $label ?>" for="other">Other documents <span class="normal-case tracking-normal font-normal">(optional, up to 5: bank statement, letters, bookings…)</span></label>
-          <input id="other" type="file" name="other[]" multiple accept=".pdf,.jpg,.jpeg,.png" class="mt-1 block w-full rounded-lg bg-cloud-50 p-2 text-sm ring-1 ring-navy-300 file:mr-3 file:rounded-md file:border-0 file:bg-navy-900 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-cloud-50">
+        <li class="p-4">
+          <label class="font-semibold" for="other">Anything else <span class="font-normal text-navy-500">(optional, up to 5 files: letters, previous visas...)</span></label>
+          <input id="other" type="file" name="other[]" multiple accept=".pdf,.jpg,.jpeg,.png" class="<?= $file_input ?>">
           <?= show_error($errors, 'other') ?>
-        </div>
-      </div>
+        </li>
+      </ul>
     </fieldset>
 
-    <div class="rounded-2xl bg-navy-950 p-5 text-cloud-50 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-6">
+    <div class="rounded-3xl bg-navy-900 p-5 text-cloud-50 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-6">
       <div>
         <p class="text-[11px] uppercase tracking-wider text-navy-300 font-semibold">Our service fee</p>
-        <p class="font-display text-2xl font-bold num"><?= naira($country['service_fee_kobo']) ?></p>
-        <p class="mt-1 text-xs text-navy-300">Nothing to pay now. We'll confirm the next steps and how to pay after we review your documents.</p>
+        <p class="font-display text-2xl font-bold num"><?= visa_fee_text($country['service_fee_kobo']) ?></p>
+        <p class="mt-1 text-xs text-navy-300">Nothing to pay now. After we review your documents you can pay online by card, transfer or USSD, or at our office.</p>
       </div>
-      <button class="btn btn-primary mt-4 w-full px-7 py-4 text-base sm:mt-0 sm:w-auto">Send application</button>
+      <button class="btn btn-accent mt-4 w-full px-7 py-4 text-base sm:mt-0 sm:w-auto">Send application</button>
     </div>
   </form>
 </section>

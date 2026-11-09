@@ -3,3 +3,5 @@ storage/logs/*
 storage/uploads/*
 storage/cache/*
 !storage/**/.gitkeep
+assets/img/offers/*
+!assets/img/offers/.gitkeep

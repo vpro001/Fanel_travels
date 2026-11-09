@@ -12,7 +12,7 @@ A step-by-step guide for putting the site on a normal cPanel host (Apache + PHP)
 
 1. Zip the project folder **without** `config.php`, `storage/logs/*`, `storage/cache/*` and `storage/uploads/*`.
 2. In cPanel **File Manager**, upload the zip to `public_html` (or a subfolder) and extract it.
-3. Folder permissions: folders `755`, files `644`. The web server must be able to write to `storage/` and `assets/img/tours/` (on most cPanel hosts PHP runs as your user, so `755` is enough).
+3. Folder permissions: folders `755`, files `644`. The web server must be able to write to `storage/`, `assets/img/tours/` and `assets/img/offers/` (on most cPanel hosts PHP runs as your user, so `755` is enough).
 4. Check that these return **403 Forbidden** in a browser: `/config.php`, `/includes/functions.php`, `/storage/`, `/database/schema.sql`, `/docs/DEPLOY.md`.
 
 ## 3. Database

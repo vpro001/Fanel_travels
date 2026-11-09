@@ -35,6 +35,35 @@ ON DUPLICATE KEY UPDATE country_name = VALUES(country_name), summary = VALUES(su
   processing_time = VALUES(processing_time), service_fee_kobo = VALUES(service_fee_kobo), sort_order = VALUES(sort_order),
   visa_types = VALUES(visa_types);
 
+-- Checklists for the destinations that already exist (staff can edit them in Admin → Visa destinations)
+UPDATE visa_destinations SET checklist = CONCAT('*Passport photo (bio-data) page\n*Passport photograph\n',
+  CASE slug
+    WHEN 'united-kingdom' THEN 'Bank statements (last 6 months)\nEmployer letter or business documents\nTravel itinerary and accommodation details\nInvitation letter (if visiting family or friends)'
+    WHEN 'united-states' THEN 'Proof of income\nProof of ties to Nigeria (work, property, family)\nPrevious visas, if any'
+    WHEN 'canada' THEN 'Bank statements (last 4 to 6 months)\nProof of employment or business\nTravel itinerary\nInvitation letter (if visiting family)'
+    WHEN 'united-arab-emirates' THEN 'Return flight booking\nHotel booking or host address'
+    WHEN 'schengen' THEN 'Travel medical insurance\nBank statements (last 6 months)\nFlight and hotel reservations\nEmployer letter or business documents'
+    WHEN 'south-africa' THEN 'Bank statements (last 3 months)\nReturn flight booking\nProof of accommodation'
+    ELSE 'Supporting documents'
+  END)
+WHERE checklist IS NULL OR checklist = '';
+
+-- Two destinations from Fanel's own flyers (requirements as printed on the flyers).
+-- Fee 0 = "confirmed after we review your application"; set the real fee in the admin.
+INSERT INTO visa_destinations (slug, country_name, country_code, visa_types, summary, requirements, checklist, processing_time, service_fee_kobo, sort_order) VALUES
+('thailand', 'Thailand', 'TH', 'tourist',
+ 'Thailand e-visa for holidays. We prepare and submit the application for you.',
+ 'Passport copy, valid for at least 6 months\nRecent passport photograph on a white background\nCompleted Thailand e-visa application form (we fill it with you)\nPOSSAP police clearance (mandatory)\nHotel booking or proof of accommodation\nConfirmed round-trip flight itinerary',
+ '*Passport copy (valid 6+ months)\n*Passport photograph (white background)\nPOSSAP police clearance\nHotel booking or proof of accommodation\nConfirmed round-trip flight itinerary',
+ 'Ask us for current timing', 0, 70),
+('malaysia', 'Malaysia', 'MY', 'tourist',
+ 'Malaysia visa for a one-month stay. Easy visa, memorable journey.',
+ 'Passport, scanned pages 1 to 10\nYellow fever card\nScanned passport photograph',
+ '*Passport, scanned pages 1 to 10\n*Passport photograph (scanned)\nYellow fever card',
+ 'About 7 days. Visa valid for a 1-month stay', 0, 80)
+ON DUPLICATE KEY UPDATE slug = slug;
+
+
 INSERT INTO tour_packages (slug, title, destination, country_code, summary, description, duration_days, duration_nights, price_kobo, price_basis, deposit_pct, itinerary_json, inclusions, exclusions, is_published, is_featured, sort_order) VALUES
 ('zanzibar-island-escape', 'Zanzibar Island Escape', 'Zanzibar', 'TZ',
  'Six nights between Stone Town''s old streets and the white beaches of the east coast.',
@@ -96,3 +125,26 @@ UPDATE tour_packages SET cover_image = 'cape-town' WHERE slug = 'cape-town-explo
 -- in the admin before taking real payments.
 INSERT INTO fx_rates (currency, rate_to_ngn) VALUES ('USD', 1550.00), ('GBP', 2050.00), ('EUR', 1720.00)
 ON DUPLICATE KEY UPDATE rate_to_ngn = VALUES(rate_to_ngn);
+
+-- First posts: Fanel's flyers (images in assets/img/fanel/). Only added when the table is empty.
+INSERT INTO visa_offers (kind, title, image, destination_id, sort_order)
+SELECT * FROM (
+  SELECT 'visa' AS kind, 'Dubai 5-year multiple-entry visa' AS title, 'fanel/dubai-multiple-entry' AS image, (SELECT id FROM visa_destinations WHERE slug = 'united-arab-emirates') AS destination_id, 10 AS sort_order UNION ALL
+  SELECT 'visa', 'Thailand visa', 'fanel/thailand-visa', (SELECT id FROM visa_destinations WHERE slug = 'thailand'), 20 UNION ALL
+  SELECT 'visa', 'Malaysia visa', 'fanel/malaysia-visa', (SELECT id FROM visa_destinations WHERE slug = 'malaysia'), 30 UNION ALL
+  SELECT 'visa', 'Qatar visa', 'fanel/qatar-visa', NULL, 40 UNION ALL
+  SELECT 'visa', 'Kenya visa', 'fanel/kenya-visa', NULL, 50 UNION ALL
+  SELECT 'visa', 'Indonesia visa', 'fanel/indonesia-visa', NULL, 60 UNION ALL
+  SELECT 'visa', 'Mexico tourist visa', 'fanel/mexico-visa', NULL, 70 UNION ALL
+  SELECT 'visa', 'Uganda visa', 'fanel/uganda-visa', NULL, 80 UNION ALL
+  SELECT 'visa', 'East Africa tourist visa', 'fanel/east-africa-visa', NULL, 90 UNION ALL
+  SELECT 'visa', 'Kuwait and Oman work visas', 'fanel/kuwait-oman-work-visa', NULL, 100 UNION ALL
+  SELECT 'visa', 'Qatar work visa', 'fanel/qatar-work-visa', NULL, 110 UNION ALL
+  SELECT 'visa', 'Indonesia 2-year residence permit', 'fanel/indonesia-residence', NULL, 120 UNION ALL
+  SELECT 'visa', 'Dubai e-visa (non-Nigerians)', 'fanel/dubai-evisa', (SELECT id FROM visa_destinations WHERE slug = 'united-arab-emirates'), 130 UNION ALL
+  SELECT 'visa', 'More countries we process', 'fanel/visa-countries', NULL, 140 UNION ALL
+  SELECT 'holiday', 'Seychelles holiday', 'fanel/seychelles', NULL, 10 UNION ALL
+  SELECT 'holiday', 'Family escape to Qatar', 'fanel/qatar-family', NULL, 20 UNION ALL
+  SELECT 'holiday', 'Seychelles and Ethiopia', 'fanel/seychelles-ethiopia', NULL, 30
+) AS seed
+WHERE NOT EXISTS (SELECT 1 FROM visa_offers);

@@ -10,9 +10,9 @@ Plain PHP pages and a MySQL database. No framework and no build step.
    2. `database/airports.sql`
    3. `database/demo-content.sql` (sample tours and visa destinations for the demo)
 
-   A database created from an older `schema.sql` only needs `database/fanel-update.sql`.
+   A database created from an older `schema.sql` needs `database/fanel-update.sql`, then `database/visa-upgrade.sql`, then `database/visa-offers.sql`.
 3. Copy `config.sample.php` to `config.php` and fill in your database login, `SITE_URL`, a random `APP_SECRET` and the API keys.
-4. Make sure the web server can write to `storage/` and `assets/img/tours/`.
+4. Make sure the web server can write to `storage/`, `assets/img/tours/` and `assets/img/offers/`.
 5. Open the site, e.g. http://localhost/fanel/
 6. Open `/admin/`. The first visit asks you to create the admin account.
 

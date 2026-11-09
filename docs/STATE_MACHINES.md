@@ -43,6 +43,14 @@ Same shape as flights, with `booking` in place of `ticketing`:
 
 `pending_payment → deposit_paid → paid → confirmed`, or `pending_payment → paid` when paid in full. Also `payment_failed`, `cancellation_requested`, `cancelled` (seats returned) and `refunded`. Seats are reserved on the first successful payment, only if enough are left.
 
-## Visa applications (Phase 4)
+## Visa applications (`includes/visa.php`, `admin/visa.php`, `visa-track.php`)
 
 `submitted → under_review → documents_requested → processing → approved / refused → completed`
+
+- `submitted` can also go straight to `documents_requested`. `documents_requested` returns to `under_review` automatically when the customer has uploaded every required document that was missing or sent back.
+- Every change goes into `visa_status_history` (public notes show on the tracking page) and emails the customer. Updates that don't change the status (appointment booked, fee paid, file shared) are history rows with `from_status = to_status`.
+
+**Document checklist** (`visa_checklist`, one row per document per application, copied from the destination's `checklist` when the customer applies; lines starting with `*` are required at application time):
+`missing → received → accepted`, or `received → rejected → received` when staff send it back with a reason. Staff can add items or make an optional item required; "Ask the customer for documents" emails everything that's outstanding.
+
+**Service fee** (`fee_status` on the application): `unpaid → paid` (Paystack via `confirm_payment()`, or recorded by staff for transfer / cash / POS) or `unpaid → waived`. `visa_fee_paid()` only changes an `unpaid` row, so the webhook and the return page can't record it twice. Customers can pay online once the application has left `submitted` and the fee is above ₦0.

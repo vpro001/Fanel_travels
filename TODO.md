@@ -12,7 +12,8 @@ Demo target: Monday (internal review) → Tuesday (client presentation)
 - [ ] Licence numbers (NCAA / IATA / NANTA, if any) (`{{CLIENT_LICENCES}}`)
 - [ ] Preferred service fee model (default ₦2,000 per booking)
 - [ ] Visa destinations offered + requirements per country (staff can edit them in the database for now; an admin screen for visa destinations is a Phase 7 item) (demo lists in `020_demo_content.sql` are a general guide, not checked against embassies)
-- [ ] Visa service fees (demo values ₦35,000–₦85,000 in the seed)
+- [ ] Visa service fees (demo values ₦35,000–₦85,000 in the seed; Thailand and Malaysia show "confirmed after review" until a fee is set)
+- [ ] Visa destinations for the other countries on Fanel's flyers (Qatar, Kenya, Indonesia, Mexico, Uganda, East Africa, Kuwait, Oman...) with their real requirements and document checklists
 - [x] "Our story" text for the About page: about, mission, vision and services from the company profile
 - [ ] Tour packages to feature (4 fictional demo packages with demo prices are seeded)
 - [ ] Own photos for tours (Zanzibar and Obudu use illustrative Unsplash photos, see docs/IMAGE_CREDITS.md)
@@ -218,3 +219,17 @@ Demo target: Monday (internal review) → Tuesday (client presentation)
 - No Duffel / Paystack test keys yet. Fixtures mode is the fallback for the demo, but Phase 3 acceptance (real Paystack test checkout) needs keys.
 - Duffel `balance` payments in test mode are not explicitly documented — verify on the first test order.
 - Paystack verify `data.status` enum not fully listed in the spec — code treats anything except `success` as unpaid.
+
+## Visa processing upgrade (2026-11-09)
+- [x] Per-destination document checklist (`visa_destinations.checklist`, `*` = required); each application gets its own copy (`visa_checklist`)
+- [x] Apply form: one upload per checklist item; required ones enforced; work and residence visa types
+- [x] Staff: accept / send back each document with a reason, add or require documents, email the outstanding list
+- [x] Service fee: set per application, pay online with Paystack (callback + webhook via `confirm_payment()`), or record transfer / cash / POS, or waive
+- [x] Appointment date and place, visa valid-until date, files shared with the customer (`visa-file.php`, only for a browser that opened the application)
+- [x] Tracking page: what's needed, document status, pay button, appointment, downloads
+- [x] Admin list: search (reference, name, email, phone, passport), country filter, queues (documents to check, travelling within 14 days, fee unpaid, unassigned, mine); assign to any staff member; WhatsApp / call / email links
+- [x] Office email alerts (to `ADMIN_EMAIL`) on new applications, customer uploads and online payments
+- [x] Thailand and Malaysia added from Fanel's flyers
+- [x] Tested end to end locally (apply, validation, staff actions, uploads, download access, Paystack test checkout, payment confirmation run twice)
+- [ ] Set `ADMIN_EMAIL` in `config.php` so the office gets the alerts
+- [x] Visa and holiday flyers are posts in the database (`visa_offers`), managed in Admin → Visa & holiday posts: upload, title, details, link to a visa destination ("Apply online") or "Ask us" (contact form pre-filled), take-down date, order, show/hide, delete. The homepage hero, visa gallery, holiday ideas and the Visa page all read from it

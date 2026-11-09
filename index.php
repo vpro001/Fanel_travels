@@ -44,8 +44,11 @@ $services = [
 ];
 
 require 'includes/posters.php';
+$visa_posts = visa_offers('visa');
+$holiday_posts = visa_offers('holiday', 12);
+$hero_posts = array_slice(array_merge($visa_posts, $holiday_posts), 0, 3);
 
-$visas = db_all("SELECT * FROM visa_destinations WHERE is_active = 1 ORDER BY sort_order LIMIT 6");
+$visas = db_all("SELECT * FROM visa_destinations WHERE is_active = 1 ORDER BY sort_order LIMIT 8");
 
 $tours = db_all("
     SELECT p.*, MIN(d.start_date) AS next_date
@@ -92,16 +95,18 @@ include 'includes/header.php';
       </dl>
     </div>
 
-    <!-- Three Fanel flyers, fanned out -->
+    <!-- The first three posts (Admin → Visa & holiday posts), fanned out -->
+    <?php if ($hero_posts): $spots = ['absolute right-0 top-0 w-60 rotate-[7deg] ring-white/90', 'absolute left-0 top-10 w-60 -rotate-[8deg] ring-white/90', 'absolute bottom-0 left-1/2 w-64 -translate-x-1/2 rotate-[-1deg] ring-white']; ?>
     <div class="relative mx-auto hidden h-[30rem] w-full max-w-md sm:block" aria-hidden="true">
-      <div class="absolute left-0 top-10 w-60 -rotate-[8deg] overflow-hidden rounded-3xl shadow-2xl ring-4 ring-white/90"><?= photo('fanel/seychelles', '', 'aspect-square w-full object-cover', false, [480, 800], '15rem') ?></div>
-      <div class="absolute right-0 top-0 w-60 rotate-[7deg] overflow-hidden rounded-3xl shadow-2xl ring-4 ring-white/90"><?= photo('fanel/dubai-multiple-entry', '', 'aspect-square w-full object-cover', false, [480, 800], '15rem') ?></div>
-      <div class="absolute bottom-0 left-1/2 w-64 -translate-x-1/2 rotate-[-1deg] overflow-hidden rounded-3xl shadow-2xl ring-4 ring-white"><?= photo('fanel/kenya-visa', '', 'aspect-square w-full object-cover', false, [480, 800], '16rem') ?></div>
+      <?php foreach ($hero_posts as $n => $o): ?>
+        <div class="<?= $spots[$n] ?> overflow-hidden rounded-3xl shadow-2xl ring-4"><?= photo($o['image'], '', 'aspect-square w-full object-cover', false, [480, 800], '16rem') ?></div>
+      <?php endforeach; ?>
       <div class="absolute -left-4 bottom-16 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 text-navy-900 shadow-xl">
         <span class="flex size-10 items-center justify-center rounded-full bg-sun-100 text-sun-700"><?= icon('passport', 'size-5') ?></span>
         <span class="text-sm leading-tight"><b class="block">Visa desk</b><span class="text-navy-500">Documents checked for you</span></span>
       </div>
     </div>
+    <?php endif; ?>
   </div>
 </section>
 
@@ -141,16 +146,18 @@ include 'includes/header.php';
         <h2 class="mt-4 text-4xl font-bold leading-tight sm:text-5xl">Visas we're processing now</h2>
         <p class="mt-4 text-lg text-navy-600">Tourist, work and residence visas. Tap a flyer to see it in full, or ask us about your destination.</p>
       </div>
-      <div class="flex gap-2" aria-hidden="true">
+      <div class="flex gap-2 <?= $visa_posts ? '' : 'hidden' ?>" aria-hidden="true">
         <button type="button" data-scroll="#visa-posters" data-dir="-1" class="flex size-12 items-center justify-center rounded-full bg-white text-navy-900 shadow-sm ring-1 ring-navy-900/10 hover:bg-navy-900 hover:text-white" tabindex="-1"><?= icon('arrow-right', 'size-5 rotate-180') ?></button>
         <button type="button" data-scroll="#visa-posters" data-dir="1" class="flex size-12 items-center justify-center rounded-full bg-white text-navy-900 shadow-sm ring-1 ring-navy-900/10 hover:bg-navy-900 hover:text-white" tabindex="-1"><?= icon('arrow-right', 'size-5') ?></button>
       </div>
     </div>
   </div>
 
+  <?php if ($visa_posts): ?>
   <div id="visa-posters" class="snap-row snap-row-page mt-10 flex gap-5 overflow-x-auto pb-4">
-    <?php foreach ($visa_posters as $p) echo poster_card($p); ?>
+    <?php foreach ($visa_posts as $o) echo poster_card($o); ?>
   </div>
+  <?php endif; ?>
 
   <div class="container-page mt-14 grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-start">
     <ol class="grid gap-4 sm:grid-cols-2">
@@ -171,7 +178,7 @@ include 'includes/header.php';
       <div class="mt-3 flex flex-wrap gap-2">
         <?php foreach ($visas as $visa): ?>
           <a href="visa.php?country=<?= e($visa['slug']) ?>" class="rounded-full bg-white px-4 py-2 text-sm font-semibold ring-1 ring-navy-900/10 transition hover:bg-brand-600 hover:text-white hover:ring-brand-600">
-            <?= e($visa['country_name']) ?> <span class="font-normal opacity-70 num">· from <?= naira($visa['service_fee_kobo']) ?></span>
+            <?= e($visa['country_name']) ?><?php if ($visa['service_fee_kobo'] > 0): ?> <span class="font-normal opacity-70 num">· from <?= naira($visa['service_fee_kobo']) ?></span><?php endif; ?>
           </a>
         <?php endforeach; ?>
       </div>
@@ -260,12 +267,14 @@ include 'includes/header.php';
     </div>
     <?php endif; ?>
 
+    <?php if ($holiday_posts): ?>
     <div class="mt-14">
       <p class="text-sm font-semibold text-navy-200">Holiday ideas from our team</p>
       <div class="snap-row mt-4 flex gap-5 overflow-x-auto pb-2 [&_figcaption_span]:text-white [&_figcaption_a]:text-sun-300">
-        <?php foreach ($holiday_posters as $p) echo poster_card($p, 'w-64 sm:w-80'); ?>
+        <?php foreach ($holiday_posts as $o) echo poster_card($o, 'w-64 sm:w-80'); ?>
       </div>
     </div>
+    <?php endif; ?>
   </div>
 </section>
 

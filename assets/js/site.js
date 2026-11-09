@@ -30,7 +30,12 @@ if (viewer && viewer.showModal) {
       img.src = link.getAttribute('href');
       img.alt = link.dataset.caption;
       viewer.querySelector('[data-caption]').textContent = link.dataset.caption;
-      viewer.querySelector('[data-link]').href = link.dataset.link;
+      var button = viewer.querySelector('[data-link]');
+      button.href = link.dataset.link;
+      button.textContent = link.dataset.linkText || 'Ask us';
+      var summary = viewer.querySelector('[data-summary]');
+      summary.textContent = link.dataset.summary || '';
+      summary.hidden = !link.dataset.summary;
       viewer.showModal();
     });
   });

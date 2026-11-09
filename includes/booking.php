@@ -77,7 +77,9 @@ function confirm_payment($reference, $verified)
         // Not paid (yet). Only "failed" and "abandoned" are final.
         if ($status == 'failed' || $status == 'abandoned') {
             db_query("UPDATE payments SET status = ?, verify_response = ? WHERE id = ?", [$status, json_encode($verified), $payment['id']]);
-            if ($payment['booking_type'] == 'tour') {
+            if ($payment['booking_type'] == 'visa') {
+                // Nothing to change on the application: the fee simply stays unpaid
+            } elseif ($payment['booking_type'] == 'tour') {
                 db_query("UPDATE tour_bookings SET status = 'payment_failed' WHERE id = ? AND status = 'pending_payment'", [$booking_id]);
             } elseif ($payment['booking_type'] == 'hotel') {
                 require_once __DIR__ . '/stays.php';
@@ -95,6 +97,20 @@ function confirm_payment($reference, $verified)
         [(string) $verified['id'], (string) $verified['channel'], json_encode($verified), $payment['id']]
     );
     $amount_ok = (int) $verified['amount'] === (int) $payment['amount_kobo'] && $verified['currency'] === $payment['currency'];
+
+    // Visa service fee: mark the application paid (includes/visa.php)
+    if ($payment['booking_type'] == 'visa') {
+        require_once __DIR__ . '/visa.php';
+        if (!$amount_ok) {
+            db_commit();
+            admin_alert('ACTION NEEDED: visa fee payment ' . $reference, 'The amount paid (' . $verified['amount'] . ' ' . $verified['currency'] . ') does not match the expected ' . naira($payment['amount_kobo']) . '. Check it and record the fee by hand in the back office.');
+            return $booking_id;
+        }
+        visa_fee_paid($booking_id, 'Paystack, ' . $verified['channel']);
+        db_commit();
+        admin_visa_alert($booking_id, 'Service fee paid online', naira($payment['amount_kobo']) . ' by ' . $verified['channel']);
+        return $booking_id;
+    }
 
     // Tours: record the money and reserve the seats (includes/tours.php)
     if ($payment['booking_type'] == 'tour') {

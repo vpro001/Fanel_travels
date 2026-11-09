@@ -8,7 +8,9 @@ $slug = get('country');
 $country = $slug ? db_one("SELECT * FROM visa_destinations WHERE slug = ? AND is_active = 1", [$slug]) : null;
 $countries = db_all("SELECT * FROM visa_destinations WHERE is_active = 1 ORDER BY sort_order, country_name");
 require 'includes/posters.php';
-$type_names = ['tourist' => 'Tourist', 'business' => 'Business', 'visit' => 'Family visit', 'student' => 'Student', 'transit' => 'Transit'];
+$visa_posts = visa_offers('visa');
+require_once 'includes/visa.php';
+$type_names = visa_type_names();
 
 $title = $country ? $country['country_name'] . ' visa' : 'Visa services';
 $page = 'visa';
@@ -17,9 +19,11 @@ include 'includes/header.php';
 
 <section class="relative isolate overflow-hidden bg-navy-900 text-cloud-50">
   <div class="absolute inset-0 -z-20 bg-[radial-gradient(110%_100%_at_90%_0%,#1d55d0_0%,#0f2c5c_50%,#0a1f44_80%)]"></div>
-  <div class="absolute bottom-0 right-[6%] hidden w-72 translate-y-10 rotate-[5deg] overflow-hidden rounded-3xl shadow-2xl ring-4 ring-white/90 lg:block" aria-hidden="true">
-    <?= photo('fanel/thailand-visa', '', 'aspect-[4/3] w-full object-cover', false, [480, 800], '18rem') ?>
+  <?php if ($visa_posts): ?>
+  <div class="absolute bottom-0 right-[6%] hidden w-64 translate-y-16 rotate-[5deg] overflow-hidden rounded-3xl shadow-2xl ring-4 ring-white/90 lg:block" aria-hidden="true">
+    <?= photo($visa_posts[0]['image'], '', 'aspect-square w-full object-cover', false, [480, 800], '16rem') ?>
   </div>
+  <?php endif; ?>
   <div class="container-page py-14 sm:py-20 lg:pr-96">
     <p class="eyebrow text-sun-300"><?= $country ? 'Visa · ' . e($country['country_name']) : 'Visa services' ?></p>
     <h1 class="mt-4 max-w-3xl text-4xl font-bold leading-[1.05] sm:text-6xl">
@@ -49,7 +53,7 @@ include 'includes/header.php';
       <div class="overflow-hidden rounded-2xl bg-navy-950 text-cloud-50">
         <div class="p-6">
           <p class="text-[11px] uppercase tracking-wider text-navy-300 font-semibold">Our service fee</p>
-          <p class="mt-1 font-display text-4xl font-bold num"><?= naira($country['service_fee_kobo']) ?></p>
+          <p class="mt-1 font-display text-4xl font-bold num"><?= visa_fee_text($country['service_fee_kobo']) ?></p>
           <p class="mt-1 text-sm text-navy-300">The embassy's own visa fee is separate and paid as the embassy asks.</p>
           <dl class="mt-6 space-y-3 border-t border-white/10 pt-5 text-sm">
             <div class="flex justify-between gap-4"><dt class="text-navy-300">Processing time</dt><dd class="text-right"><?= e($country['processing_time']) ?></dd></div>
@@ -81,7 +85,7 @@ include 'includes/header.php';
           <p class="mt-2 flex-1 text-sm text-navy-700"><?= e($c['summary']) ?></p>
           <div class="mt-4 flex items-end justify-between border-t border-cloud-200 pt-3 text-sm">
             <span class="text-navy-600"><?= e($c['processing_time']) ?></span>
-            <span class="font-semibold num">from <?= naira($c['service_fee_kobo']) ?></span>
+            <span class="font-semibold num"><?= $c['service_fee_kobo'] > 0 ? 'from ' . naira($c['service_fee_kobo']) : 'Fee on request' ?></span>
           </div>
         </a>
       <?php endforeach; ?>
@@ -90,7 +94,8 @@ include 'includes/header.php';
   </div>
 </section>
 
-<!-- Flyers from the Fanel visa desk -->
+<!-- Posts from the Fanel visa desk (Admin → Visa & holiday posts) -->
+<?php if ($visa_posts): ?>
 <section class="py-12 sm:py-16">
   <div class="container-page flex flex-wrap items-end justify-between gap-4">
     <div>
@@ -101,9 +106,10 @@ include 'includes/header.php';
     <a class="btn btn-primary" href="contact.php?topic=visa">Ask about a visa</a>
   </div>
   <div class="snap-row snap-row-page mt-8 flex gap-5 overflow-x-auto pb-4">
-    <?php foreach ($visa_posters as $p) echo poster_card($p); ?>
+    <?php foreach ($visa_posts as $o) echo poster_card($o); ?>
   </div>
 </section>
 <?= poster_viewer() ?>
+<?php endif; ?>
 
 <?php include 'includes/footer.php'; ?>

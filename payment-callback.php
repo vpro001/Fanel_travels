@@ -34,6 +34,10 @@ if ($payment['booking_type'] == 'hotel') {
     $_SESSION['my_hotels'][] = $booking_ref;
     redirect('hotel-booking.php?ref=' . urlencode($booking_ref));
 }
+if ($payment['booking_type'] == 'visa') {
+    $_SESSION['visa_access'][] = $booking_ref;
+    redirect('visa-track.php?ref=' . urlencode($booking_ref));
+}
 if ($payment['booking_type'] == 'tour') {
     $_SESSION['my_tours'][] = $booking_ref;
     redirect('tour-booking.php?ref=' . urlencode($booking_ref));

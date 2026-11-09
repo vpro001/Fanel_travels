@@ -1,9 +1,10 @@
 <?php
 require '../includes/init.php';
 require '../includes/admin.php';
+require '../includes/visa.php';
 
 // Visa destinations shown on the site: requirements, fee, processing time.
-$types = ['tourist' => 'Tourist', 'business' => 'Business', 'visit' => 'Family visit', 'student' => 'Student', 'transit' => 'Transit'];
+$types = visa_type_names();
 $id = (int) get('id');
 $edit = $id ? db_one("SELECT * FROM visa_destinations WHERE id = ?", [$id]) : null;
 $errors = [];
@@ -18,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'visa_types' => implode(',', $chosen),
         'summary' => post('summary'),
         'requirements' => trim(post('requirements')),
+        'checklist' => trim(post('checklist')),
         'processing_time' => post('processing_time'),
         'service_fee_kobo' => (int) round((float) str_replace(',', '', post('fee')) * 100),
         'is_active' => post('is_active') ? 1 : 0,
@@ -44,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 $all = db_all("SELECT d.*, (SELECT COUNT(*) FROM visa_applications a WHERE a.destination_id = d.id) AS apps FROM visa_destinations d ORDER BY d.sort_order, d.country_name");
 $show_form = $edit || get('new') || $errors;
-$e = $edit ?: ['country_name' => '', 'slug' => '', 'country_code' => '', 'visa_types' => 'tourist', 'summary' => '', 'requirements' => '', 'processing_time' => '', 'service_fee_kobo' => 0, 'is_active' => 1, 'sort_order' => 100];
+$e = $edit ?: ['country_name' => '', 'slug' => '', 'country_code' => '', 'visa_types' => 'tourist', 'summary' => '', 'requirements' => '', 'checklist' => "*Passport photo (bio-data) page\n*Passport photograph\n", 'processing_time' => '', 'service_fee_kobo' => 0, 'is_active' => 1, 'sort_order' => 100];
 
 $title = 'Visa destinations';
 $section = 'visa-destinations';
@@ -66,10 +68,12 @@ include '../includes/admin-header.php';
       <div><label class="field-label" for="slug">Web address</label><input id="slug" name="slug" class="field font-mono text-sm" value="<?= e($e['slug']) ?>" placeholder="from the name"></div>
     </div>
     <div class="lg:col-span-2"><label class="field-label" for="summary">Summary</label><input id="summary" name="summary" maxlength="300" class="field" value="<?= e($e['summary']) ?>"></div>
-    <div class="lg:col-span-2"><label class="field-label" for="requirements">Requirements (one per line)</label><textarea id="requirements" name="requirements" rows="7" class="field"><?= e($e['requirements']) ?></textarea></div>
+    <div><label class="field-label" for="requirements">Requirements shown on the site (one per line)</label><textarea id="requirements" name="requirements" rows="8" class="field"><?= e($e['requirements']) ?></textarea></div>
+    <div><label class="field-label" for="checklist">Documents customers upload (one per line)</label><textarea id="checklist" name="checklist" rows="8" class="field font-mono text-sm"><?= e($e['checklist']) ?></textarea>
+      <p class="mt-1 text-xs text-navy-600">Start a line with <b>*</b> if it must be uploaded with the application. The others can be sent later. Each application gets its own copy, so changing this doesn't affect applications already sent.</p></div>
     <div><label class="field-label" for="processing_time">Processing time</label><input id="processing_time" name="processing_time" class="field" value="<?= e($e['processing_time']) ?>" placeholder="e.g. Usually 3 weeks"></div>
     <div class="grid grid-cols-2 gap-3">
-      <div><label class="field-label" for="fee">Our fee (₦)</label><input id="fee" name="fee" inputmode="decimal" class="field num" value="<?= $e['service_fee_kobo'] ? number_format($e['service_fee_kobo'] / 100, 0, '.', '') : '' ?>"></div>
+      <div><label class="field-label" for="fee">Our fee (₦, empty = confirmed after review)</label><input id="fee" name="fee" inputmode="decimal" class="field num" value="<?= $e['service_fee_kobo'] ? number_format($e['service_fee_kobo'] / 100, 0, '.', '') : '' ?>"></div>
       <div><label class="field-label" for="sort_order">Order</label><input id="sort_order" type="number" name="sort_order" class="field" value="<?= (int) $e['sort_order'] ?>"></div>
     </div>
     <fieldset class="lg:col-span-2"><legend class="field-label">Visa types</legend>
@@ -89,7 +93,7 @@ include '../includes/admin-header.php';
       <?php foreach ($all as $d): ?>
         <tr class="hover:bg-cloud-50">
           <td class="px-5 py-3 font-semibold"><?= e($d['country_name']) ?> <span class="font-mono text-xs text-navy-500"><?= e($d['country_code']) ?></span></td>
-          <td class="px-3 py-3 num"><?= naira($d['service_fee_kobo']) ?></td>
+          <td class="px-3 py-3 num"><?= visa_fee_text($d['service_fee_kobo']) ?></td>
           <td class="px-3 py-3 text-navy-700"><?= e($d['processing_time']) ?></td>
           <td class="px-3 py-3"><?= (int) $d['apps'] ?></td>
           <td class="px-3 py-3"><?= $d['is_active'] ? '<span class="badge bg-ok-100 text-ok-700">Shown</span>' : '<span class="badge bg-navy-100 text-navy-700">Hidden</span>' ?></td>
