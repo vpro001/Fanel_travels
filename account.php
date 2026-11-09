@@ -72,7 +72,7 @@ function cancel_form($type, $id)
         . '<form method="post" class="mt-3 flex flex-col gap-2 sm:flex-row" onsubmit="return confirm(\'Send a cancellation request to our team?\')">' . csrf_field()
         . '<input type="hidden" name="action" value="cancel"><input type="hidden" name="type" value="' . $type . '"><input type="hidden" name="id" value="' . (int) $id . '">'
         . '<input name="reason" placeholder="Reason (optional)" class="field mt-0 flex-1"><button class="btn btn-ghost">Send request</button></form>'
-        . '<p class="mt-1 text-xs text-ink-600">Airline and hotel rules decide what can be refunded. We\'ll check and contact you.</p></details>';
+        . '<p class="mt-1 text-xs text-navy-600">Airline and hotel rules decide what can be refunded. We\'ll check and contact you.</p></details>';
 }
 
 $title = 'My account';
@@ -80,12 +80,12 @@ $page = 'account';
 include 'includes/header.php';
 $empty = !$mine['flights'] && !$mine['hotels'] && !$mine['tours'] && !$mine['visas'];
 ?>
-<section class="bg-ink-950 text-paper-50">
+<section class="bg-navy-950 text-cloud-50">
   <div class="container-page flex flex-wrap items-end justify-between gap-4 py-10 sm:py-14">
     <div>
-      <p class="eyebrow text-saffron-300">My account</p>
+      <p class="eyebrow text-sun-300">My account</p>
       <h1 class="mt-2 text-4xl font-extrabold tracking-[-0.03em] sm:text-5xl">Hello, <?= e(explode(' ', $user['full_name'])[0]) ?></h1>
-      <p class="mt-1 text-ink-300"><?= e($user['email']) ?></p>
+      <p class="mt-1 text-navy-300"><?= e($user['email']) ?></p>
     </div>
     <form method="post" action="logout.php"><?= csrf_field() ?><button class="btn ring-1 ring-inset ring-white/20 hover:bg-white/10">Sign out</button></form>
   </div>
@@ -100,9 +100,9 @@ $empty = !$mine['flights'] && !$mine['hotels'] && !$mine['tours'] && !$mine['vis
   <?php endif; ?>
 
   <?php if ($empty): ?>
-    <div class="rounded-2xl bg-white p-10 text-center ring-1 ring-paper-200">
+    <div class="rounded-2xl bg-white p-10 text-center ring-1 ring-cloud-200">
       <p class="font-display text-2xl font-bold">Nothing booked yet</p>
-      <p class="mt-2 text-ink-700">Your flights, hotels, holidays and visa applications will show here.</p>
+      <p class="mt-2 text-navy-700">Your flights, hotels, holidays and visa applications will show here.</p>
       <div class="mt-5 flex flex-wrap justify-center gap-3"><a class="btn btn-primary" href="flights.php">Find a flight</a><a class="btn btn-ghost" href="visa.php">Visa services</a></div>
     </div>
   <?php endif; ?>
@@ -112,11 +112,11 @@ $empty = !$mine['flights'] && !$mine['hotels'] && !$mine['tours'] && !$mine['vis
       <h2 class="text-2xl font-extrabold">Flights</h2>
       <div class="mt-4 grid gap-4 md:grid-cols-2">
         <?php foreach ($mine['flights'] as $b): $trip = json_decode($b['itinerary_json'], true); ?>
-          <div class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-ink-900/5">
+          <div class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-navy-900/5">
             <div class="flex items-start justify-between gap-3">
               <div>
                 <p class="font-display text-xl font-bold"><?= e($trip[0]['from_city']) ?> → <?= e($trip[0]['to_city']) ?></p>
-                <p class="text-sm text-ink-600 num"><?= date('D j M Y', strtotime($trip[0]['depart'])) ?><?= count($trip) > 1 ? ' · ' . plural(count($trip), 'flight') : '' ?></p>
+                <p class="text-sm text-navy-600 num"><?= date('D j M Y', strtotime($trip[0]['depart'])) ?><?= count($trip) > 1 ? ' · ' . plural(count($trip), 'flight') : '' ?></p>
               </div>
               <?= pill($b['status'], $status_names) ?>
             </div>
@@ -134,9 +134,9 @@ $empty = !$mine['flights'] && !$mine['hotels'] && !$mine['tours'] && !$mine['vis
       <h2 class="text-2xl font-extrabold">Hotels</h2>
       <div class="mt-4 grid gap-4 md:grid-cols-2">
         <?php foreach ($mine['hotels'] as $b): $h = json_decode($b['accommodation_json'], true); ?>
-          <div class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-ink-900/5">
+          <div class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-navy-900/5">
             <div class="flex items-start justify-between gap-3">
-              <div><p class="font-display text-xl font-bold"><?= e($h['name']) ?></p><p class="text-sm text-ink-600 num"><?= nice_date($b['check_in_date']) ?> – <?= nice_date($b['check_out_date']) ?></p></div>
+              <div><p class="font-display text-xl font-bold"><?= e($h['name']) ?></p><p class="text-sm text-navy-600 num"><?= nice_date($b['check_in_date']) ?> – <?= nice_date($b['check_out_date']) ?></p></div>
               <?= pill($b['status'], $status_names) ?>
             </div>
             <p class="mt-3 text-sm"><span class="font-mono"><?= e($b['booking_ref']) ?></span><?= $b['hotel_reference'] ? ' · Hotel ref <b class="font-mono">' . e($b['hotel_reference']) . '</b>' : '' ?> · <?= naira($b['total_kobo']) ?></p>
@@ -153,9 +153,9 @@ $empty = !$mine['flights'] && !$mine['hotels'] && !$mine['tours'] && !$mine['vis
       <h2 class="text-2xl font-extrabold">Holidays</h2>
       <div class="mt-4 grid gap-4 md:grid-cols-2">
         <?php foreach ($mine['tours'] as $b): ?>
-          <div class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-ink-900/5">
+          <div class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-navy-900/5">
             <div class="flex items-start justify-between gap-3">
-              <div><p class="font-display text-xl font-bold"><?= e($b['title']) ?></p><p class="text-sm text-ink-600 num">Departs <?= nice_date($b['start_date']) ?> · <?= plural($b['travellers'], 'traveller') ?></p></div>
+              <div><p class="font-display text-xl font-bold"><?= e($b['title']) ?></p><p class="text-sm text-navy-600 num">Departs <?= nice_date($b['start_date']) ?> · <?= plural($b['travellers'], 'traveller') ?></p></div>
               <?= pill($b['status'], $status_names) ?>
             </div>
             <p class="mt-3 text-sm"><span class="font-mono"><?= e($b['booking_ref']) ?></span> · paid <?= naira($b['amount_paid_kobo']) ?> of <?= naira($b['total_kobo']) ?></p>
@@ -172,9 +172,9 @@ $empty = !$mine['flights'] && !$mine['hotels'] && !$mine['tours'] && !$mine['vis
       <h2 class="text-2xl font-extrabold">Visa applications</h2>
       <div class="mt-4 grid gap-4 md:grid-cols-2">
         <?php foreach ($mine['visas'] as $v): ?>
-          <a href="visa-track.php?ref=<?= e($v['reference']) ?>" class="block rounded-2xl bg-white p-5 shadow-sm ring-1 ring-ink-900/5 hover:shadow-md">
+          <a href="visa-track.php?ref=<?= e($v['reference']) ?>" class="block rounded-2xl bg-white p-5 shadow-sm ring-1 ring-navy-900/5 hover:shadow-md">
             <div class="flex items-start justify-between gap-3">
-              <div><p class="font-display text-xl font-bold"><?= e($v['country_name']) ?> visa</p><p class="text-sm text-ink-600">Travel <?= nice_date($v['travel_date']) ?></p></div>
+              <div><p class="font-display text-xl font-bold"><?= e($v['country_name']) ?> visa</p><p class="text-sm text-navy-600">Travel <?= nice_date($v['travel_date']) ?></p></div>
               <?= pill($v['status'], $status_names) ?>
             </div>
             <p class="mt-3 font-mono text-sm"><?= e($v['reference']) ?></p>

@@ -34,9 +34,9 @@ if ($error) {
     include 'includes/header.php';
     ?>
     <section class="container-page py-20 max-w-xl">
-      <p class="eyebrow text-saffron-700">Booking</p>
+      <p class="eyebrow text-sun-700">Booking</p>
       <h1 class="mt-3 text-4xl font-extrabold">Let's find you another fare</h1>
-      <p class="mt-3 text-lg text-ink-700"><?= e($error) ?></p>
+      <p class="mt-3 text-lg text-navy-700"><?= e($error) ?></p>
       <div class="mt-8 flex flex-wrap gap-3">
         <a class="btn btn-dark px-5 py-3" href="flights.php">Search again</a>
         <a class="btn btn-ghost px-5 py-3" href="contact.php">Ask us to find fares</a>
@@ -233,8 +233,8 @@ $title = 'Traveller details';
 $page = 'flights';
 include 'includes/header.php';
 
-$field = 'mt-1 block w-full rounded-lg border-0 bg-paper-50 px-3.5 py-3 text-base text-ink-900 ring-1 ring-ink-300 placeholder:text-ink-500 focus:outline-none focus:ring-2 focus:ring-saffron-500';
-$label = 'block font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-600';
+$field = 'mt-1 block w-full rounded-lg border-0 bg-cloud-50 px-3.5 py-3 text-base text-navy-900 ring-1 ring-navy-300 placeholder:text-navy-500 focus:outline-none focus:ring-2 focus:ring-sun-500';
+$label = 'block font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-navy-600';
 
 // Small helpers for showing a field's value and error
 function val($form, $i, $key) { return isset($form['passengers'][$i][$key]) ? $form['passengers'][$i][$key] : ''; }
@@ -242,16 +242,16 @@ function err($errors, $key) { return isset($errors[$key]) ? '<p class="field-err
 ?>
 
 <!-- Steps -->
-<section class="bg-ink-950 text-paper-50">
+<section class="bg-navy-950 text-cloud-50">
   <div class="container-page py-6">
-    <ol class="flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-xs font-semibold uppercase tracking-[0.15em]">
-      <li class="flex items-center gap-2 text-ink-300"><span class="flex size-6 items-center justify-center rounded-full bg-ok-700 text-white"><?= icon('check', 'size-3.5') ?></span> Flight</li>
-      <li class="h-px w-6 bg-ink-600" aria-hidden="true"></li>
-      <li class="flex items-center gap-2 text-saffron-300" aria-current="step"><span class="flex size-6 items-center justify-center rounded-full bg-saffron-400 text-ink-950">2</span> Travellers</li>
-      <li class="h-px w-6 bg-ink-600" aria-hidden="true"></li>
-      <li class="flex items-center gap-2 text-ink-300"><span class="flex size-6 items-center justify-center rounded-full ring-1 ring-ink-500">3</span> Payment</li>
-      <li class="h-px w-6 bg-ink-600" aria-hidden="true"></li>
-      <li class="flex items-center gap-2 text-ink-300"><span class="flex size-6 items-center justify-center rounded-full ring-1 ring-ink-500">4</span> Ticket</li>
+    <ol class="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs font-semibold uppercase tracking-wider">
+      <li class="flex items-center gap-2 text-navy-300"><span class="flex size-6 items-center justify-center rounded-full bg-ok-700 text-white"><?= icon('check', 'size-3.5') ?></span> Flight</li>
+      <li class="h-px w-6 bg-navy-600" aria-hidden="true"></li>
+      <li class="flex items-center gap-2 text-sun-300" aria-current="step"><span class="flex size-6 items-center justify-center rounded-full bg-sun-400 text-navy-950">2</span> Travellers</li>
+      <li class="h-px w-6 bg-navy-600" aria-hidden="true"></li>
+      <li class="flex items-center gap-2 text-navy-300"><span class="flex size-6 items-center justify-center rounded-full ring-1 ring-navy-500">3</span> Payment</li>
+      <li class="h-px w-6 bg-navy-600" aria-hidden="true"></li>
+      <li class="flex items-center gap-2 text-navy-300"><span class="flex size-6 items-center justify-center rounded-full ring-1 ring-navy-500">4</span> Ticket</li>
     </ol>
   </div>
 </section>
@@ -264,7 +264,7 @@ function err($errors, $key) { return isset($errors[$key]) ? '<p class="field-err
       <?= csrf_field() ?>
       <div>
         <h1 class="text-3xl font-extrabold sm:text-4xl">Who's travelling?</h1>
-        <p class="mt-2 text-ink-700">Enter each name <b>exactly as it is on <?= $offer['needs_passport'] ? 'the passport' : 'their ID (passport, national ID card or driver\'s licence)' ?></b>. Airlines can refuse boarding if names don't match.</p>
+        <p class="mt-2 text-navy-700">Enter each name <b>exactly as it is on <?= $offer['needs_passport'] ? 'the passport' : 'their ID (passport, national ID card or driver\'s licence)' ?></b>. Airlines can refuse boarding if names don't match.</p>
       </div>
 
       <?php if ($notice): ?>
@@ -277,11 +277,11 @@ function err($errors, $key) { return isset($errors[$key]) ? '<p class="field-err
       <?php endif; ?>
 
       <?php foreach ($raw['passengers'] as $i => $p): ?>
-        <fieldset class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-ink-900/5 sm:p-6">
+        <fieldset class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-navy-900/5 sm:p-6">
           <legend class="sr-only">Traveller <?= $i + 1 ?></legend>
           <div class="flex items-center justify-between gap-3">
             <p class="font-display text-xl font-bold">Traveller <?= $i + 1 ?></p>
-            <span class="rounded-full bg-paper-100 px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-ink-700"><?= $type_names[$p['type']] ?></span>
+            <span class="rounded-full bg-cloud-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-navy-700"><?= $type_names[$p['type']] ?></span>
           </div>
 
           <div class="mt-5 grid gap-4 sm:grid-cols-[8rem_1fr_1fr]">
@@ -317,7 +317,7 @@ function err($errors, $key) { return isset($errors[$key]) ? '<p class="field-err
                 <?php foreach (['m' => 'Male', 'f' => 'Female'] as $g => $gl): ?>
                   <label class="relative">
                     <input type="radio" name="p[<?= $i ?>][gender]" value="<?= $g ?>" class="peer sr-only" <?= val($form, $i, 'gender') == $g ? 'checked' : '' ?>>
-                    <span class="block rounded-lg bg-paper-50 px-3.5 py-3 text-center font-medium ring-1 ring-ink-300 peer-checked:bg-ink-900 peer-checked:text-paper-50 peer-checked:ring-ink-900 peer-focus-visible:outline peer-focus-visible:outline-3 peer-focus-visible:outline-saffron-500"><?= $gl ?></span>
+                    <span class="block rounded-lg bg-cloud-50 px-3.5 py-3 text-center font-medium ring-1 ring-navy-300 peer-checked:bg-navy-900 peer-checked:text-cloud-50 peer-checked:ring-navy-900 peer-focus-visible:outline peer-focus-visible:outline-3 peer-focus-visible:outline-sun-500"><?= $gl ?></span>
                   </label>
                 <?php endforeach; ?>
               </div>
@@ -326,8 +326,8 @@ function err($errors, $key) { return isset($errors[$key]) ? '<p class="field-err
           </div>
 
           <?php if ($offer['needs_passport']): ?>
-            <div class="mt-5 border-t border-dashed border-paper-300 pt-5">
-              <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-saffron-700">Passport</p>
+            <div class="mt-5 border-t border-dashed border-cloud-300 pt-5">
+              <p class="text-[11px] font-semibold uppercase tracking-wider text-sun-700">Passport</p>
               <div class="mt-3 grid gap-4 sm:grid-cols-3">
                 <div>
                   <label class="<?= $label ?>" for="p<?= $i ?>-pp">Passport number</label>
@@ -349,16 +349,16 @@ function err($errors, $key) { return isset($errors[$key]) ? '<p class="field-err
                   <?= err($errors, "p$i.passport_expiry") ?>
                 </div>
               </div>
-              <p class="mt-3 text-xs text-ink-600">Many countries ask for a passport that is valid for 6 months after you arrive. Check before you book.</p>
+              <p class="mt-3 text-xs text-navy-600">Many countries ask for a passport that is valid for 6 months after you arrive. Check before you book.</p>
             </div>
           <?php endif; ?>
         </fieldset>
       <?php endforeach; ?>
 
-      <fieldset class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-ink-900/5 sm:p-6">
+      <fieldset class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-navy-900/5 sm:p-6">
         <legend class="sr-only">Contact details</legend>
         <p class="font-display text-xl font-bold">Contact details</p>
-        <p class="mt-1 text-sm text-ink-700">We send the e-ticket here, and the airline uses them if your flight changes.</p>
+        <p class="mt-1 text-sm text-navy-700">We send the e-ticket here, and the airline uses them if your flight changes.</p>
         <div class="mt-5 grid gap-4 sm:grid-cols-2">
           <div>
             <label class="<?= $label ?>" for="email">Email</label>
@@ -373,53 +373,53 @@ function err($errors, $key) { return isset($errors[$key]) ? '<p class="field-err
         </div>
       </fieldset>
 
-      <div class="rounded-2xl bg-ink-950 p-5 text-paper-50 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-6">
+      <div class="rounded-2xl bg-navy-950 p-5 text-cloud-50 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-6">
         <div>
-          <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-300">Total to pay</p>
+          <p class="text-[11px] uppercase tracking-wider text-navy-300 font-semibold">Total to pay</p>
           <p class="font-display text-3xl font-bold num"><?= naira($price['total_kobo']) ?></p>
-          <p class="mt-1 text-xs text-ink-300">You'll pay securely on Paystack: card, bank transfer or USSD.</p>
+          <p class="mt-1 text-xs text-navy-300">You'll pay securely on Paystack: card, bank transfer or USSD.</p>
         </div>
         <button type="submit" class="btn btn-primary mt-4 w-full px-7 py-4 text-base sm:mt-0 sm:w-auto"><?= icon('card', 'size-5') ?> Continue to payment</button>
       </div>
-      <p class="text-xs text-ink-600">By continuing you agree to the airline's fare rules shown on this page. Your booking is only confirmed once payment is complete and the airline issues your ticket.</p>
+      <p class="text-xs text-navy-600">By continuing you agree to the airline's fare rules shown on this page. Your booking is only confirmed once payment is complete and the airline issues your ticket.</p>
     </form>
 
     <!-- Trip summary -->
     <aside class="lg:sticky lg:top-24 lg:self-start">
-      <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-ink-900/5">
-        <div class="flex items-center gap-3 border-b border-paper-200 p-5">
+      <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-navy-900/5">
+        <div class="flex items-center gap-3 border-b border-cloud-200 p-5">
           <?php if ($offer['logo']): ?>
             <img src="<?= e($offer['logo']) ?>" alt="" class="size-9 object-contain">
           <?php else: ?>
-            <span class="flex size-9 items-center justify-center rounded-md bg-ink-900 text-xs font-bold text-paper-50"><?= e($offer['airline_code']) ?></span>
+            <span class="flex size-9 items-center justify-center rounded-md bg-navy-900 text-xs font-bold text-cloud-50"><?= e($offer['airline_code']) ?></span>
           <?php endif; ?>
           <div>
             <p class="font-semibold"><?= e($offer['airline']) ?></p>
-            <p class="text-xs text-ink-600"><?= plural($offer['passengers'], 'traveller') ?></p>
+            <p class="text-xs text-navy-600"><?= plural($offer['passengers'], 'traveller') ?></p>
           </div>
         </div>
         <div class="space-y-4 p-5">
           <?php foreach ($offer['slices'] as $s): ?>
             <div>
-              <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-600"><?= date('D j M Y', strtotime($s['depart'])) ?></p>
+              <p class="text-[11px] font-semibold uppercase tracking-wider text-navy-600"><?= date('D j M Y', strtotime($s['depart'])) ?></p>
               <div class="mt-1 flex items-center justify-between gap-2">
-                <p class="font-display text-xl font-bold num"><?= substr($s['depart'], 11, 5) ?> <span class="text-sm font-sans font-semibold text-ink-600"><?= e($s['from']) ?></span></p>
-                <p class="text-center text-[11px] text-ink-600"><?= minutes_text($s['minutes']) ?><br><?= $s['stops'] ? plural($s['stops'], 'stop') : 'Direct' ?></p>
-                <p class="text-right font-display text-xl font-bold num"><?= substr($s['arrive'], 11, 5) ?> <span class="text-sm font-sans font-semibold text-ink-600"><?= e($s['to']) ?></span></p>
+                <p class="font-display text-xl font-bold num"><?= substr($s['depart'], 11, 5) ?> <span class="text-sm font-sans font-semibold text-navy-600"><?= e($s['from']) ?></span></p>
+                <p class="text-center text-[11px] text-navy-600"><?= minutes_text($s['minutes']) ?><br><?= $s['stops'] ? plural($s['stops'], 'stop') : 'Direct' ?></p>
+                <p class="text-right font-display text-xl font-bold num"><?= substr($s['arrive'], 11, 5) ?> <span class="text-sm font-sans font-semibold text-navy-600"><?= e($s['to']) ?></span></p>
               </div>
             </div>
           <?php endforeach; ?>
         </div>
-        <dl class="space-y-1.5 border-t border-dashed border-paper-300 bg-paper-50 p-5 text-sm">
-          <div class="flex justify-between"><dt class="text-ink-700">Airline fare and taxes</dt><dd class="num"><?= naira($price['base_kobo']) ?></dd></div>
-          <div class="flex justify-between"><dt class="text-ink-700">Our service fee</dt><dd class="num"><?= naira($price['markup_kobo']) ?></dd></div>
-          <div class="flex justify-between border-t border-paper-300 pt-2 text-base font-bold"><dt>Total</dt><dd class="num"><?= naira($price['total_kobo']) ?></dd></div>
+        <dl class="space-y-1.5 border-t border-dashed border-cloud-300 bg-cloud-50 p-5 text-sm">
+          <div class="flex justify-between"><dt class="text-navy-700">Airline fare and taxes</dt><dd class="num"><?= naira($price['base_kobo']) ?></dd></div>
+          <div class="flex justify-between"><dt class="text-navy-700">Our service fee</dt><dd class="num"><?= naira($price['markup_kobo']) ?></dd></div>
+          <div class="flex justify-between border-t border-cloud-300 pt-2 text-base font-bold"><dt>Total</dt><dd class="num"><?= naira($price['total_kobo']) ?></dd></div>
         </dl>
-        <div class="space-y-1 p-5 text-xs text-ink-700">
+        <div class="space-y-1 p-5 text-xs text-navy-700">
           <p><b>Bags:</b> <?= $offer['checked_bags'] ? plural($offer['checked_bags'], 'checked bag') . ' each' : 'No checked bag' ?><?= $offer['carry_on'] ? ', plus a cabin bag' : '' ?></p>
           <p><b>Refunds:</b> <?= $offer['refund'] === null ? 'Ask us' : (!empty($offer['refund']['allowed']) ? 'Allowed, airline fee applies' : 'Not refundable') ?></p>
           <p><b>Changes:</b> <?= $offer['change'] === null ? 'Ask us' : (!empty($offer['change']['allowed']) ? 'Allowed, airline fee applies' : 'Not allowed') ?></p>
-          <p class="pt-2 text-ink-600" id="hold" data-expires="<?= e($offer['expires_at']) ?>">The airline holds this price until <?= date('H:i', strtotime($offer['expires_at'])) ?>.</p>
+          <p class="pt-2 text-navy-600" id="hold" data-expires="<?= e($offer['expires_at']) ?>">The airline holds this price until <?= date('H:i', strtotime($offer['expires_at'])) ?>.</p>
         </div>
       </div>
     </aside>

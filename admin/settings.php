@@ -111,54 +111,54 @@ include '../includes/admin-header.php';
 <h1 class="text-3xl font-extrabold">Fees, rates &amp; contact</h1>
 
 <div class="mt-6 grid gap-6 xl:grid-cols-2">
-  <form method="post" class="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-ink-900/5">
+  <form method="post" class="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-navy-900/5">
     <?= csrf_field() ?><input type="hidden" name="action" value="fees">
     <h2 class="font-display text-xl font-bold">Our service fee on flights</h2>
     <div class="space-y-2 text-sm">
       <?php foreach (['flat_booking' => 'A fixed amount per booking', 'flat_passenger' => 'A fixed amount per traveller', 'percent' => 'A percentage of the airline price'] as $k => $l): ?>
-        <label class="flex items-center gap-2"><input type="radio" name="markup_type" value="<?= $k ?>" class="size-4 accent-ink-900" <?= $fee_type == $k ? 'checked' : '' ?>> <?= $l ?></label>
+        <label class="flex items-center gap-2"><input type="radio" name="markup_type" value="<?= $k ?>" class="size-4 accent-navy-900" <?= $fee_type == $k ? 'checked' : '' ?>> <?= $l ?></label>
       <?php endforeach; ?>
     </div>
     <div class="grid grid-cols-2 gap-3">
       <div><label class="field-label" for="markup_value">Amount (₦) or percentage</label><input id="markup_value" name="markup_value" inputmode="decimal" class="field num" value="<?= e(setting('markup_value', '2000')) ?>"></div>
       <div><label class="field-label" for="fx_buffer_pct">Exchange-rate buffer %</label><input id="fx_buffer_pct" name="fx_buffer_pct" inputmode="decimal" class="field num" value="<?= e(setting('fx_buffer_pct', '0')) ?>"></div>
     </div>
-    <p class="text-xs text-ink-600">The buffer covers the rate moving before we pay the airline. It's added to foreign-currency fares only.</p>
+    <p class="text-xs text-navy-600">The buffer covers the rate moving before we pay the airline. It's added to foreign-currency fares only.</p>
     <?php if ($example): ?>
-      <p class="rounded-lg bg-paper-100 p-3 text-sm">Example with the saved settings: a <b>$500</b> fare for 2 travellers costs the customer <b class="num"><?= naira($example['total_kobo']) ?></b> (airline <?= naira($example['base_kobo']) ?> + our fee <?= naira($example['markup_kobo']) ?>).</p>
+      <p class="rounded-lg bg-cloud-100 p-3 text-sm">Example with the saved settings: a <b>$500</b> fare for 2 travellers costs the customer <b class="num"><?= naira($example['total_kobo']) ?></b> (airline <?= naira($example['base_kobo']) ?> + our fee <?= naira($example['markup_kobo']) ?>).</p>
     <?php endif; ?>
     <button class="btn btn-dark">Save fees</button>
   </form>
 
-  <form method="post" class="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-ink-900/5">
+  <form method="post" class="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-navy-900/5">
     <?= csrf_field() ?><input type="hidden" name="action" value="hotel_fees">
     <h2 class="font-display text-xl font-bold">Our service fee on hotels</h2>
     <div class="space-y-2 text-sm">
       <?php $hotel_type = setting('hotel_markup_type', 'flat_booking'); foreach (['flat_booking' => 'A fixed amount per booking', 'percent' => 'A percentage of the hotel price'] as $k => $l): ?>
-        <label class="flex items-center gap-2"><input type="radio" name="hotel_markup_type" value="<?= $k ?>" class="size-4 accent-ink-900" <?= $hotel_type == $k ? 'checked' : '' ?>> <?= $l ?></label>
+        <label class="flex items-center gap-2"><input type="radio" name="hotel_markup_type" value="<?= $k ?>" class="size-4 accent-navy-900" <?= $hotel_type == $k ? 'checked' : '' ?>> <?= $l ?></label>
       <?php endforeach; ?>
     </div>
     <div class="w-48"><label class="field-label" for="hotel_markup_value">Amount (₦) or percentage</label><input id="hotel_markup_value" name="hotel_markup_value" inputmode="decimal" class="field num" value="<?= e(setting('hotel_markup_value', '2000')) ?>"></div>
     <button class="btn btn-dark">Save hotel fee</button>
   </form>
 
-  <form method="post" class="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-ink-900/5">
+  <form method="post" class="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-navy-900/5">
     <?= csrf_field() ?><input type="hidden" name="action" value="rates">
     <h2 class="font-display text-xl font-bold">Exchange rates</h2>
-    <p class="text-sm text-ink-700">Naira for 1 unit of each currency. Airlines price in these; we convert at this rate (plus the buffer). Update them every morning.</p>
+    <p class="text-sm text-navy-700">Naira for 1 unit of each currency. Airlines price in these; we convert at this rate (plus the buffer). Update them every morning.</p>
     <table class="w-full text-sm">
-      <thead class="text-xs text-ink-600"><tr><th class="py-1 text-left font-medium">Currency</th><th class="py-1 text-left font-medium">₦ per unit</th><th class="py-1 text-left font-medium">Last changed</th></tr></thead>
+      <thead class="text-xs text-navy-600"><tr><th class="py-1 text-left font-medium">Currency</th><th class="py-1 text-left font-medium">₦ per unit</th><th class="py-1 text-left font-medium">Last changed</th></tr></thead>
       <tbody>
         <?php foreach ($rates as $r): ?>
           <tr>
             <td class="py-1.5 font-mono font-semibold"><?= e($r['currency']) ?></td>
-            <td class="py-1.5"><input name="rate[<?= e($r['currency']) ?>]" inputmode="decimal" class="w-32 rounded-md border-0 bg-paper-50 px-2 py-1.5 ring-1 ring-ink-300 num" value="<?= rtrim(rtrim(number_format($r['rate_to_ngn'], 6, '.', ''), '0'), '.') ?>"></td>
-            <td class="py-1.5 text-xs text-ink-600 num"><?= date('j M Y H:i', strtotime($r['updated_at'])) ?><?= $r['full_name'] ? ' · ' . e($r['full_name']) : '' ?></td>
+            <td class="py-1.5"><input name="rate[<?= e($r['currency']) ?>]" inputmode="decimal" class="w-32 rounded-md border-0 bg-cloud-50 px-2 py-1.5 ring-1 ring-navy-300 num" value="<?= rtrim(rtrim(number_format($r['rate_to_ngn'], 6, '.', ''), '0'), '.') ?>"></td>
+            <td class="py-1.5 text-xs text-navy-600 num"><?= date('j M Y H:i', strtotime($r['updated_at'])) ?><?= $r['full_name'] ? ' · ' . e($r['full_name']) : '' ?></td>
           </tr>
         <?php endforeach; ?>
         <tr>
-          <td class="py-1.5"><input name="new_currency" maxlength="3" placeholder="New" class="w-20 rounded-md border-0 bg-paper-50 px-2 py-1.5 font-mono uppercase ring-1 ring-ink-300"></td>
-          <td class="py-1.5"><input name="new_rate" inputmode="decimal" placeholder="Rate" class="w-32 rounded-md border-0 bg-paper-50 px-2 py-1.5 ring-1 ring-ink-300"></td>
+          <td class="py-1.5"><input name="new_currency" maxlength="3" placeholder="New" class="w-20 rounded-md border-0 bg-cloud-50 px-2 py-1.5 uppercase ring-1 ring-navy-300 font-semibold"></td>
+          <td class="py-1.5"><input name="new_rate" inputmode="decimal" placeholder="Rate" class="w-32 rounded-md border-0 bg-cloud-50 px-2 py-1.5 ring-1 ring-navy-300"></td>
           <td></td>
         </tr>
       </tbody>
@@ -166,10 +166,10 @@ include '../includes/admin-header.php';
     <button class="btn btn-dark">Save rates</button>
   </form>
 
-  <form method="post" class="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-ink-900/5">
+  <form method="post" class="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-navy-900/5">
     <?= csrf_field() ?><input type="hidden" name="action" value="contact">
     <h2 class="font-display text-xl font-bold">Contact details on the site</h2>
-    <p class="text-sm text-ink-700">Empty fields show as placeholders like {{CLIENT_PHONE}}, so nothing made-up ever appears.</p>
+    <p class="text-sm text-navy-700">Empty fields show as placeholders like {{CLIENT_PHONE}}, so nothing made-up ever appears.</p>
     <?php foreach ($contact_fields as $key => $label): ?>
       <div>
         <label class="field-label" for="c-<?= $key ?>"><?= e($label) ?></label>
@@ -183,19 +183,19 @@ include '../includes/admin-header.php';
     <button class="btn btn-dark">Save contact details</button>
   </form>
 
-  <div class="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-ink-900/5">
+  <div class="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-navy-900/5">
     <h2 class="font-display text-xl font-bold">Staff accounts</h2>
-    <ul class="divide-y divide-paper-200 text-sm">
+    <ul class="divide-y divide-cloud-200 text-sm">
       <?php foreach ($staff as $s): ?>
         <li class="flex items-center justify-between gap-3 py-2.5">
-          <span><b><?= e($s['full_name']) ?></b> <span class="text-ink-600">· <?= e($s['email']) ?> · <?= e($s['role']) ?></span><br><span class="text-xs text-ink-500"><?= $s['last_login_at'] ? 'Last in ' . date('j M Y H:i', strtotime($s['last_login_at'])) : 'Never logged in' ?></span></span>
+          <span><b><?= e($s['full_name']) ?></b> <span class="text-navy-600">· <?= e($s['email']) ?> · <?= e($s['role']) ?></span><br><span class="text-xs text-navy-500"><?= $s['last_login_at'] ? 'Last in ' . date('j M Y H:i', strtotime($s['last_login_at'])) : 'Never logged in' ?></span></span>
           <?php if ($s['id'] != $_SESSION['staff']['id']): ?>
             <form method="post"><?= csrf_field() ?><input type="hidden" name="action" value="toggle_staff"><input type="hidden" name="id" value="<?= $s['id'] ?>"><button class="btn btn-ghost px-3 py-1"><?= $s['is_active'] ? 'Switch off' : 'Switch on' ?></button></form>
           <?php endif; ?>
         </li>
       <?php endforeach; ?>
     </ul>
-    <form method="post" class="grid gap-3 rounded-xl bg-paper-100 p-4 sm:grid-cols-2">
+    <form method="post" class="grid gap-3 rounded-xl bg-cloud-100 p-4 sm:grid-cols-2">
       <?= csrf_field() ?><input type="hidden" name="action" value="add_staff">
       <input name="name" placeholder="Name" class="field mt-0" aria-label="Name">
       <input name="email" type="email" placeholder="Email" class="field mt-0" aria-label="Email">

@@ -42,7 +42,7 @@ include 'includes/header.php';
       <p class="mt-4"><a class="link" href="forgot-password.php">Ask for a new link</a></p>
     <?php else: ?>
       <?php if ($error): ?><p class="mt-6 rounded-xl bg-bad-100 p-4 text-sm text-bad-700" role="alert"><?= e($error) ?></p><?php endif; ?>
-      <form method="post" class="mt-8 space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-ink-900/5">
+      <form method="post" class="mt-8 space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-navy-900/5">
         <?= csrf_field() ?><input type="hidden" name="token" value="<?= e($token) ?>">
         <div><label class="field-label" for="password">New password</label><input id="password" name="password" type="password" autocomplete="new-password" minlength="8" class="field" required></div>
         <button class="btn btn-dark w-full py-3">Save new password</button>

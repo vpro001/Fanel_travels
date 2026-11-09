@@ -62,7 +62,7 @@ function visa_email($application_id, $status, $note = '')
     $app = db_one("SELECT a.*, d.country_name FROM visa_applications a JOIN visa_destinations d ON d.id = a.destination_id WHERE a.id = ?", [$application_id]);
     $names = visa_status_names();
     $link = SITE_URL . '/visa-track.php?ref=' . urlencode($app['reference']) . '&email=' . urlencode($app['email']);
-    $html = '<div style="font-family:Arial,sans-serif;color:#0f1f33;max-width:600px">'
+    $html = '<div style="font-family:Arial,sans-serif;color:#0a1f44;max-width:600px">'
         . '<p>Hello ' . e($app['full_name']) . ',</p>'
         . '<p>Your ' . e($app['country_name']) . ' visa application <b>' . e($app['reference']) . '</b> is now: <b>' . e($names[$status]) . '</b>.</p>'
         . ($note ? '<p>' . nl2br(e($note)) . '</p>' : '')

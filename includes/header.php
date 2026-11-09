@@ -15,7 +15,7 @@ $menu = ['flights.php' => 'Flights', 'hotels.php' => 'Hotels', 'visa.php' => 'Vi
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= $title ? e($title) . ' · ' . SITE_NAME : SITE_NAME . ' — Flights, hotels, visas and tours' ?></title>
 <meta name="description" content="<?= e($description) ?>">
-<meta name="theme-color" content="#0a1420">
+<meta name="theme-color" content="#0a1f44">
 <?php
 // Search engines and link previews (WhatsApp, Facebook, X). Private pages set $noindex = true.
 $canonical = SITE_URL . '/' . basename(strtok($_SERVER['REQUEST_URI'], '?'));
@@ -26,7 +26,7 @@ if (in_array(basename($_SERVER['SCRIPT_NAME']), $private)) $noindex = true;
 <meta property="og:site_name" content="<?= e(SITE_NAME) ?>">
 <meta property="og:title" content="<?= e($title ?: SITE_NAME) ?>">
 <meta property="og:description" content="<?= e($description) ?>">
-<meta property="og:image" content="<?= e(SITE_URL) ?>/assets/img/plane-wing-1600.webp">
+<meta property="og:image" content="<?= e(SITE_URL) ?>/assets/img/fanel/logo-900.webp">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <?php include __DIR__ . '/analytics.php'; ?>
@@ -36,38 +36,48 @@ if (in_array(basename($_SERVER['SCRIPT_NAME']), $private)) $noindex = true;
 <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] btn btn-primary">Skip to content</a>
 
 <?php if (FLIGHT_DATA === 'demo'): ?>
-<div class="print:hidden bg-saffron-300 text-ink-950 text-center font-mono text-[11px] font-semibold uppercase tracking-wider py-1">Demo data · flight and hotel results are samples, not live fares</div>
+<div class="print:hidden bg-navy-950 text-sun-300 text-center text-xs font-semibold py-1.5">Demo data · flight and hotel results are samples, not live fares</div>
 <?php endif; ?>
 
-<header class="print:hidden sticky top-0 z-50 border-b border-white/10 bg-ink-950/95 text-paper-50 backdrop-blur-sm">
-  <div class="container-page flex h-16 items-center justify-between gap-4">
-    <a href="index.php" class="group flex items-center gap-2.5">
-      <span class="flex size-8 items-center justify-center rounded-md bg-saffron-400 font-display text-lg font-extrabold text-ink-950 transition group-hover:rotate-[-6deg]">F</span>
-      <span class="leading-none">
-        <span class="block font-display text-lg font-bold tracking-tight">Fanel</span>
-        <span class="block font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-saffron-300">Travels Ltd</span>
-      </span>
+<?php $phone_digits = preg_replace('/\D/', '', setting('contact_phone')); ?>
+<div class="print:hidden hidden bg-sun-500 text-navy-950 md:block">
+  <div class="container-page flex h-9 items-center justify-between gap-6 text-[13px] font-medium">
+    <p class="flex items-center gap-1.5 truncate"><?= icon('pin', 'size-4 shrink-0') ?> <?= e(contact('address')) ?></p>
+    <div class="flex shrink-0 items-center gap-5">
+      <span class="hidden items-center gap-1.5 lg:flex"><?= icon('clock', 'size-4') ?> <?= e(contact('hours')) ?></span>
+      <a class="flex items-center gap-1.5 font-semibold hover:underline" href="<?= $phone_digits ? 'tel:' . $phone_digits : 'contact.php' ?>"><?= icon('phone', 'size-4') ?> <span class="num"><?= e(contact('phone')) ?></span></a>
+      <a class="hidden items-center gap-1.5 hover:underline xl:flex" href="mailto:<?= e(setting('contact_email')) ?>"><?= icon('mail', 'size-4') ?> <?= e(contact('email')) ?></a>
+    </div>
+  </div>
+</div>
+
+<header class="print:hidden sticky top-0 z-50 bg-navy-900/95 text-white shadow-lg shadow-navy-950/20 backdrop-blur-md">
+  <div class="container-page flex h-[4.5rem] items-center justify-between gap-4">
+    <a href="index.php" class="shrink-0" aria-label="<?= e(SITE_NAME) ?>, home">
+      <img src="assets/img/fanel/logo-header.webp" alt="<?= e(SITE_NAME) ?>" width="640" height="242" class="h-12 w-auto sm:h-[3.4rem]">
     </a>
 
-    <nav class="hidden md:flex items-center gap-1 text-sm font-medium">
+    <nav class="hidden md:flex items-center gap-1 text-sm font-semibold">
       <?php foreach ($menu as $link => $label): $on = $page . '.php' == $link; ?>
-        <a href="<?= $link ?>" class="relative rounded px-3 py-2 transition hover:text-saffron-300 <?= $on ? 'text-saffron-300' : 'text-paper-100' ?>">
-          <?= $label ?>
-          <?php if ($on): ?><span class="absolute inset-x-3 -bottom-[13px] h-0.5 rounded bg-saffron-400"></span><?php endif; ?>
-        </a>
+        <a href="<?= $link ?>" <?= $on ? 'aria-current="page"' : '' ?> class="rounded-full px-4 py-2 transition <?= $on ? 'bg-white text-navy-900' : 'text-navy-100 hover:bg-white/10 hover:text-white' ?>"><?= $label ?></a>
       <?php endforeach; ?>
-      <a href="manage-booking.php" class="ml-3 rounded-md px-3.5 py-2 ring-1 ring-white/20 transition hover:bg-white/10">Manage booking</a>
-      <a href="<?= empty($_SESSION['user']) ? 'login.php' : 'account.php' ?>" class="ml-1 rounded-md px-3 py-2 transition hover:text-saffron-300 <?= $page == 'account' ? 'text-saffron-300' : 'text-paper-100' ?>"><?= empty($_SESSION['user']) ? 'Sign in' : 'My account' ?></a>
+      <a href="about.php" class="rounded-full px-4 py-2 transition <?= basename($_SERVER['SCRIPT_NAME']) == 'about.php' ? 'bg-white text-navy-900' : 'text-navy-100 hover:bg-white/10 hover:text-white' ?>">About</a>
+      <span class="mx-2 h-6 w-px bg-white/15" aria-hidden="true"></span>
+      <a href="<?= empty($_SESSION['user']) ? 'login.php' : 'account.php' ?>" class="rounded-full px-3 py-2 transition hover:text-sun-300 <?= $page == 'account' ? 'text-sun-300' : 'text-navy-100' ?>"><?= empty($_SESSION['user']) ? 'Sign in' : 'My account' ?></a>
+      <a href="manage-booking.php" class="btn btn-accent ml-1 py-2">Manage booking</a>
     </nav>
 
     <details class="md:hidden relative">
-      <summary class="list-none rounded-md px-3 py-2 ring-1 ring-white/20 text-sm font-medium">Menu</summary>
-      <nav class="absolute right-0 z-40 mt-3 w-60 rounded-xl bg-ink-900 p-2 shadow-2xl ring-1 ring-white/10">
+      <summary class="list-none rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">Menu</summary>
+      <nav class="absolute right-0 z-40 mt-3 w-64 rounded-2xl bg-white p-2 text-navy-900 shadow-2xl ring-1 ring-navy-900/10">
         <?php foreach ($menu as $link => $label): ?>
-          <a href="<?= $link ?>" class="block rounded-md px-3 py-3 hover:bg-ink-800"><?= $label ?></a>
+          <a href="<?= $link ?>" class="block rounded-xl px-3 py-3 font-medium hover:bg-cloud-100"><?= $label ?></a>
         <?php endforeach; ?>
-        <a href="manage-booking.php" class="block rounded-md px-3 py-3 hover:bg-ink-800">Manage booking</a>
-        <a href="<?= empty($_SESSION['user']) ? 'login.php' : 'account.php' ?>" class="block rounded-md px-3 py-3 hover:bg-ink-800"><?= empty($_SESSION['user']) ? 'Sign in' : 'My account' ?></a>
+        <a href="about.php" class="block rounded-xl px-3 py-3 font-medium hover:bg-cloud-100">About us</a>
+        <a href="contact.php" class="block rounded-xl px-3 py-3 font-medium hover:bg-cloud-100">Contact us</a>
+        <a href="<?= empty($_SESSION['user']) ? 'login.php' : 'account.php' ?>" class="block rounded-xl px-3 py-3 font-medium hover:bg-cloud-100"><?= empty($_SESSION['user']) ? 'Sign in' : 'My account' ?></a>
+        <a href="manage-booking.php" class="btn btn-accent mt-1 w-full">Manage booking</a>
+        <?php if ($phone_digits): ?><a href="tel:<?= $phone_digits ?>" class="mt-2 flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold text-brand-700"><?= icon('phone', 'size-4') ?> <?= e(contact('phone')) ?></a><?php endif; ?>
       </nav>
     </details>
   </div>
@@ -75,7 +85,7 @@ if (in_array(basename($_SERVER['SCRIPT_NAME']), $private)) $noindex = true;
 
 <?php if (isset($_SESSION['flash'])): ?>
   <div class="container-page mt-4">
-    <p class="rounded-md px-4 py-3 text-sm font-medium <?= $_SESSION['flash']['type'] == 'error' ? 'bg-bad-100 text-bad-700' : 'bg-ok-100 text-ok-700' ?>">
+    <p class="rounded-xl px-4 py-3 text-sm font-medium <?= $_SESSION['flash']['type'] == 'error' ? 'bg-bad-100 text-bad-700' : 'bg-ok-100 text-ok-700' ?>">
       <?= e($_SESSION['flash']['message']) ?>
     </p>
   </div>

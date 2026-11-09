@@ -42,34 +42,34 @@ $section = 'tours-bookings';
 include '../includes/admin-header.php';
 ?>
 <h1 class="text-3xl font-extrabold">Tour bookings</h1>
-<div class="mt-5 overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-ink-900/5">
+<div class="mt-5 overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-navy-900/5">
   <table class="w-full text-left text-sm">
-    <thead class="border-b border-paper-200 text-xs text-ink-600">
+    <thead class="border-b border-cloud-200 text-xs text-navy-600">
       <tr><th class="px-5 py-3 font-medium">Reference</th><th class="px-3 py-3 font-medium">Tour</th><th class="px-3 py-3 font-medium">Lead traveller</th><th class="px-3 py-3 font-medium">Paid</th><th class="px-3 py-3 font-medium">Status</th><th class="px-5 py-3 font-medium">Change</th></tr>
     </thead>
-    <tbody class="divide-y divide-paper-200">
+    <tbody class="divide-y divide-cloud-200">
       <?php foreach ($bookings as $b):
           $next = [];
           foreach ($rules as $to => $from) if (in_array($b['status'], $from)) $next[] = $to;
       ?>
-        <tr class="align-top hover:bg-paper-50">
-          <td class="px-5 py-3 font-mono font-semibold"><?= e($b['booking_ref']) ?><br><span class="font-sans text-xs font-normal text-ink-600"><?= date('j M Y', strtotime($b['created_at'])) ?></span></td>
-          <td class="px-3 py-3"><?= e($b['title']) ?><br><span class="text-xs text-ink-600">Departs <?= nice_date($b['start_date']) ?> · <?= plural($b['travellers'], 'traveller') ?></span></td>
-          <td class="px-3 py-3"><?= e($b['lead_name']) ?><br><span class="text-xs text-ink-600"><?= e($b['email']) ?> · <?= e($b['phone']) ?></span></td>
-          <td class="px-3 py-3 num"><?= naira($b['amount_paid_kobo']) ?><br><span class="text-xs text-ink-600">of <?= naira($b['total_kobo']) ?></span></td>
+        <tr class="align-top hover:bg-cloud-50">
+          <td class="px-5 py-3 font-mono font-semibold"><?= e($b['booking_ref']) ?><br><span class="font-sans text-xs font-normal text-navy-600"><?= date('j M Y', strtotime($b['created_at'])) ?></span></td>
+          <td class="px-3 py-3"><?= e($b['title']) ?><br><span class="text-xs text-navy-600">Departs <?= nice_date($b['start_date']) ?> · <?= plural($b['travellers'], 'traveller') ?></span></td>
+          <td class="px-3 py-3"><?= e($b['lead_name']) ?><br><span class="text-xs text-navy-600"><?= e($b['email']) ?> · <?= e($b['phone']) ?></span></td>
+          <td class="px-3 py-3 num"><?= naira($b['amount_paid_kobo']) ?><br><span class="text-xs text-navy-600">of <?= naira($b['total_kobo']) ?></span></td>
           <td class="px-3 py-3"><?= status_badge($b['status']) ?></td>
           <td class="px-5 py-3">
             <?php if ($next): ?>
               <form method="post" class="flex gap-2" onsubmit="return confirm('Change this booking\'s status?')">
                 <?= csrf_field() ?><input type="hidden" name="id" value="<?= $b['id'] ?>">
-                <select name="status" class="rounded-md border-0 bg-paper-50 px-2 py-1.5 text-sm ring-1 ring-ink-300"><?php foreach ($next as $n): ?><option value="<?= $n ?>"><?= ucfirst(str_replace('_', ' ', $n)) ?></option><?php endforeach; ?></select>
+                <select name="status" class="rounded-md border-0 bg-cloud-50 px-2 py-1.5 text-sm ring-1 ring-navy-300"><?php foreach ($next as $n): ?><option value="<?= $n ?>"><?= ucfirst(str_replace('_', ' ', $n)) ?></option><?php endforeach; ?></select>
                 <button class="btn btn-dark px-3 py-1.5">Save</button>
               </form>
             <?php endif; ?>
           </td>
         </tr>
       <?php endforeach; ?>
-      <?php if (!$bookings): ?><tr><td colspan="6" class="px-5 py-10 text-center text-ink-600">No tour bookings yet.</td></tr><?php endif; ?>
+      <?php if (!$bookings): ?><tr><td colspan="6" class="px-5 py-10 text-center text-navy-600">No tour bookings yet.</td></tr><?php endif; ?>
     </tbody>
   </table>
 </div>

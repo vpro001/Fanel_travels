@@ -30,7 +30,7 @@ function send_tour_email($booking_id)
     $b = db_one("SELECT b.*, p.title, d.start_date, d.end_date FROM tour_bookings b JOIN tour_packages p ON p.id = b.package_id JOIN tour_departures d ON d.id = b.departure_id WHERE b.id = ?", [$booking_id]);
     $balance = $b['total_kobo'] - $b['amount_paid_kobo'];
     $link = SITE_URL . '/tour-booking.php?ref=' . urlencode($b['booking_ref']) . '&email=' . urlencode($b['email']);
-    $html = '<div style="font-family:Arial,sans-serif;color:#0f1f33;max-width:600px">'
+    $html = '<div style="font-family:Arial,sans-serif;color:#0a1f44;max-width:600px">'
         . '<h1 style="font-size:22px">' . ($balance > 0 ? 'Your place is reserved' : 'Your holiday is paid for') . '</h1>'
         . '<p><b>' . e($b['title']) . '</b><br>' . nice_date($b['start_date']) . ' to ' . nice_date($b['end_date']) . ' · ' . plural($b['travellers'], 'traveller') . '</p>'
         . '<p>Reference: <b>' . e($b['booking_ref']) . '</b><br>Paid so far: ' . naira($b['amount_paid_kobo']) . ' of ' . naira($b['total_kobo']) . '</p>'

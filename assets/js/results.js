@@ -49,7 +49,7 @@ fetch(results.dataset.url)
     data.airlines.forEach(function (a) {
       var label = document.createElement('label');
       label.className = 'flex items-center gap-2';
-      label.innerHTML = '<input type="checkbox" name="airline" class="size-4 accent-ink-900"><span class="flex-1"></span><span class="text-xs text-ink-600 num"></span>';
+      label.innerHTML = '<input type="checkbox" name="airline" class="size-4 accent-navy-900"><span class="flex-1"></span><span class="text-xs text-navy-600 num"></span>';
       label.querySelector('input').value = a.code;
       label.children[1].textContent = a.name;
       label.children[2].textContent = a.price_text;

@@ -98,15 +98,15 @@ $title = 'Apply: ' . $country['country_name'] . ' visa';
 $page = 'visa';
 include 'includes/header.php';
 
-$field = 'mt-1 block w-full rounded-lg border-0 bg-paper-50 px-3.5 py-3 text-base ring-1 ring-ink-300 focus:outline-none focus:ring-2 focus:ring-saffron-500';
-$label = 'block font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-600';
+$field = 'mt-1 block w-full rounded-lg border-0 bg-cloud-50 px-3.5 py-3 text-base ring-1 ring-navy-300 focus:outline-none focus:ring-2 focus:ring-sun-500';
+$label = 'block font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-navy-600';
 function show_error($errors, $key) { return isset($errors[$key]) ? '<p class="field-error">' . e($errors[$key]) . '</p>' : ''; }
 ?>
-<section class="bg-ink-950 text-paper-50">
+<section class="bg-navy-950 text-cloud-50">
   <div class="container-page py-10 sm:py-14">
-    <a href="visa.php?country=<?= e($country['slug']) ?>" class="font-mono text-xs uppercase tracking-[0.2em] text-ink-300 hover:text-saffron-300">← <?= e($country['country_name']) ?> requirements</a>
+    <a href="visa.php?country=<?= e($country['slug']) ?>" class="text-xs uppercase tracking-wider text-navy-300 hover:text-sun-300 font-semibold">← <?= e($country['country_name']) ?> requirements</a>
     <h1 class="mt-3 text-4xl font-extrabold tracking-[-0.03em] sm:text-5xl"><?= e($country['country_name']) ?> visa application</h1>
-    <p class="mt-2 text-ink-200">Takes about 5 minutes. You'll get a reference number to track every step.</p>
+    <p class="mt-2 text-navy-200">Takes about 5 minutes. You'll get a reference number to track every step.</p>
   </div>
 </section>
 
@@ -117,14 +117,14 @@ function show_error($errors, $key) { return isset($errors[$key]) ? '<p class="fi
       <div class="rounded-xl bg-bad-100 p-4 text-bad-700" role="alert"><p class="font-semibold">Please check the highlighted details.</p></div>
     <?php endif; ?>
 
-    <fieldset class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-ink-900/5 sm:p-6">
+    <fieldset class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-navy-900/5 sm:p-6">
       <legend class="sr-only">Service</legend>
       <p class="font-display text-xl font-bold">1. How can we help?</p>
       <div class="mt-4 grid gap-3 sm:grid-cols-3">
         <?php foreach ($services as $key => $s): ?>
           <label class="relative">
             <input type="radio" name="service" value="<?= $key ?>" class="peer sr-only" <?= $f['service'] == $key ? 'checked' : '' ?>>
-            <span class="block h-full rounded-xl p-4 ring-1 ring-ink-300 transition peer-checked:bg-ink-950 peer-checked:text-paper-50 peer-checked:ring-ink-950 peer-focus-visible:outline peer-focus-visible:outline-3 peer-focus-visible:outline-saffron-500">
+            <span class="block h-full rounded-xl p-4 ring-1 ring-navy-300 transition peer-checked:bg-navy-950 peer-checked:text-cloud-50 peer-checked:ring-navy-950 peer-focus-visible:outline peer-focus-visible:outline-3 peer-focus-visible:outline-sun-500">
               <b class="block"><?= $s[0] ?></b><span class="mt-1 block text-sm opacity-80"><?= $s[1] ?></span>
             </span>
           </label>
@@ -139,7 +139,7 @@ function show_error($errors, $key) { return isset($errors[$key]) ? '<p class="fi
       </div>
     </fieldset>
 
-    <fieldset class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-ink-900/5 sm:p-6">
+    <fieldset class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-navy-900/5 sm:p-6">
       <legend class="sr-only">Your details</legend>
       <p class="font-display text-xl font-bold">2. About you and your trip</p>
       <div class="mt-4 grid gap-4 sm:grid-cols-2">
@@ -182,31 +182,31 @@ function show_error($errors, $key) { return isset($errors[$key]) ? '<p class="fi
       </div>
     </fieldset>
 
-    <fieldset class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-ink-900/5 sm:p-6">
+    <fieldset class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-navy-900/5 sm:p-6">
       <legend class="sr-only">Documents</legend>
       <p class="font-display text-xl font-bold">3. Documents</p>
-      <p class="mt-1 text-sm text-ink-700">PDF, JPG or PNG, up to 5 MB each. A clear phone photo is fine. Only our visa staff can see these files.</p>
+      <p class="mt-1 text-sm text-navy-700">PDF, JPG or PNG, up to 5 MB each. A clear phone photo is fine. Only our visa staff can see these files.</p>
       <div class="mt-4 grid gap-4 sm:grid-cols-2">
         <?php foreach (['passport_page' => 'Passport photo page', 'photo' => 'Passport photograph'] as $name => $text): ?>
           <div>
             <label class="<?= $label ?>" for="<?= $name ?>"><?= $text ?></label>
-            <input id="<?= $name ?>" type="file" name="<?= $name ?>" accept=".pdf,.jpg,.jpeg,.png" class="mt-1 block w-full rounded-lg bg-paper-50 p-2 text-sm ring-1 ring-ink-300 file:mr-3 file:rounded-md file:border-0 file:bg-ink-900 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-paper-50">
+            <input id="<?= $name ?>" type="file" name="<?= $name ?>" accept=".pdf,.jpg,.jpeg,.png" class="mt-1 block w-full rounded-lg bg-cloud-50 p-2 text-sm ring-1 ring-navy-300 file:mr-3 file:rounded-md file:border-0 file:bg-navy-900 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-cloud-50">
             <?= show_error($errors, $name) ?>
           </div>
         <?php endforeach; ?>
         <div class="sm:col-span-2">
           <label class="<?= $label ?>" for="other">Other documents <span class="normal-case tracking-normal font-normal">(optional, up to 5: bank statement, letters, bookings…)</span></label>
-          <input id="other" type="file" name="other[]" multiple accept=".pdf,.jpg,.jpeg,.png" class="mt-1 block w-full rounded-lg bg-paper-50 p-2 text-sm ring-1 ring-ink-300 file:mr-3 file:rounded-md file:border-0 file:bg-ink-900 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-paper-50">
+          <input id="other" type="file" name="other[]" multiple accept=".pdf,.jpg,.jpeg,.png" class="mt-1 block w-full rounded-lg bg-cloud-50 p-2 text-sm ring-1 ring-navy-300 file:mr-3 file:rounded-md file:border-0 file:bg-navy-900 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-cloud-50">
           <?= show_error($errors, 'other') ?>
         </div>
       </div>
     </fieldset>
 
-    <div class="rounded-2xl bg-ink-950 p-5 text-paper-50 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-6">
+    <div class="rounded-2xl bg-navy-950 p-5 text-cloud-50 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-6">
       <div>
-        <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-300">Our service fee</p>
+        <p class="text-[11px] uppercase tracking-wider text-navy-300 font-semibold">Our service fee</p>
         <p class="font-display text-2xl font-bold num"><?= naira($country['service_fee_kobo']) ?></p>
-        <p class="mt-1 text-xs text-ink-300">Nothing to pay now. We'll confirm the next steps and how to pay after we review your documents.</p>
+        <p class="mt-1 text-xs text-navy-300">Nothing to pay now. We'll confirm the next steps and how to pay after we review your documents.</p>
       </div>
       <button class="btn btn-primary mt-4 w-full px-7 py-4 text-base sm:mt-0 sm:w-auto">Send application</button>
     </div>

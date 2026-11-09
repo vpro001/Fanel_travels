@@ -30,7 +30,7 @@ if ($error) {
     include 'includes/header.php'; ?>
     <section class="container-page max-w-xl py-20">
       <h1 class="text-4xl font-extrabold">Let's find another room</h1>
-      <p class="mt-3 text-lg text-ink-700"><?= e($error) ?></p>
+      <p class="mt-3 text-lg text-navy-700"><?= e($error) ?></p>
       <div class="mt-6 flex gap-3">
         <?php if ($srr && !$search['error']): ?><a class="btn btn-dark px-5 py-3" href="hotel.php?id=<?= e($srr) ?>&<?= e(hotel_search_query($search)) ?>">Back to the rooms</a><?php endif; ?>
         <a class="btn btn-ghost px-5 py-3" href="hotels.php">New search</a>
@@ -110,8 +110,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 $title = 'Guest details';
 $page = 'hotels';
 include 'includes/header.php';
-$field = 'mt-1 block w-full rounded-lg border-0 bg-paper-50 px-3.5 py-3 text-base ring-1 ring-ink-300 focus:outline-none focus:ring-2 focus:ring-saffron-500';
-$label = 'block font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-600';
+$field = 'mt-1 block w-full rounded-lg border-0 bg-cloud-50 px-3.5 py-3 text-base ring-1 ring-navy-300 focus:outline-none focus:ring-2 focus:ring-sun-500';
+$label = 'block font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-navy-600';
 $photo = isset($acc['photos'][0]['url']) ? $acc['photos'][0]['url'] : '';
 ?>
 <section class="container-page py-8 sm:py-12">
@@ -119,16 +119,16 @@ $photo = isset($acc['photos'][0]['url']) ? $acc['photos'][0]['url'] : '';
     <form method="post" novalidate class="space-y-6">
       <?= csrf_field() ?>
       <div>
-        <p class="eyebrow text-saffron-700">Hotel booking</p>
+        <p class="eyebrow text-sun-700">Hotel booking</p>
         <h1 class="mt-2 text-3xl font-extrabold sm:text-4xl">Who's staying?</h1>
-        <p class="mt-2 text-ink-700">One name per room, as it is on the guest's ID. They'll need it at check-in.</p>
+        <p class="mt-2 text-navy-700">One name per room, as it is on the guest's ID. They'll need it at check-in.</p>
       </div>
       <?php if ($notice): ?><div class="rounded-xl bg-warn-100 p-4 text-warn-700" role="alert"><p class="font-semibold">The price has changed</p><p class="mt-1 text-sm"><?= e($notice) ?></p></div><?php endif; ?>
       <?php if (isset($errors['form'])): ?><div class="rounded-xl bg-bad-100 p-4 text-bad-700" role="alert"><?= e($errors['form']) ?></div>
       <?php elseif ($errors): ?><div class="rounded-xl bg-bad-100 p-4 text-bad-700" role="alert">Please check the highlighted details.</div><?php endif; ?>
 
       <?php for ($i = 0; $i < $search['rooms']; $i++): $g = isset($f['guests'][$i]) ? $f['guests'][$i] : ['', '']; ?>
-        <fieldset class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-ink-900/5 sm:p-6">
+        <fieldset class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-navy-900/5 sm:p-6">
           <legend class="sr-only">Room <?= $i + 1 ?></legend>
           <p class="font-display text-xl font-bold">Room <?= $i + 1 ?></p>
           <div class="mt-4 grid gap-4 sm:grid-cols-2">
@@ -139,7 +139,7 @@ $photo = isset($acc['photos'][0]['url']) ? $acc['photos'][0]['url'] : '';
         </fieldset>
       <?php endfor; ?>
 
-      <fieldset class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-ink-900/5 sm:p-6">
+      <fieldset class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-navy-900/5 sm:p-6">
         <legend class="sr-only">Contact</legend>
         <p class="font-display text-xl font-bold">Contact details</p>
         <div class="mt-4 grid gap-4 sm:grid-cols-2">
@@ -149,33 +149,33 @@ $photo = isset($acc['photos'][0]['url']) ? $acc['photos'][0]['url'] : '';
         </div>
       </fieldset>
 
-      <div class="rounded-2xl bg-ink-950 p-5 text-paper-50 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-6">
+      <div class="rounded-2xl bg-navy-950 p-5 text-cloud-50 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-6">
         <div>
-          <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-300">Total to pay</p>
+          <p class="text-[11px] uppercase tracking-wider text-navy-300 font-semibold">Total to pay</p>
           <p class="font-display text-3xl font-bold num"><?= naira($price['total_kobo']) ?></p>
-          <p class="mt-1 text-xs text-ink-300">Pay securely on Paystack: card, bank transfer or USSD.</p>
+          <p class="mt-1 text-xs text-navy-300">Pay securely on Paystack: card, bank transfer or USSD.</p>
         </div>
         <button class="btn btn-primary mt-4 w-full px-7 py-4 text-base sm:mt-0 sm:w-auto"><?= icon('card', 'size-5') ?> Continue to payment</button>
       </div>
     </form>
 
     <aside class="lg:sticky lg:top-24 lg:self-start">
-      <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-ink-900/5">
+      <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-navy-900/5">
         <?php if ($photo): ?><img src="<?= e($photo) ?>" alt="" class="aspect-[16/9] w-full object-cover"><?php endif; ?>
         <div class="p-5">
-          <p class="text-sm text-saffron-600"><?= str_repeat('★', isset($acc['rating']) ? (int) $acc['rating'] : 0) ?></p>
+          <p class="text-sm text-sun-600"><?= str_repeat('★', isset($acc['rating']) ? (int) $acc['rating'] : 0) ?></p>
           <p class="font-display text-xl font-bold"><?= e($acc['name']) ?></p>
-          <p class="mt-1 text-sm text-ink-700"><?= e($room['name']) ?> · <?= e(board_name(isset($rate['board_type']) ? $rate['board_type'] : '')) ?></p>
+          <p class="mt-1 text-sm text-navy-700"><?= e($room['name']) ?> · <?= e(board_name(isset($rate['board_type']) ? $rate['board_type'] : '')) ?></p>
           <dl class="mt-4 grid grid-cols-2 gap-3 text-sm">
             <div><dt class="<?= $label ?>">Check-in</dt><dd class="mt-0.5 font-semibold num"><?= date('D j M Y', strtotime($search['check_in'])) ?></dd></div>
             <div><dt class="<?= $label ?>">Check-out</dt><dd class="mt-0.5 font-semibold num"><?= date('D j M Y', strtotime($search['check_out'])) ?></dd></div>
           </dl>
-          <p class="mt-4 text-sm <?= isset($rate['cancellation_timeline']) && $rate['cancellation_timeline'] ? 'text-ok-700' : 'text-ink-600' ?>"><?= e(cancellation_text(isset($rate['cancellation_timeline']) ? $rate['cancellation_timeline'] : [], $quote['total_amount'])) ?></p>
+          <p class="mt-4 text-sm <?= isset($rate['cancellation_timeline']) && $rate['cancellation_timeline'] ? 'text-ok-700' : 'text-navy-600' ?>"><?= e(cancellation_text(isset($rate['cancellation_timeline']) ? $rate['cancellation_timeline'] : [], $quote['total_amount'])) ?></p>
         </div>
-        <dl class="space-y-1.5 border-t border-dashed border-paper-300 bg-paper-50 p-5 text-sm">
-          <div class="flex justify-between"><dt class="text-ink-700">Hotel price (<?= plural($search['nights'], 'night') ?>, <?= plural($search['rooms'], 'room') ?>)</dt><dd class="num"><?= naira($price['base_kobo']) ?></dd></div>
-          <div class="flex justify-between"><dt class="text-ink-700">Our service fee</dt><dd class="num"><?= naira($price['markup_kobo']) ?></dd></div>
-          <div class="flex justify-between border-t border-paper-300 pt-2 text-base font-bold"><dt>Total</dt><dd class="num"><?= naira($price['total_kobo']) ?></dd></div>
+        <dl class="space-y-1.5 border-t border-dashed border-cloud-300 bg-cloud-50 p-5 text-sm">
+          <div class="flex justify-between"><dt class="text-navy-700">Hotel price (<?= plural($search['nights'], 'night') ?>, <?= plural($search['rooms'], 'room') ?>)</dt><dd class="num"><?= naira($price['base_kobo']) ?></dd></div>
+          <div class="flex justify-between"><dt class="text-navy-700">Our service fee</dt><dd class="num"><?= naira($price['markup_kobo']) ?></dd></div>
+          <div class="flex justify-between border-t border-cloud-300 pt-2 text-base font-bold"><dt>Total</dt><dd class="num"><?= naira($price['total_kobo']) ?></dd></div>
         </dl>
       </div>
     </aside>

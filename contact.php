@@ -75,7 +75,7 @@ include 'includes/header.php';
 <section class="container-page py-10 sm:py-14 grid gap-10 lg:grid-cols-[3fr_2fr]">
   <div>
     <h1 class="text-2xl sm:text-3xl font-bold">Contact us</h1>
-    <p class="mt-2 text-ink-700">Ask us anything about a trip. We reply by email, usually within one working day. Our office is open Monday to Saturday, 9:00 AM to 6:00 PM.</p>
+    <p class="mt-2 text-navy-700">Ask us anything about a trip. We reply by email, usually within one working day. Our office is open Monday to Saturday, 9:00 AM to 6:00 PM.</p>
 
     <?php if (isset($errors['form'])): ?>
       <p class="mt-5 rounded-md bg-bad-100 px-4 py-3 text-sm font-medium text-bad-700"><?= e($errors['form']) ?></p>
@@ -123,12 +123,12 @@ include 'includes/header.php';
     </form>
   </div>
 
-  <aside class="h-fit space-y-5 rounded-lg bg-paper-100 p-5 sm:p-6">
+  <aside class="h-fit space-y-5 rounded-lg bg-cloud-100 p-5 sm:p-6">
     <h2 class="text-lg font-bold">Visit or call us</h2>
-    <p class="flex gap-3"><?= icon('pin', 'size-5 shrink-0 text-ink-600 mt-0.5') ?> <?= e(contact('address')) ?></p>
-    <p class="flex gap-3"><?= icon('phone', 'size-5 shrink-0 text-ink-600 mt-0.5') ?> <?= e(contact('phone')) ?></p>
-    <p class="flex gap-3"><?= icon('mail', 'size-5 shrink-0 text-ink-600 mt-0.5') ?> <?= e(contact('email')) ?></p>
-    <p class="flex gap-3"><?= icon('clock', 'size-5 shrink-0 text-ink-600 mt-0.5') ?> <?= e(contact('hours')) ?></p>
+    <p class="flex gap-3"><?= icon('pin', 'size-5 shrink-0 text-navy-600 mt-0.5') ?> <?= e(contact('address')) ?></p>
+    <p class="flex gap-3"><?= icon('phone', 'size-5 shrink-0 text-navy-600 mt-0.5') ?> <?= e(contact('phone')) ?></p>
+    <p class="flex gap-3"><?= icon('mail', 'size-5 shrink-0 text-navy-600 mt-0.5') ?> <?= e(contact('email')) ?></p>
+    <p class="flex gap-3"><?= icon('clock', 'size-5 shrink-0 text-navy-600 mt-0.5') ?> <?= e(contact('hours')) ?></p>
   </aside>
 </section>
 

@@ -22,11 +22,8 @@ function airport_km($a, $b)
     return round(6371 * 2 * asin(sqrt($h)));
 }
 
-// Departures board, local routes first
-$board = [
-    'Within Nigeria' => [['LOS', 'Lagos'], ['ABV', 'Abuja'], ['KAN', 'Kano'], ['ENU', 'Enugu']],
-    'International' => [['LHR', 'London'], ['DXB', 'Dubai'], ['ACC', 'Accra'], ['JFK', 'New York']],
-];
+// Routes from Port Harcourt: a few local ones, and five featured cities
+$local_routes = [['LOS', 'Lagos'], ['ABV', 'Abuja'], ['KAN', 'Kano'], ['ENU', 'Enugu']];
 
 // Destination features (photos in assets/img/)
 $destinations = [
@@ -36,6 +33,17 @@ $destinations = [
     ['New York', 'United States', 'JFK', 'new-york', 'Manhattan skyline across the Hudson River', 'Business, family and the city that never stops.'],
     ['Toronto', 'Canada', 'YYZ', 'toronto', 'Toronto skyline and the CN Tower', 'Visiting family, school and new beginnings.'],
 ];
+
+$services = [
+    ['plane', 'Flight reservations and ticketing', 'Domestic and international airline bookings and ticket issuance.', 'flights.php', 'Search flights'],
+    ['bed', 'Hotel reservations', 'Accommodation bookings and hotel arrangements, locally and internationally.', 'hotels.php', 'Find a hotel'],
+    ['passport', 'Visa assistance', 'Guidance and support with visa applications and travel documents.', 'visa.php', 'Start a visa'],
+    ['shield', 'Travel insurance', 'Travel protection for individuals and groups.', 'contact.php?topic=insurance', 'Get a quote'],
+    ['palm', 'Tourism and holiday packages', 'Tailored holidays, sightseeing and leisure travel.', 'tours.php', 'See holidays'],
+    ['compass', 'Travel consultancy', 'Travel advice, itinerary planning and travel management.', 'contact.php?topic=consultancy', 'Talk to us'],
+];
+
+require 'includes/posters.php';
 
 $visas = db_all("SELECT * FROM visa_destinations WHERE is_active = 1 ORDER BY sort_order LIMIT 6");
 
@@ -50,6 +58,7 @@ $tours = db_all("
 ");
 
 $whatsapp = preg_replace('/\D/', '', setting('contact_whatsapp'));
+$phone_digits = preg_replace('/\D/', '', setting('contact_phone'));
 
 $title = '';
 $page = 'home';
@@ -57,221 +66,252 @@ include 'includes/header.php';
 ?>
 
 <!-- =============================== HERO =============================== -->
-<section class="relative isolate overflow-hidden bg-ink-950 text-paper-50">
-  <div class="absolute inset-0 -z-20 overflow-hidden">
-    <?= photo('plane-wing', 'View of an aircraft wing from the window', 'hero-photo h-full w-full object-cover', false, [800, 1600]) ?>
-  </div>
-  <div class="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(10,20,32,0.55)_0%,rgba(10,20,32,0.35)_35%,rgba(10,20,32,0.92)_78%,#0a1420_100%)]"></div>
-  <div class="absolute inset-0 -z-10 bg-ink-950/45 sm:hidden"></div>
+<section class="relative isolate overflow-hidden bg-navy-900 text-white">
+  <!-- Background: deep navy into globe blue, with a faint orbit like the logo -->
+  <div class="absolute inset-0 -z-20 bg-[radial-gradient(120%_90%_at_85%_10%,#1d55d0_0%,#0f2c5c_45%,#0a1f44_75%)]"></div>
+  <svg class="absolute -right-40 -top-40 -z-10 size-[46rem] text-white/[0.06]" viewBox="0 0 400 400" fill="none" aria-hidden="true">
+    <circle cx="200" cy="200" r="160" stroke="currentColor" stroke-width="1.5"/><circle cx="200" cy="200" r="120" stroke="currentColor" stroke-width="1.5"/>
+    <ellipse cx="200" cy="200" rx="60" ry="160" stroke="currentColor" stroke-width="1.5"/><path d="M40 200h320M60 130h280M60 270h280" stroke="currentColor" stroke-width="1.5"/>
+  </svg>
 
-  <div class="container-page pt-10 pb-12 sm:pt-20 sm:pb-20 lg:pt-28">
-    <div class="flex flex-wrap items-end justify-between gap-8">
-      <div class="max-w-4xl">
-        <p class="eyebrow text-saffron-300">Port Harcourt · 4.82° N, 7.03° E</p>
-        <h1 class="mt-4 text-[2.6rem] font-extrabold leading-[0.95] tracking-[-0.035em] sm:text-7xl lg:text-[6.5rem]">
-          Connecting you<br><span class="text-saffron-400">to the world.</span>
-        </h1>
-        <p class="mt-5 max-w-xl text-base text-ink-100 sm:text-xl sm:leading-relaxed">Flights from over 300 airlines, hotels, visas and holidays, booked in one place by a Port Harcourt travel agency that picks up the phone. Pay in Naira.</p>
+  <div class="container-page grid gap-12 pt-12 pb-40 sm:pt-16 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:pt-20 lg:pb-48">
+    <div>
+      <p class="eyebrow text-sun-300">Travel agency · Port Harcourt</p>
+      <h1 class="mt-5 text-[2.75rem] font-bold leading-[1.02] sm:text-6xl lg:text-7xl">
+        Connecting you<br>to <span class="swoosh text-sun-400">the world.</span>
+      </h1>
+      <p class="mt-6 max-w-xl text-lg leading-relaxed text-navy-100">Flights, hotels, visas, travel insurance and holidays for families, business travellers and companies, booked by people you can call or visit. Pay in Naira.</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="#search" class="btn btn-accent px-6 py-3.5 text-base">Book a trip <?= icon('arrow-right', 'size-5') ?></a>
+        <a href="visa.php" class="btn px-6 py-3.5 text-base text-white ring-1 ring-inset ring-white/30 hover:bg-white/10">Visa assistance</a>
       </div>
-      <ul class="hidden space-y-3 border-l border-white/20 pl-5 font-mono text-xs uppercase tracking-[0.16em] text-ink-200 lg:block">
-        <li><span class="text-saffron-300">01</span> · 300+ airlines</li>
-        <li><span class="text-saffron-300">02</span> · Card, transfer or USSD</li>
-        <li><span class="text-saffron-300">03</span> · E-ticket by email</li>
-        <li><span class="text-saffron-300">04</span> · People on WhatsApp</li>
-      </ul>
+      <dl class="mt-10 grid max-w-lg grid-cols-3 gap-4 border-t border-white/15 pt-6 text-sm">
+        <div><dt class="text-navy-300">Airlines</dt><dd class="mt-1 font-display text-xl font-semibold sm:text-2xl">300+</dd></div>
+        <div><dt class="text-navy-300">Open</dt><dd class="mt-1 font-display text-xl font-semibold sm:text-2xl">Mon–Sat</dd></div>
+        <div><dt class="text-navy-300">Pay by</dt><dd class="mt-1 font-display text-xl font-semibold sm:text-2xl">Card · USSD</dd></div>
+      </dl>
     </div>
 
-    <div class="mt-8 sm:mt-12">
-      <?php $tab = 'flights'; include 'includes/search-box.php'; ?>
+    <!-- Three Fanel flyers, fanned out -->
+    <div class="relative mx-auto hidden h-[30rem] w-full max-w-md sm:block" aria-hidden="true">
+      <div class="absolute left-0 top-10 w-60 -rotate-[8deg] overflow-hidden rounded-3xl shadow-2xl ring-4 ring-white/90"><?= photo('fanel/seychelles', '', 'aspect-square w-full object-cover', false, [480, 800], '15rem') ?></div>
+      <div class="absolute right-0 top-0 w-60 rotate-[7deg] overflow-hidden rounded-3xl shadow-2xl ring-4 ring-white/90"><?= photo('fanel/dubai-multiple-entry', '', 'aspect-square w-full object-cover', false, [480, 800], '15rem') ?></div>
+      <div class="absolute bottom-0 left-1/2 w-64 -translate-x-1/2 rotate-[-1deg] overflow-hidden rounded-3xl shadow-2xl ring-4 ring-white"><?= photo('fanel/kenya-visa', '', 'aspect-square w-full object-cover', false, [480, 800], '16rem') ?></div>
+      <div class="absolute -left-4 bottom-16 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 text-navy-900 shadow-xl">
+        <span class="flex size-10 items-center justify-center rounded-full bg-sun-100 text-sun-700"><?= icon('passport', 'size-5') ?></span>
+        <span class="text-sm leading-tight"><b class="block">Visa desk</b><span class="text-navy-500">Documents checked for you</span></span>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- =============================== DEPARTURES BOARD =============================== -->
-<section class="bg-ink-950 pb-16 text-paper-50 sm:pb-24">
+<!-- Search box, pulled up over the bottom of the hero -->
+<section id="search" class="relative z-10 -mt-28 scroll-mt-28 lg:-mt-32">
   <div class="container-page">
-    <div id="departures" class="reveal overflow-hidden rounded-2xl bg-[#0d1a2b] ring-1 ring-white/10">
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-5 py-4 sm:px-7">
-        <div class="flex items-center gap-3">
-          <span class="flex size-9 items-center justify-center rounded-lg bg-saffron-400 text-ink-950"><?= icon('plane', 'size-5') ?></span>
-          <div>
-            <h2 class="font-mono text-sm font-semibold uppercase tracking-[0.25em] text-saffron-300">Departures</h2>
-            <p class="text-xs text-ink-300">Popular routes from Port Harcourt, local and international. Tap one for today's fares.</p>
-          </div>
-        </div>
-        <p class="font-mono text-xs uppercase tracking-[0.2em] text-ink-300">Port Harcourt time <span id="lagos-time" class="ml-1 text-lg font-semibold text-paper-50 num"><?= date('H:i') ?></span></p>
-      </div>
+    <?php $tab = 'flights'; include 'includes/search-box.php'; ?>
+  </div>
+</section>
 
-      <div class="hidden grid-cols-[1fr_6rem_9rem_9rem] gap-4 px-7 pt-4 font-mono text-[11px] uppercase tracking-[0.2em] text-ink-400 md:grid">
-        <span>Destination</span><span>Code</span><span>Distance</span><span class="text-right">Remarks</span>
+<!-- =============================== SERVICES =============================== -->
+<section class="container-page py-20 sm:py-28">
+  <div class="reveal mx-auto max-w-2xl text-center">
+    <p class="eyebrow text-sun-700">What we do</p>
+    <h2 class="mt-4 text-4xl font-bold leading-tight sm:text-5xl">Everything for the trip, in one place</h2>
+    <p class="mt-4 text-lg text-navy-600">Tell us where you're going. We'll handle the ticket, the room, the paperwork and the cover.</p>
+  </div>
+
+  <div class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <?php foreach ($services as $n => $sv): ?>
+      <a href="<?= e($sv[3]) ?>" style="--delay: <?= $n * 70 ?>ms" class="reveal card group relative flex flex-col p-7 transition hover:-translate-y-1 hover:shadow-[0_24px_50px_-20px_rgba(29,85,208,0.45)]">
+        <span class="flex size-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 transition group-hover:bg-brand-600 group-hover:text-white"><?= icon($sv[0], 'size-7') ?></span>
+        <h3 class="mt-6 text-xl font-semibold"><?= e($sv[1]) ?></h3>
+        <p class="mt-2 flex-1 text-navy-600"><?= e($sv[2]) ?></p>
+        <span class="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-brand-700"><?= e($sv[4]) ?> <?= icon('arrow-right', 'size-4 transition group-hover:translate-x-1') ?></span>
+      </a>
+    <?php endforeach; ?>
+  </div>
+</section>
+
+<!-- =============================== VISA DESK =============================== -->
+<section class="relative overflow-hidden bg-cloud-100 py-20 sm:py-28">
+  <div class="container-page">
+    <div class="reveal flex flex-wrap items-end justify-between gap-6">
+      <div class="max-w-2xl">
+        <p class="eyebrow text-sun-700">From our visa desk</p>
+        <h2 class="mt-4 text-4xl font-bold leading-tight sm:text-5xl">Visas we're processing now</h2>
+        <p class="mt-4 text-lg text-navy-600">Tourist, work and residence visas. Tap a flyer to see it in full, or ask us about your destination.</p>
       </div>
-      <ul class="divide-y divide-white/5 px-2 pb-2 sm:px-3">
-        <?php foreach ($board as $group => $rows): ?>
-          <li class="px-3 pt-5 pb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-ink-400 sm:px-4"><?= e($group) ?></li>
-        <?php foreach ($rows as $row): ?>
-          <li>
-            <a href="<?= e(route_link('PHC', $row[0])) ?>" class="group grid grid-cols-[1fr_auto] items-center gap-4 rounded-lg px-3 py-3 font-mono text-base font-semibold uppercase text-saffron-300 transition hover:bg-white/5 sm:px-4 md:grid-cols-[1fr_6rem_9rem_9rem] md:text-lg">
-              <span data-flap class="truncate"><?= e($row[1]) ?></span>
-              <span data-flap class="hidden md:block text-paper-50"><?= $row[0] ?></span>
-              <span data-flap class="hidden md:block text-ink-200 num"><?= number_format(airport_km('PHC', $row[0])) ?> KM</span>
-              <span class="flex items-center justify-end gap-2 text-xs tracking-[0.15em] text-paper-50">
-                <span class="hidden sm:inline">See fares</span>
-                <span class="flex size-8 items-center justify-center rounded-full bg-white/10 transition group-hover:translate-x-1 group-hover:bg-saffron-400 group-hover:text-ink-950"><?= icon('arrow-right', 'size-4') ?></span>
-              </span>
-            </a>
-          </li>
+      <div class="flex gap-2" aria-hidden="true">
+        <button type="button" data-scroll="#visa-posters" data-dir="-1" class="flex size-12 items-center justify-center rounded-full bg-white text-navy-900 shadow-sm ring-1 ring-navy-900/10 hover:bg-navy-900 hover:text-white" tabindex="-1"><?= icon('arrow-right', 'size-5 rotate-180') ?></button>
+        <button type="button" data-scroll="#visa-posters" data-dir="1" class="flex size-12 items-center justify-center rounded-full bg-white text-navy-900 shadow-sm ring-1 ring-navy-900/10 hover:bg-navy-900 hover:text-white" tabindex="-1"><?= icon('arrow-right', 'size-5') ?></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="visa-posters" class="snap-row snap-row-page mt-10 flex gap-5 overflow-x-auto pb-4">
+    <?php foreach ($visa_posters as $p) echo poster_card($p); ?>
+  </div>
+
+  <div class="container-page mt-14 grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-start">
+    <ol class="grid gap-4 sm:grid-cols-2">
+      <?php foreach ([
+          ['Check', 'We tell you exactly what your destination asks for.'],
+          ['Prepare', 'We review your documents and fill the forms with you.'],
+          ['Appointment', 'We book it and prepare you for the interview.'],
+          ['Track', 'Follow every step online until you have your decision.'],
+      ] as $k => $step): ?>
+        <li class="flex gap-4 rounded-2xl bg-white p-5 ring-1 ring-navy-900/5">
+          <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-sun-500 font-display text-lg font-bold text-navy-950"><?= $k + 1 ?></span>
+          <span><b class="font-display text-lg font-semibold"><?= $step[0] ?></b><br><span class="text-sm text-navy-600"><?= $step[1] ?></span></span>
+        </li>
+      <?php endforeach; ?>
+    </ol>
+    <div>
+      <p class="font-semibold">Apply online for</p>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <?php foreach ($visas as $visa): ?>
+          <a href="visa.php?country=<?= e($visa['slug']) ?>" class="rounded-full bg-white px-4 py-2 text-sm font-semibold ring-1 ring-navy-900/10 transition hover:bg-brand-600 hover:text-white hover:ring-brand-600">
+            <?= e($visa['country_name']) ?> <span class="font-normal opacity-70 num">· from <?= naira($visa['service_fee_kobo']) ?></span>
+          </a>
         <?php endforeach; ?>
-        <?php endforeach; ?>
-      </ul>
+      </div>
+      <p class="mt-3 text-xs text-navy-500">The embassy makes the final decision. Our fee is for our service and doesn't include the embassy's visa fee.</p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a class="btn btn-primary px-5 py-3" href="visa.php">Start a visa application</a>
+        <a class="btn btn-ghost bg-white px-5 py-3" href="visa-track.php">Track an application</a>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- =============================== DESTINATIONS =============================== -->
-<section class="container-page py-16 sm:py-24">
-  <div class="reveal grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
-    <div>
-      <p class="eyebrow text-saffron-700">Where Port Harcourt is flying</p>
-      <h2 class="mt-3 max-w-2xl text-4xl font-extrabold leading-[1] sm:text-6xl">Five cities worth the flight.</h2>
+<section class="container-page py-20 sm:py-28">
+  <div class="reveal flex flex-wrap items-end justify-between gap-6">
+    <div class="max-w-2xl">
+      <p class="eyebrow text-sun-700">Flying from Port Harcourt</p>
+      <h2 class="mt-4 text-4xl font-bold leading-tight sm:text-5xl">Popular trips our clients take</h2>
     </div>
-    <p class="max-w-sm text-ink-700">Return trips with one adult in economy. Tap a city and we'll show you today's fares.</p>
+    <p class="max-w-sm text-navy-600">Return fares for one adult in economy, two weeks from today. Tap a city to see today's prices.</p>
   </div>
 
-  <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-12">
-    <?php foreach ($destinations as $n => $d):
-        $span = ['lg:col-span-7 lg:h-[34rem]', 'lg:col-span-5 lg:h-[34rem]', 'lg:col-span-4 lg:h-[26rem]', 'lg:col-span-4 lg:h-[26rem]', 'lg:col-span-4 lg:h-[26rem]'][$n];
-    ?>
-      <a href="<?= e(route_link('PHC', $d[2])) ?>" style="--delay: <?= $n * 80 ?>ms"
-         class="reveal group relative isolate flex h-80 overflow-hidden rounded-2xl bg-ink-800 <?= $n == 0 ? 'sm:col-span-2' : '' ?> <?= $span ?>">
-        <?= photo($d[3], $d[4], 'absolute inset-0 -z-20 h-full w-full object-cover transition duration-700 ease-out group-hover:scale-105', true, [480, 800], $n < 2 ? '(min-width: 1024px) 55vw, 100vw' : '(min-width: 1024px) 33vw, 50vw') ?>
-        <div class="absolute inset-0 -z-10 bg-gradient-to-t from-ink-950/95 via-ink-950/25 to-ink-950/10"></div>
-        <span class="absolute left-5 top-5 font-mono text-xs font-semibold tracking-[0.2em] text-paper-50/80">0<?= $n + 1 ?></span>
-        <span class="absolute right-5 top-5 rounded-full bg-ink-950/60 px-3 py-1 font-mono text-[11px] font-semibold tracking-[0.15em] text-paper-50 backdrop-blur-sm">PHC → <?= $d[2] ?></span>
-        <div class="mt-auto w-full p-5 sm:p-7 text-paper-50">
-          <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-saffron-300"><?= e($d[1]) ?></p>
-          <p class="mt-1 font-display font-extrabold leading-[0.95] tracking-[-0.03em] <?= $n < 2 ? 'text-5xl sm:text-6xl' : 'text-4xl' ?>"><?= e($d[0]) ?></p>
-          <p class="mt-3 max-w-sm text-sm text-ink-100"><?= e($d[5]) ?></p>
-          <p class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-saffron-300">See fares <?= icon('arrow-right', 'size-4 transition group-hover:translate-x-1') ?></p>
+  <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <?php foreach ($destinations as $n => $d): ?>
+      <a href="<?= e(route_link('PHC', $d[2])) ?>" style="--delay: <?= $n * 70 ?>ms" class="reveal card group overflow-hidden <?= $n == 0 ? 'lg:col-span-2 lg:row-span-1' : '' ?>">
+        <div class="relative overflow-hidden">
+          <?= photo($d[3], $d[4], 'h-56 w-full object-cover transition duration-700 group-hover:scale-105 ' . ($n < 2 ? 'lg:h-72' : ''), true, [480, 800], $n == 0 ? '(min-width: 1024px) 60vw, 100vw' : '(min-width: 1024px) 30vw, 50vw') ?>
+          <span class="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-navy-900">PHC → <?= $d[2] ?></span>
+        </div>
+        <div class="flex items-end justify-between gap-4 p-6">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-sun-700"><?= e($d[1]) ?></p>
+            <h3 class="mt-1 text-2xl font-semibold"><?= e($d[0]) ?></h3>
+            <p class="mt-1 text-sm text-navy-600"><?= e($d[5]) ?></p>
+          </div>
+          <span class="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-700 transition group-hover:bg-sun-500 group-hover:text-navy-950"><?= icon('arrow-up-right', 'size-5') ?></span>
         </div>
       </a>
     <?php endforeach; ?>
   </div>
-</section>
 
-<!-- =============================== VISA =============================== -->
-<section class="relative overflow-hidden bg-paper-100">
-  <div class="container-page grid gap-12 py-16 sm:py-24 lg:grid-cols-[1fr_1.1fr] lg:items-center">
-    <!-- Photo with passport stamps -->
-    <div class="reveal relative mx-auto w-full max-w-lg lg:mx-0">
-      <div class="rotate-[-2deg] overflow-hidden rounded-2xl shadow-2xl ring-8 ring-white">
-        <?= photo('passport', 'A passport, camera and map laid out on a table', 'aspect-[4/5] w-full object-cover', true, [480, 800], '(min-width: 1024px) 40vw, 100vw') ?>
-      </div>
-      <svg class="absolute -right-4 -top-6 size-36 rotate-[14deg] text-bad-700 sm:-right-8 sm:size-44" viewBox="0 0 200 200" aria-hidden="true">
-        <defs><path id="stamp-ring" d="M100,100 m-72,0 a72,72 0 1,1 144,0 a72,72 0 1,1 -144,0"/></defs>
-        <circle cx="100" cy="100" r="92" fill="none" stroke="currentColor" stroke-width="5"/>
-        <circle cx="100" cy="100" r="58" fill="none" stroke="currentColor" stroke-width="2"/>
-        <text font-family="IBM Plex Mono, monospace" font-size="15" font-weight="600" letter-spacing="4" fill="currentColor"><textPath href="#stamp-ring">FANEL VISA DESK · PORT HARCOURT ·</textPath></text>
-        <text x="100" y="96" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="20" font-weight="600" fill="currentColor">CHECKED</text>
-        <text x="100" y="118" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="currentColor"><?= strtoupper(date('d M Y')) ?></text>
-      </svg>
-      <div class="absolute -bottom-6 left-4 right-4 rounded-xl bg-ink-950 p-4 text-paper-50 shadow-2xl sm:left-auto sm:right-[-1.5rem] sm:w-72">
-        <p class="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-300">Track your application</p>
-        <p class="mt-1 font-mono text-lg font-semibold tracking-wider text-saffron-300">FNV-XXXXXXXX</p>
-        <p class="mt-1 text-xs text-ink-200">Every step shows online with your reference number and email.</p>
-      </div>
-    </div>
-
-    <div class="reveal">
-      <p class="eyebrow text-saffron-700">Visa services</p>
-      <h2 class="mt-3 text-4xl font-extrabold leading-[1] sm:text-5xl">Get the application right the first time.</h2>
-      <p class="mt-4 max-w-xl text-lg text-ink-700 leading-relaxed">A refused visa costs time and money. We check every document before the embassy sees it.</p>
-
-      <ol class="mt-8 grid gap-x-6 gap-y-5 sm:grid-cols-2">
-        <?php foreach ([
-            ['Check', 'We tell you exactly what your destination asks for.'],
-            ['Prepare', 'We review your documents and fill the forms with you.'],
-            ['Appointment', 'We book it and prepare you for the interview.'],
-            ['Track', 'Follow every step online until you have your decision.'],
-        ] as $k => $step): ?>
-          <li class="border-t-2 border-ink-900 pt-3">
-            <p class="font-mono text-xs font-semibold text-saffron-700">0<?= $k + 1 ?></p>
-            <p class="mt-1 font-display text-xl font-bold"><?= $step[0] ?></p>
-            <p class="mt-1 text-sm text-ink-700"><?= $step[1] ?></p>
-          </li>
-        <?php endforeach; ?>
-      </ol>
-
-      <div class="mt-8 flex flex-wrap gap-2">
-        <?php foreach ($visas as $visa): ?>
-          <a href="visa.php?country=<?= e($visa['slug']) ?>" class="rounded-full bg-white px-4 py-2 text-sm font-semibold ring-1 ring-paper-300 transition hover:bg-ink-900 hover:text-paper-50 hover:ring-ink-900">
-            <?= e($visa['country_name']) ?> <span class="font-normal opacity-70 num">· from <?= naira($visa['service_fee_kobo']) ?></span>
-          </a>
-        <?php endforeach; ?>
-      </div>
-      <p class="mt-3 text-xs text-ink-600">The embassy makes the final decision. Our fee is for our service and doesn't include the embassy's visa fee.</p>
-      <div class="mt-6 flex flex-wrap gap-3">
-        <a class="btn btn-dark px-5 py-3" href="visa.php">Start a visa application</a>
-        <a class="btn btn-ghost px-5 py-3" href="visa-track.php">Track an application</a>
-      </div>
-    </div>
+  <div class="reveal mt-8 flex flex-wrap items-center gap-2 rounded-2xl bg-cloud-50 p-4 ring-1 ring-cloud-200 sm:p-5">
+    <span class="mr-2 flex items-center gap-2 text-sm font-semibold"><?= icon('plane', 'size-5 text-brand-600') ?> Within Nigeria from PHC:</span>
+    <?php foreach ($local_routes as $r): ?>
+      <a href="<?= e(route_link('PHC', $r[0])) ?>" class="rounded-full bg-white px-4 py-2 text-sm font-semibold ring-1 ring-navy-900/10 transition hover:bg-brand-600 hover:text-white hover:ring-brand-600"><?= e($r[1]) ?> <span class="font-normal opacity-60 num"><?= number_format(airport_km('PHC', $r[0])) ?> km</span></a>
+    <?php endforeach; ?>
   </div>
 </section>
 
 <!-- =============================== TOURS =============================== -->
-<section class="container-page py-16 sm:py-24">
-  <div class="reveal flex flex-wrap items-end justify-between gap-4">
-    <div>
-      <p class="eyebrow text-saffron-700">Tours and holidays</p>
-      <h2 class="mt-3 max-w-2xl text-4xl font-extrabold leading-[1] sm:text-6xl">Holidays we've already planned.</h2>
+<section class="bg-navy-900 py-20 text-white sm:py-28">
+  <div class="container-page">
+    <div class="reveal flex flex-wrap items-end justify-between gap-6">
+      <div class="max-w-2xl">
+        <p class="eyebrow text-sun-300">Tours and holidays</p>
+        <h2 class="mt-4 text-4xl font-bold leading-tight sm:text-5xl">Holidays we've already planned</h2>
+      </div>
+      <a class="btn bg-white px-5 py-3 text-navy-900 hover:bg-sun-400" href="tours.php">See all holidays <?= icon('arrow-right', 'size-4') ?></a>
     </div>
-    <a class="btn btn-ghost px-5 py-3" href="tours.php">See all holidays <?= icon('arrow-right', 'size-4') ?></a>
-  </div>
 
-  <div class="mt-10 grid gap-5 lg:grid-cols-2">
-    <?php foreach ($tours as $n => $tour): $big = $n == 0; ?>
-      <a href="tour.php?slug=<?= e($tour['slug']) ?>" style="--delay: <?= $n * 100 ?>ms"
-         class="reveal group relative isolate flex overflow-hidden rounded-2xl bg-ink-900 text-paper-50 <?= $big ? 'min-h-[30rem] lg:row-span-2' : 'min-h-[18rem]' ?>">
-        <?php if ($tour['cover_image']): ?>
-          <?= photo($tour['cover_image'], $tour['destination'], 'absolute inset-0 -z-20 h-full w-full object-cover transition duration-700 group-hover:scale-105', true, [480, 800], '(min-width: 1024px) 50vw, 100vw') ?>
-        <?php endif; ?>
-        <div class="absolute inset-0 -z-10 bg-gradient-to-t from-ink-950 via-ink-950/40 to-transparent"></div>
-        <div class="mt-auto flex w-full flex-wrap items-end justify-between gap-4 p-6 sm:p-8">
-          <div class="max-w-md">
-            <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-saffron-300"><?= e($tour['destination']) ?> · <?= plural($tour['duration_nights'], 'night') ?></p>
-            <h3 class="mt-2 font-extrabold leading-[1] <?= $big ? 'text-4xl sm:text-5xl' : 'text-3xl' ?>"><?= e($tour['title']) ?></h3>
-            <?php if ($big): ?><p class="mt-3 text-ink-100"><?= e($tour['summary']) ?></p><?php endif; ?>
-            <?php if ($tour['next_date']): ?>
-              <p class="mt-3 text-xs text-ink-200">Next departure <b class="text-paper-50 num"><?= nice_date($tour['next_date']) ?></b></p>
+    <?php if ($tours): ?>
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      <?php foreach ($tours as $n => $tour): ?>
+        <a href="tour.php?slug=<?= e($tour['slug']) ?>" style="--delay: <?= $n * 90 ?>ms" class="reveal group flex flex-col overflow-hidden rounded-3xl bg-white text-navy-900">
+          <div class="relative overflow-hidden">
+            <?php if ($tour['cover_image']): ?>
+              <?= photo($tour['cover_image'], $tour['destination'], 'aspect-[4/3] w-full object-cover transition duration-700 group-hover:scale-105', true, [480, 800], '(min-width: 768px) 33vw, 100vw') ?>
+            <?php else: ?>
+              <div class="aspect-[4/3] w-full bg-cloud-200"></div>
             <?php endif; ?>
+            <span class="absolute left-4 top-4 rounded-full bg-navy-900/80 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm"><?= plural($tour['duration_nights'], 'night') ?></span>
           </div>
-          <div class="rounded-xl bg-paper-50 px-4 py-3 text-ink-950">
-            <p class="font-display text-2xl font-bold leading-none num"><?= naira($tour['price_kobo']) ?></p>
-            <p class="mt-1 text-[11px] text-ink-600"><?= e($tour['price_basis']) ?></p>
+          <div class="flex flex-1 flex-col p-6">
+            <p class="text-xs font-semibold uppercase tracking-wider text-sun-700"><?= e($tour['destination']) ?></p>
+            <h3 class="mt-1 text-xl font-semibold leading-snug"><?= e($tour['title']) ?></h3>
+            <?php if ($tour['next_date']): ?>
+              <p class="mt-2 text-sm text-navy-600">Next departure <b class="num text-navy-900"><?= nice_date($tour['next_date']) ?></b></p>
+            <?php endif; ?>
+            <div class="mt-auto flex items-end justify-between gap-3 pt-5">
+              <p><span class="block font-display text-2xl font-bold num"><?= naira($tour['price_kobo']) ?></span><span class="text-xs text-navy-500"><?= e($tour['price_basis']) ?></span></p>
+              <span class="flex size-11 items-center justify-center rounded-full bg-sun-500 text-navy-950 transition group-hover:translate-x-1"><?= icon('arrow-right', 'size-5') ?></span>
+            </div>
           </div>
-        </div>
-      </a>
-    <?php endforeach; ?>
-  </div>
-</section>
+        </a>
+      <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
 
-<!-- =============================== TALK TO US =============================== -->
-<section class="container-page">
-  <div class="reveal relative isolate overflow-hidden rounded-3xl bg-ink-950 text-paper-50">
-    <?= photo('hotel-room', 'A bright, made-up hotel room', 'absolute inset-0 -z-20 h-full w-full object-cover object-[50%_30%]', true, [480, 800], '100vw') ?>
-    <div class="absolute inset-0 -z-10 bg-gradient-to-r from-ink-950 via-ink-950/85 to-ink-950/30"></div>
-    <div class="max-w-2xl p-8 sm:p-14 lg:p-20">
-      <p class="eyebrow text-saffron-300">Real people, in Port Harcourt</p>
-      <h2 class="mt-3 text-4xl font-extrabold leading-[1] sm:text-6xl">Rather talk it through?</h2>
-      <p class="mt-4 text-lg text-ink-100 leading-relaxed">Group bookings, special assistance, a trip with several stops, or you just want a second opinion. Call us, send a message, or visit our office off Boundary Market, Rumukurushi, Monday to Saturday.</p>
-      <div class="mt-8 flex flex-wrap gap-3">
-        <?php if ($whatsapp): ?>
-          <a class="btn btn-primary px-6 py-3.5 text-base" href="https://wa.me/<?= $whatsapp ?>" target="_blank" rel="noopener"><?= icon('chat') ?> Chat on WhatsApp</a>
-        <?php endif; ?>
-        <a class="btn btn-primary px-6 py-3.5 text-base" href="contact.php">Send us a message</a>
-        <a class="btn px-6 py-3.5 text-base ring-1 ring-inset ring-white/30 hover:bg-white/10" href="about.php">About us</a>
+    <div class="mt-14">
+      <p class="text-sm font-semibold text-navy-200">Holiday ideas from our team</p>
+      <div class="snap-row mt-4 flex gap-5 overflow-x-auto pb-2 [&_figcaption_span]:text-white [&_figcaption_a]:text-sun-300">
+        <?php foreach ($holiday_posters as $p) echo poster_card($p, 'w-64 sm:w-80'); ?>
       </div>
     </div>
   </div>
 </section>
+
+<!-- =============================== WHY FANEL + TALK TO US =============================== -->
+<section class="container-page pt-20 sm:pt-28">
+  <div class="grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center">
+    <div class="reveal">
+      <p class="eyebrow text-sun-700">Why travel with Fanel</p>
+      <h2 class="mt-4 text-4xl font-bold leading-tight sm:text-5xl">Travel made simple, from start to finish</h2>
+      <p class="mt-4 text-lg leading-relaxed text-navy-600">Our goal is to make domestic and international travel convenient, accessible and stress-free, with solutions shaped around you.</p>
+      <ul class="mt-8 grid gap-4 sm:grid-cols-2">
+        <?php foreach ([
+            ['Professionalism', 'Trained staff who know the airlines, hotels and embassies.'],
+            ['Integrity', 'Clear prices in Naira and honest advice, even when it means a smaller sale.'],
+            ['Efficiency', 'Tickets, rooms and visa files handled quickly and checked twice.'],
+            ['Customer care', 'Call, message or walk in. A real person answers.'],
+        ] as $v): ?>
+          <li class="flex gap-3">
+            <span class="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-brand-600 text-white"><?= icon('check', 'size-4') ?></span>
+            <span><b class="font-semibold"><?= $v[0] ?></b><br><span class="text-sm text-navy-600"><?= $v[1] ?></span></span>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
+
+    <div class="reveal relative overflow-hidden rounded-[2rem] bg-sun-500 p-8 text-navy-950 sm:p-12">
+      <svg class="absolute -right-16 -top-16 size-72 text-white/20" viewBox="0 0 200 200" fill="none" aria-hidden="true"><circle cx="100" cy="100" r="80" stroke="currentColor" stroke-width="3"/><ellipse cx="100" cy="100" rx="34" ry="80" stroke="currentColor" stroke-width="3"/><path d="M20 100h160" stroke="currentColor" stroke-width="3"/></svg>
+      <h2 class="relative text-3xl font-bold leading-tight sm:text-4xl">Rather talk it through?</h2>
+      <p class="relative mt-3 max-w-md text-lg">Group bookings, special assistance, trips with several stops, corporate travel, or a second opinion. Call us, send a message, or visit our office.</p>
+      <dl class="relative mt-6 space-y-2 text-sm">
+        <div class="flex gap-2"><dt><?= icon('pin', 'size-5') ?></dt><dd class="font-medium"><?= e(contact('address')) ?></dd></div>
+        <div class="flex gap-2"><dt><?= icon('clock', 'size-5') ?></dt><dd class="font-medium"><?= e(contact('hours')) ?></dd></div>
+      </dl>
+      <div class="relative mt-8 flex flex-wrap gap-3">
+        <?php if ($phone_digits): ?>
+          <a class="btn btn-dark px-6 py-3.5 text-base" href="tel:<?= $phone_digits ?>"><?= icon('phone') ?> <span class="num"><?= e(contact('phone')) ?></span></a>
+        <?php endif; ?>
+        <?php if ($whatsapp): ?>
+          <a class="btn bg-white px-6 py-3.5 text-base text-navy-900 hover:bg-cloud-100" href="https://wa.me/<?= $whatsapp ?>" target="_blank" rel="noopener"><?= icon('chat') ?> WhatsApp</a>
+        <?php endif; ?>
+        <a class="btn bg-white px-6 py-3.5 text-base text-navy-900 hover:bg-cloud-100" href="contact.php">Send a message</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<?= poster_viewer() ?>
 
 <?php include 'includes/footer.php'; ?>

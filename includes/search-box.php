@@ -1,5 +1,5 @@
 <?php
-// The search box, designed like a boarding pass, with Flights / Hotels / Visa / Tours tabs.
+// The search box: a white card with Flights / Hotels / Visa / Tours tabs.
 // Set $tab before including it: 'flights' (default), 'hotels', 'visa' or 'tours'.
 // Each tab is a normal form. assets/js/search.js adds tab switching, airport suggestions,
 // the swap button, extra multi-city flights and the travellers picker.
@@ -33,31 +33,24 @@ foreach (array_merge($from, $to) as $code) {
 $visa_countries = db_all("SELECT slug, country_name FROM visa_destinations WHERE is_active = 1 ORDER BY sort_order");
 $tour_places = db_all("SELECT DISTINCT destination FROM tour_packages WHERE is_published = 1 ORDER BY destination");
 
-$tabs = ['flights' => 'Flights', 'hotels' => 'Hotels', 'visa' => 'Visa', 'tours' => 'Tours'];
+$tabs = ['flights' => ['Flights', 'plane'], 'hotels' => ['Hotels', 'bed'], 'visa' => ['Visa', 'passport'], 'tours' => ['Tours', 'palm']];
 
-// Shared classes: each field sits in a "cell" like the boxes on a boarding pass
-$cell = 'relative rounded-lg bg-paper-50 px-3.5 pt-2.5 pb-2 ring-1 ring-ink-200 transition hover:ring-ink-400 focus-within:ring-2 focus-within:ring-saffron-500';
-$cell_label = 'block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-600';
-$cell_input = 'mt-0.5 block w-full border-0 bg-transparent p-0 text-base sm:text-lg font-semibold text-ink-900 placeholder:font-normal placeholder:text-ink-500 focus:outline-none focus:ring-0';
-$list_class = 'airport-list absolute left-0 top-full z-40 mt-2 w-full min-w-80 overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-ink-900/10';
-$stub = 'relative flex flex-col justify-between gap-5 p-5 sm:p-6 lg:w-[17rem]';
-$stub_line = '<div class="perforation-x absolute inset-x-5 top-0 h-px lg:hidden" aria-hidden="true"></div><div class="perforation absolute inset-y-5 left-0 hidden w-px lg:block" aria-hidden="true"></div>';
-$barcode = '<div class="hidden lg:block" aria-hidden="true"><div class="barcode h-10 text-ink-900"></div><p class="mt-1.5 font-mono text-[10px] tracking-[0.3em] text-ink-500">FNT · ' . strtoupper(date('dMy')) . '</p></div>';
-$button = 'btn btn-primary w-full py-4 text-base shadow-[0_8px_20px_-8px_rgba(227,154,38,0.8)]';
+// Shared classes: each field is a soft rounded box
+$cell = 'relative rounded-2xl bg-cloud-50 px-4 pt-2.5 pb-2 ring-1 ring-cloud-200 transition hover:ring-navy-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-brand-500';
+$cell_label = 'block text-[11px] font-semibold uppercase tracking-wider text-navy-500';
+$cell_input = 'mt-0.5 block w-full border-0 bg-transparent p-0 text-base sm:text-lg font-semibold text-navy-900 placeholder:font-normal placeholder:text-navy-400 focus:outline-none focus:ring-0';
+$list_class = 'airport-list absolute left-0 top-full z-40 mt-2 w-full min-w-80 overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-navy-900/10';
+$stub = 'relative flex flex-col justify-end gap-4 border-t border-cloud-200 p-5 sm:p-6 lg:w-[16rem] lg:border-l lg:border-t-0';
+$button = 'btn btn-accent w-full py-4 text-base';
 ?>
-<div id="search-box" class="relative text-ink-900">
-  <!-- The white ticket shape with its notches (drawn behind the form) -->
-  <div class="pointer-events-none absolute inset-0 drop-shadow-[0_30px_50px_rgba(5,12,22,0.45)]" aria-hidden="true">
-    <div class="ticket h-full w-full bg-white"></div>
-  </div>
-
+<div id="search-box" class="relative rounded-[1.75rem] bg-white text-navy-900 shadow-[0_30px_70px_-25px_rgba(6,20,46,0.45)] ring-1 ring-navy-900/5">
   <div class="relative">
     <!-- Tabs -->
-    <div role="tablist" class="flex gap-1 overflow-x-auto border-b border-paper-200 px-3 pt-3 sm:px-5">
-      <?php foreach ($tabs as $key => $label): ?>
+    <div role="tablist" class="flex gap-1.5 overflow-x-auto px-3 pt-3 sm:px-5 sm:pt-5">
+      <?php foreach ($tabs as $key => $t): ?>
         <a href="<?= $key ?>.php" role="tab" data-tab="<?= $key ?>" aria-selected="<?= $tab == $key ? 'true' : 'false' ?>"
-           class="relative shrink-0 rounded-t-md px-4 py-3 text-sm font-semibold text-ink-600 transition hover:text-ink-900 aria-selected:text-ink-950 after:absolute after:inset-x-3 after:-bottom-px after:h-[3px] after:rounded-full after:bg-saffron-500 after:opacity-0 aria-selected:after:opacity-100">
-          <?= $label ?>
+           class="inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-navy-600 transition hover:bg-cloud-100 hover:text-navy-900 aria-selected:bg-brand-600 aria-selected:text-white aria-selected:shadow-md aria-selected:shadow-brand-600/30">
+          <?= icon($t[1], 'size-4') ?> <?= $t[0] ?>
         </a>
       <?php endforeach; ?>
     </div>
@@ -65,11 +58,11 @@ $button = 'btn btn-primary w-full py-4 text-base shadow-[0_8px_20px_-8px_rgba(22
     <!-- ===================== Flights ===================== -->
     <form id="panel-flights" action="flight-results.php" method="get" class="lg:flex" <?= $tab == 'flights' ? '' : 'hidden' ?>>
       <div class="min-w-0 flex-1 p-4 sm:p-6">
-        <div class="inline-flex rounded-full bg-paper-100 p-1 text-sm font-semibold">
+        <div class="inline-flex rounded-full bg-cloud-100 p-1 text-sm font-semibold">
           <?php foreach (['return' => 'Return', 'one_way' => 'One way', 'multi' => 'Multi-city'] as $value => $label): ?>
             <label class="relative">
               <input type="radio" name="trip" value="<?= $value ?>" <?= $trip == $value ? 'checked' : '' ?> class="peer sr-only">
-              <span class="block rounded-full px-3.5 py-1.5 text-ink-600 transition peer-checked:bg-ink-900 peer-checked:text-paper-50 peer-focus-visible:outline peer-focus-visible:outline-3 peer-focus-visible:outline-saffron-500"><?= $label ?></span>
+              <span class="block rounded-full px-3.5 py-1.5 text-navy-600 transition peer-checked:bg-white peer-checked:text-brand-700 peer-checked:shadow-sm peer-focus-visible:outline peer-focus-visible:outline-3 peer-focus-visible:outline-brand-500"><?= $label ?></span>
             </label>
           <?php endforeach; ?>
         </div>
@@ -83,9 +76,9 @@ $button = 'btn btn-primary w-full py-4 text-base shadow-[0_8px_20px_-8px_rgba(22
             $show = $i == 0 || ($trip == 'multi' && ($i == 1 || $from_code != ''));
             $off = $show ? '' : 'disabled';   // disabled fields aren't sent with the form
         ?>
-        <div class="flight-leg mt-4 grid grid-cols-2 gap-2.5 lg:grid-cols-[1fr_1fr_10rem_10rem]" <?= $show ? '' : 'hidden' ?>>
+        <div class="flight-leg mt-4 grid grid-cols-2 gap-2.5 lg:grid-cols-[1fr_1fr_11.5rem_11.5rem]" <?= $show ? '' : 'hidden' ?>>
           <?php if ($i > 0): ?>
-            <p class="col-span-2 lg:col-span-4 eyebrow text-saffron-700">Flight <?= $i + 1 ?></p>
+            <p class="col-span-2 lg:col-span-4 text-xs font-bold uppercase tracking-wider text-sun-700">Flight <?= $i + 1 ?></p>
           <?php endif; ?>
 
           <div class="<?= $cell ?> col-span-2 sm:col-span-1">
@@ -94,7 +87,7 @@ $button = 'btn btn-primary w-full py-4 text-base shadow-[0_8px_20px_-8px_rgba(22
                    value="<?= e(isset($airport_names[$from_code]) ? $airport_names[$from_code] : '') ?>" <?= $off ?>>
             <input type="hidden" name="from[]" value="<?= e($from_code) ?>" <?= $off ?>>
             <ul class="<?= $list_class ?>" hidden></ul>
-            <button type="button" class="swap absolute -bottom-4 right-6 z-10 flex size-9 items-center justify-center rounded-full bg-white text-ink-800 shadow-md ring-1 ring-ink-200 transition hover:rotate-180 hover:bg-saffron-300 sm:-right-[1.4rem] sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2" aria-label="Swap from and to">
+            <button type="button" class="swap absolute -bottom-4 right-6 z-10 flex size-9 items-center justify-center rounded-full bg-white text-navy-800 shadow-md ring-1 ring-navy-200 transition hover:rotate-180 hover:bg-sun-400 hover:text-navy-950 sm:-right-[1.4rem] sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2" aria-label="Swap from and to">
               <?= icon('swap', 'size-4') ?>
             </button>
           </div>
@@ -127,9 +120,9 @@ $button = 'btn btn-primary w-full py-4 text-base shadow-[0_8px_20px_-8px_rgba(22
 
         <!-- Quick picks: tapping one fills in From and To -->
         <div class="mt-5 flex flex-wrap items-center gap-2" id="quick-picks">
-          <span class="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-500">Try</span>
+          <span class="text-xs font-semibold text-navy-500">Popular:</span>
           <?php foreach ([['PHC', 'Port Harcourt', 'LOS', 'Lagos'], ['PHC', 'Port Harcourt', 'ABV', 'Abuja'], ['LOS', 'Lagos', 'ABV', 'Abuja'], ['PHC', 'Port Harcourt', 'LHR', 'London'], ['PHC', 'Port Harcourt', 'DXB', 'Dubai'], ['PHC', 'Port Harcourt', 'ACC', 'Accra']] as $q): ?>
-            <button type="button" class="quick-pick rounded-full bg-paper-100 px-3 py-1.5 text-xs font-semibold text-ink-800 ring-1 ring-paper-200 transition hover:bg-ink-900 hover:text-paper-50"
+            <button type="button" class="quick-pick rounded-full bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700 transition hover:bg-brand-600 hover:text-white"
                     data-from="<?= $q[0] ?>" data-from-city="<?= $q[1] ?>" data-to="<?= $q[2] ?>" data-to-city="<?= $q[3] ?>">
               <?= $q[1] ?> → <?= $q[3] ?>
             </button>
@@ -137,18 +130,17 @@ $button = 'btn btn-primary w-full py-4 text-base shadow-[0_8px_20px_-8px_rgba(22
         </div>
       </div>
 
-      <!-- Ticket stub -->
+      <!-- Travellers and search button -->
       <div class="<?= $stub ?>">
-        <?= $stub_line ?>
         <details class="relative" id="travellers">
           <summary class="list-none <?= $cell ?>">
             <span class="<?= $cell_label ?>">Travellers · Cabin</span>
             <span class="mt-0.5 flex items-center justify-between font-semibold">
               <span id="travellers-text"><?= plural($adults + $children + $infants, 'traveller') ?>, <?= $cabins[$cabin] ?></span>
-              <span class="text-ink-500" aria-hidden="true">▾</span>
+              <span class="text-navy-500" aria-hidden="true">▾</span>
             </span>
           </summary>
-          <div class="absolute right-0 top-full z-40 mt-2 w-full min-w-72 space-y-3 rounded-xl bg-white p-4 shadow-2xl ring-1 ring-ink-900/10">
+          <div class="absolute right-0 top-full z-40 mt-2 w-full min-w-72 space-y-3 rounded-xl bg-white p-4 shadow-2xl ring-1 ring-navy-900/10">
             <?php
             $people = [
                 ['adults', 'Adults', '12 years and over', $adults, 1, 9],
@@ -157,12 +149,12 @@ $button = 'btn btn-primary w-full py-4 text-base shadow-[0_8px_20px_-8px_rgba(22
             ];
             foreach ($people as $p): ?>
             <div class="flex items-center justify-between gap-3">
-              <label for="<?= $p[0] ?>" class="text-sm"><b><?= $p[1] ?></b><br><span class="text-ink-600"><?= $p[2] ?></span></label>
+              <label for="<?= $p[0] ?>" class="text-sm"><b><?= $p[1] ?></b><br><span class="text-navy-600"><?= $p[2] ?></span></label>
               <div class="flex items-center gap-1">
-                <button type="button" class="step size-11 rounded-full ring-1 ring-ink-300 text-lg font-semibold hover:bg-ink-100" data-add="-1" aria-label="Fewer <?= strtolower($p[1]) ?>">−</button>
+                <button type="button" class="step size-11 rounded-full ring-1 ring-navy-300 text-lg font-semibold hover:bg-navy-100" data-add="-1" aria-label="Fewer <?= strtolower($p[1]) ?>">−</button>
                 <input id="<?= $p[0] ?>" name="<?= $p[0] ?>" type="number" min="<?= $p[4] ?>" max="<?= $p[5] ?>" value="<?= $p[3] ?>"
                        class="w-10 border-0 bg-transparent text-center font-semibold num [appearance:textfield]">
-                <button type="button" class="step size-11 rounded-full ring-1 ring-ink-300 text-lg font-semibold hover:bg-ink-100" data-add="1" aria-label="More <?= strtolower($p[1]) ?>">+</button>
+                <button type="button" class="step size-11 rounded-full ring-1 ring-navy-300 text-lg font-semibold hover:bg-navy-100" data-add="1" aria-label="More <?= strtolower($p[1]) ?>">+</button>
               </div>
             </div>
             <?php endforeach; ?>
@@ -174,11 +166,10 @@ $button = 'btn btn-primary w-full py-4 text-base shadow-[0_8px_20px_-8px_rgba(22
                 <?php endforeach; ?>
               </select>
             </div>
-            <p class="text-xs text-ink-600">Each infant travels on an adult's lap, so you can't have more infants than adults.</p>
+            <p class="text-xs text-navy-600">Each infant travels on an adult's lap, so you can't have more infants than adults.</p>
           </div>
         </details>
         <button type="submit" class="<?= $button ?>">Search flights <?= icon('arrow-right', 'size-5') ?></button>
-        <?= $barcode ?>
       </div>
     </form>
 
@@ -208,17 +199,15 @@ $button = 'btn btn-primary w-full py-4 text-base shadow-[0_8px_20px_-8px_rgba(22
         </div>
       </div>
       <div class="<?= $stub ?>">
-        <?= $stub_line ?>
-        <p class="text-sm text-ink-700">The full price for your stay, in Naira, before you pay.</p>
+        <p class="text-sm text-navy-700">The full price for your stay, in Naira, before you pay.</p>
         <button type="submit" class="<?= $button ?>">Search hotels <?= icon('arrow-right', 'size-5') ?></button>
-        <?= $barcode ?>
       </div>
     </form>
 
     <!-- ===================== Visa ===================== -->
     <form id="panel-visa" action="visa.php" method="get" class="lg:flex" <?= $tab == 'visa' ? '' : 'hidden' ?>>
       <div class="min-w-0 flex-1 p-4 sm:p-6">
-        <p class="text-sm text-ink-700">Tell us where you're going. We'll show you the documents you need and help you apply.</p>
+        <p class="text-sm text-navy-700">Tell us where you're going. We'll show you the documents you need and help you apply.</p>
         <div class="<?= $cell ?> mt-3">
           <label class="<?= $cell_label ?>" for="visa-country">Destination country</label>
           <select id="visa-country" name="country" class="<?= $cell_input ?>" required>
@@ -231,17 +220,15 @@ $button = 'btn btn-primary w-full py-4 text-base shadow-[0_8px_20px_-8px_rgba(22
         <p class="mt-3 text-sm"><a class="link" href="visa-track.php">Already applied? Track your application</a></p>
       </div>
       <div class="<?= $stub ?>">
-        <?= $stub_line ?>
-        <p class="text-sm text-ink-700">Document check, forms, appointment and interview preparation.</p>
+        <p class="text-sm text-navy-700">Document check, forms, appointment and interview preparation.</p>
         <button type="submit" class="<?= $button ?>">See requirements <?= icon('arrow-right', 'size-5') ?></button>
-        <?= $barcode ?>
       </div>
     </form>
 
     <!-- ===================== Tours ===================== -->
     <form id="panel-tours" action="tours.php" method="get" class="lg:flex" <?= $tab == 'tours' ? '' : 'hidden' ?>>
       <div class="min-w-0 flex-1 p-4 sm:p-6">
-        <p class="text-sm text-ink-700">Holidays we've planned end to end: flights, hotel, transfers and a local guide.</p>
+        <p class="text-sm text-navy-700">Holidays we've planned end to end: flights, hotel, transfers and a local guide.</p>
         <div class="mt-3 grid gap-2.5 sm:grid-cols-2">
           <div class="<?= $cell ?>">
             <label class="<?= $cell_label ?>" for="tour-place">Destination</label>
@@ -264,10 +251,8 @@ $button = 'btn btn-primary w-full py-4 text-base shadow-[0_8px_20px_-8px_rgba(22
         </div>
       </div>
       <div class="<?= $stub ?>">
-        <?= $stub_line ?>
-        <p class="text-sm text-ink-700">Set dates, small groups, and a deposit secures your place.</p>
+        <p class="text-sm text-navy-700">Set dates, small groups, and a deposit secures your place.</p>
         <button type="submit" class="<?= $button ?>">Find holidays <?= icon('arrow-right', 'size-5') ?></button>
-        <?= $barcode ?>
       </div>
     </form>
   </div>

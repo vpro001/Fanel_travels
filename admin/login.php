@@ -51,13 +51,13 @@ include '../includes/admin-header.php';
 ?>
 <div class="mx-auto mt-[10vh] max-w-sm">
   <div class="flex items-center gap-2.5">
-    <span class="flex size-10 items-center justify-center rounded-lg bg-saffron-400 font-display text-xl font-extrabold text-ink-950">F</span>
-    <span class="leading-none"><span class="block font-display text-lg font-bold">Fanel</span><span class="font-mono text-[10px] uppercase tracking-[0.2em] text-saffron-700">Back office</span></span>
+    <img src="../assets/img/fanel/logo-mark.png" alt="" class="size-11">
+    <span class="leading-none"><span class="block font-display text-lg font-bold">Fanel Travels</span><span class="text-[10px] uppercase tracking-wider text-sun-700 font-semibold">Back office</span></span>
   </div>
   <h1 class="mt-8 text-3xl font-extrabold"><?= $has_staff ? 'Staff log in' : 'Create the admin account' ?></h1>
-  <?php if (!$has_staff): ?><p class="mt-2 text-sm text-ink-700">No staff accounts exist yet. The account you create now is the main admin.</p><?php endif; ?>
+  <?php if (!$has_staff): ?><p class="mt-2 text-sm text-navy-700">No staff accounts exist yet. The account you create now is the main admin.</p><?php endif; ?>
   <?php if ($error): ?><p class="mt-5 rounded-lg bg-bad-100 p-3 text-sm text-bad-700" role="alert"><?= e($error) ?></p><?php endif; ?>
-  <form method="post" class="mt-6 space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-ink-900/5">
+  <form method="post" class="mt-6 space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-navy-900/5">
     <?= csrf_field() ?>
     <?php if (!$has_staff): ?>
       <div><label class="field-label" for="name">Your name</label><input id="name" name="name" class="field" autocomplete="name" required></div>

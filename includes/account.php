@@ -51,7 +51,7 @@ function send_verification_email($user)
 {
     $link = SITE_URL . '/verify-email.php?id=' . $user['id'] . '&token=' . verify_token($user);
     send_mail($user['email'], 'Confirm your email for ' . SITE_NAME,
-        '<div style="font-family:Arial,sans-serif;color:#0f1f33;max-width:600px"><p>Hello ' . e($user['full_name']) . ',</p>'
+        '<div style="font-family:Arial,sans-serif;color:#0a1f44;max-width:600px"><p>Hello ' . e($user['full_name']) . ',</p>'
         . '<p>Please confirm your email address so we can show bookings made with it in your account:</p>'
         . '<p><a href="' . e($link) . '">Confirm my email</a></p>'
         . '<p>If you did not create an account, you can ignore this email.</p><p>' . e(SITE_NAME) . '</p></div>');

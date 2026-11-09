@@ -34,16 +34,16 @@ include '../includes/admin-header.php';
   <button class="btn btn-dark">Filter</button>
 </form>
 
-<div class="mt-5 overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-ink-900/5">
+<div class="mt-5 overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-navy-900/5">
   <table class="w-full text-left text-sm">
-    <thead class="border-b border-paper-200 text-xs text-ink-600">
+    <thead class="border-b border-cloud-200 text-xs text-navy-600">
       <tr><th class="px-5 py-3 font-medium">Reference</th><th class="px-3 py-3 font-medium">Created</th><th class="px-3 py-3 font-medium">Route</th><th class="px-3 py-3 font-medium">Customer</th><th class="px-3 py-3 font-medium">PNR</th><th class="px-3 py-3 font-medium">Status</th><th class="px-5 py-3 text-right font-medium">Total</th></tr>
     </thead>
-    <tbody class="divide-y divide-paper-200">
+    <tbody class="divide-y divide-cloud-200">
       <?php foreach ($bookings as $b): $trip = json_decode($b['itinerary_json'], true); ?>
-        <tr class="hover:bg-paper-50">
+        <tr class="hover:bg-cloud-50">
           <td class="px-5 py-3"><a class="font-mono font-semibold hover:underline" href="booking.php?id=<?= $b['id'] ?>"><?= e($b['booking_ref']) ?></a></td>
-          <td class="px-3 py-3 text-ink-700 num"><?= date('j M Y H:i', strtotime($b['created_at'])) ?></td>
+          <td class="px-3 py-3 text-navy-700 num"><?= date('j M Y H:i', strtotime($b['created_at'])) ?></td>
           <td class="px-3 py-3 font-mono"><?= e($trip[0]['from'] . ' → ' . $trip[0]['to']) ?><?= count($trip) > 1 ? ' +' . (count($trip) - 1) : '' ?></td>
           <td class="px-3 py-3"><?= e($b['contact_email']) ?></td>
           <td class="px-3 py-3 font-mono font-semibold"><?= e($b['pnr'] ?: '—') ?></td>
@@ -51,7 +51,7 @@ include '../includes/admin-header.php';
           <td class="px-5 py-3 text-right num"><?= naira($b['total_kobo']) ?></td>
         </tr>
       <?php endforeach; ?>
-      <?php if (!$bookings): ?><tr><td colspan="7" class="px-5 py-10 text-center text-ink-600">No bookings found.</td></tr><?php endif; ?>
+      <?php if (!$bookings): ?><tr><td colspan="7" class="px-5 py-10 text-center text-navy-600">No bookings found.</td></tr><?php endif; ?>
     </tbody>
   </table>
 </div>

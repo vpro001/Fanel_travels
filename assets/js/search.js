@@ -91,7 +91,7 @@ document.querySelectorAll('.airport-input').forEach(function (input) {
   function highlight(i) {
     highlighted = i;
     list.querySelectorAll('li').forEach(function (li, n) {
-      li.classList.toggle('bg-paper-100', n === i);
+      li.classList.toggle('bg-cloud-100', n === i);
     });
   }
 
@@ -99,14 +99,14 @@ document.querySelectorAll('.airport-input').forEach(function (input) {
     results = airports;
     list.innerHTML = '';
     if (airports.length === 0) {
-      list.innerHTML = '<li class="px-3 py-2.5 text-sm text-ink-600">No airports found. Try the city name.</li>';
+      list.innerHTML = '<li class="px-3 py-2.5 text-sm text-navy-600">No airports found. Try the city name.</li>';
     }
     airports.forEach(function (a, i) {
       var li = document.createElement('li');
-      li.className = 'flex cursor-pointer items-center gap-3 px-3 py-2.5 hover:bg-paper-100';
+      li.className = 'flex cursor-pointer items-center gap-3 px-3 py-2.5 hover:bg-cloud-100';
       li.innerHTML =
-        '<span class="w-11 shrink-0 rounded bg-ink-900 py-1 text-center text-xs font-bold text-paper-50"></span>' +
-        '<span class="min-w-0"><span class="block text-sm font-semibold"></span><span class="block truncate text-xs text-ink-600"></span></span>';
+        '<span class="w-11 shrink-0 rounded bg-navy-900 py-1 text-center text-xs font-bold text-cloud-50"></span>' +
+        '<span class="min-w-0"><span class="block text-sm font-semibold"></span><span class="block truncate text-xs text-navy-600"></span></span>';
       // textContent, so airport names can never inject HTML
       li.children[0].textContent = a.code;
       li.children[1].children[0].textContent = a.city + (a.country ? ', ' + a.country : '');

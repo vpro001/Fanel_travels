@@ -45,22 +45,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 $title = 'Create an account';
 include 'includes/header.php';
-$field = 'mt-1 block w-full rounded-lg border-0 bg-paper-50 px-3.5 py-3 text-base ring-1 ring-ink-300 focus:outline-none focus:ring-2 focus:ring-saffron-500';
+$field = 'mt-1 block w-full rounded-lg border-0 bg-cloud-50 px-3.5 py-3 text-base ring-1 ring-navy-300 focus:outline-none focus:ring-2 focus:ring-sun-500';
 ?>
 <section class="container-page py-14 sm:py-20">
   <div class="mx-auto max-w-md">
-    <p class="eyebrow text-saffron-700">Your account</p>
+    <p class="eyebrow text-sun-700">Your account</p>
     <h1 class="mt-3 text-4xl font-extrabold">Create an account</h1>
-    <p class="mt-2 text-ink-700">See all your flights, hotels, holidays and visa applications in one place.</p>
-    <form method="post" class="mt-8 space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-ink-900/5" novalidate>
+    <p class="mt-2 text-navy-700">See all your flights, hotels, holidays and visa applications in one place.</p>
+    <form method="post" class="mt-8 space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-navy-900/5" novalidate>
       <?= csrf_field() ?>
       <div><label class="field-label" for="name">Full name</label><input id="name" name="name" autocomplete="name" class="<?= $field ?>" value="<?= e($f['name']) ?>"><?= isset($errors['name']) ? '<p class="field-error">' . e($errors['name']) . '</p>' : '' ?></div>
       <div><label class="field-label" for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" class="<?= $field ?>" value="<?= e($f['email']) ?>"><?= isset($errors['email']) ? '<p class="field-error">' . e($errors['email']) . '</p>' : '' ?></div>
       <div><label class="field-label" for="phone">Phone <span class="normal-case font-normal">(optional)</span></label><input id="phone" name="phone" type="tel" autocomplete="tel" class="<?= $field ?> num" value="<?= e($f['phone']) ?>"><?= isset($errors['phone']) ? '<p class="field-error">' . e($errors['phone']) . '</p>' : '' ?></div>
-      <div><label class="field-label" for="password">Password</label><input id="password" name="password" type="password" autocomplete="new-password" minlength="8" class="<?= $field ?>"><?= isset($errors['password']) ? '<p class="field-error">' . e($errors['password']) . '</p>' : '<p class="mt-1 text-xs text-ink-600">At least 8 characters.</p>' ?></div>
+      <div><label class="field-label" for="password">Password</label><input id="password" name="password" type="password" autocomplete="new-password" minlength="8" class="<?= $field ?>"><?= isset($errors['password']) ? '<p class="field-error">' . e($errors['password']) . '</p>' : '<p class="mt-1 text-xs text-navy-600">At least 8 characters.</p>' ?></div>
       <button class="btn btn-dark w-full py-3">Create account</button>
     </form>
-    <p class="mt-4 text-sm text-ink-700">Already have an account? <a class="link" href="login.php">Sign in</a></p>
+    <p class="mt-4 text-sm text-navy-700">Already have an account? <a class="link" href="login.php">Sign in</a></p>
   </div>
 </section>
 <?php include 'includes/footer.php'; ?>

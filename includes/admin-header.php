@@ -31,16 +31,16 @@ $counts = [
 <title><?= e($title) ?> · Admin · <?= e(SITE_NAME) ?></title>
 <?php $base = '../'; include __DIR__ . '/head-assets.php'; ?>
 </head>
-<body class="min-h-dvh bg-paper-100 lg:flex">
+<body class="min-h-dvh bg-cloud-100 lg:flex">
 <?php if (!empty($_SESSION['staff'])): ?>
-<aside class="bg-ink-950 text-ink-200 lg:sticky lg:top-0 lg:h-dvh lg:w-64 lg:shrink-0">
+<aside class="bg-navy-950 text-navy-200 lg:sticky lg:top-0 lg:h-dvh lg:w-64 lg:shrink-0">
   <div class="flex items-center justify-between gap-3 px-5 py-4 lg:block">
     <a href="index.php" class="flex items-center gap-2.5">
-      <span class="flex size-8 items-center justify-center rounded-md bg-saffron-400 font-display text-lg font-extrabold text-ink-950">F</span>
-      <span class="leading-none"><span class="block font-display font-bold text-paper-50">Fanel</span><span class="font-mono text-[10px] uppercase tracking-[0.2em] text-saffron-300">Back office</span></span>
+      <img src="../assets/img/fanel/logo-mark.png" alt="" class="size-9">
+      <span class="leading-none"><span class="block font-display font-bold text-cloud-50">Fanel Travels</span><span class="text-[10px] uppercase tracking-wider text-sun-300 font-semibold">Back office</span></span>
     </a>
     <details class="lg:hidden"><summary class="list-none rounded-md px-3 py-2 text-sm ring-1 ring-white/20">Menu</summary>
-      <nav class="absolute left-0 right-0 z-40 mt-3 space-y-1 bg-ink-950 p-3">
+      <nav class="absolute left-0 right-0 z-40 mt-3 space-y-1 bg-navy-950 p-3">
         <?php foreach ($admin_menu as $key => $m): ?><a href="<?= $m[0] ?>" class="block rounded-md px-3 py-2.5 hover:bg-white/10"><?= $m[1] ?></a><?php endforeach; ?>
         <form method="post" action="logout.php"><?= csrf_field() ?><button class="block w-full rounded-md px-3 py-2.5 text-left hover:bg-white/10">Log out</button></form>
       </nav>
@@ -48,16 +48,16 @@ $counts = [
   </div>
   <nav class="hidden space-y-0.5 px-3 lg:block">
     <?php foreach ($admin_menu as $key => $m): $on = $section == $key; ?>
-      <a href="<?= $m[0] ?>" class="flex items-center justify-between rounded-md px-3 py-2.5 text-sm font-medium transition <?= $on ? 'bg-white/10 text-paper-50' : 'hover:bg-white/5 hover:text-paper-50' ?>">
+      <a href="<?= $m[0] ?>" class="flex items-center justify-between rounded-md px-3 py-2.5 text-sm font-medium transition <?= $on ? 'bg-white/10 text-cloud-50' : 'hover:bg-white/5 hover:text-cloud-50' ?>">
         <?= $m[1] ?>
-        <?php if (!empty($counts[$key])): ?><span class="rounded-full bg-saffron-400 px-2 py-0.5 text-[11px] font-bold text-ink-950"><?= $counts[$key] ?></span><?php endif; ?>
+        <?php if (!empty($counts[$key])): ?><span class="rounded-full bg-sun-400 px-2 py-0.5 text-[11px] font-bold text-navy-950"><?= $counts[$key] ?></span><?php endif; ?>
       </a>
     <?php endforeach; ?>
   </nav>
   <div class="hidden border-t border-white/10 px-5 py-4 text-sm lg:absolute lg:bottom-0 lg:block lg:w-64">
-    <p class="text-paper-50"><?= e($_SESSION['staff']['name']) ?></p>
-    <p class="text-xs capitalize text-ink-400"><?= e($_SESSION['staff']['role']) ?></p>
-    <div class="mt-3 flex gap-4 text-xs"><a class="hover:text-saffron-300" href="../index.php" target="_blank">View site</a><form method="post" action="logout.php" class="inline"><?= csrf_field() ?><button class="hover:text-saffron-300">Log out</button></form></div>
+    <p class="text-cloud-50"><?= e($_SESSION['staff']['name']) ?></p>
+    <p class="text-xs capitalize text-navy-400"><?= e($_SESSION['staff']['role']) ?></p>
+    <div class="mt-3 flex gap-4 text-xs"><a class="hover:text-sun-300" href="../index.php" target="_blank">View site</a><form method="post" action="logout.php" class="inline"><?= csrf_field() ?><button class="hover:text-sun-300">Log out</button></form></div>
   </div>
 </aside>
 <?php endif; ?>

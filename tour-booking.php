@@ -80,23 +80,23 @@ include 'includes/header.php';
       <?php endif; ?>
     </div>
 
-    <article class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-ink-900/5">
-      <div class="relative h-48 bg-ink-800">
+    <article class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-navy-900/5">
+      <div class="relative h-48 bg-navy-800">
         <?php if ($b['cover_image']): ?><?= photo($b['cover_image'], $b['destination'], 'h-full w-full object-cover', false, [480, 800], '768px') ?><?php endif; ?>
-        <div class="absolute inset-0 bg-gradient-to-t from-ink-950/90 to-transparent"></div>
-        <div class="absolute bottom-0 p-6 text-paper-50">
-          <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-saffron-300"><?= e($b['destination']) ?></p>
+        <div class="absolute inset-0 bg-gradient-to-t from-navy-950/90 to-transparent"></div>
+        <div class="absolute bottom-0 p-6 text-cloud-50">
+          <p class="text-[11px] uppercase tracking-wider text-sun-300 font-semibold"><?= e($b['destination']) ?></p>
           <p class="font-display text-3xl font-extrabold"><?= e($b['title']) ?></p>
         </div>
       </div>
       <dl class="grid gap-4 p-6 sm:grid-cols-2">
-        <div><dt class="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-600">Reference</dt><dd class="mt-1 font-mono text-lg font-semibold"><?= e($ref) ?></dd></div>
-        <div><dt class="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-600">Dates</dt><dd class="mt-1 font-semibold num"><?= nice_date($b['start_date']) ?> – <?= nice_date($b['end_date']) ?></dd></div>
-        <div><dt class="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-600">Lead traveller</dt><dd class="mt-1"><?= e($b['lead_name']) ?> · <?= plural($b['travellers'], 'traveller') ?></dd></div>
-        <div><dt class="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-600">Paid</dt><dd class="mt-1 num"><b><?= naira($b['amount_paid_kobo']) ?></b> of <?= naira($b['total_kobo']) ?></dd></div>
+        <div><dt class="text-[11px] uppercase tracking-wider text-navy-600 font-semibold">Reference</dt><dd class="mt-1 font-mono text-lg font-semibold"><?= e($ref) ?></dd></div>
+        <div><dt class="text-[11px] uppercase tracking-wider text-navy-600 font-semibold">Dates</dt><dd class="mt-1 font-semibold num"><?= nice_date($b['start_date']) ?> – <?= nice_date($b['end_date']) ?></dd></div>
+        <div><dt class="text-[11px] uppercase tracking-wider text-navy-600 font-semibold">Lead traveller</dt><dd class="mt-1"><?= e($b['lead_name']) ?> · <?= plural($b['travellers'], 'traveller') ?></dd></div>
+        <div><dt class="text-[11px] uppercase tracking-wider text-navy-600 font-semibold">Paid</dt><dd class="mt-1 num"><b><?= naira($b['amount_paid_kobo']) ?></b> of <?= naira($b['total_kobo']) ?></dd></div>
       </dl>
     </article>
-    <p class="text-sm text-ink-700">Questions about your trip? <a class="link" href="contact.php">Contact us</a> and quote <?= e($ref) ?>.</p>
+    <p class="text-sm text-navy-700">Questions about your trip? <a class="link" href="contact.php">Contact us</a> and quote <?= e($ref) ?>.</p>
   </div>
 </section>
 <?php include 'includes/footer.php'; ?>

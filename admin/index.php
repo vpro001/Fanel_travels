@@ -24,10 +24,10 @@ include '../includes/admin-header.php';
 ?>
 <div class="flex flex-wrap items-end justify-between gap-3">
   <div>
-    <p class="eyebrow text-saffron-700"><?= date('l j F Y') ?></p>
+    <p class="eyebrow text-sun-700"><?= date('l j F Y') ?></p>
     <h1 class="mt-1 text-3xl font-extrabold">Good <?= date('H') < 12 ? 'morning' : (date('H') < 17 ? 'afternoon' : 'evening') ?>, <?= e(explode(' ', $_SESSION['staff']['name'])[0]) ?></h1>
   </div>
-  <?php if (FLIGHT_DATA == 'demo'): ?><span class="badge bg-saffron-300 text-ink-950">Flights in demo mode</span><?php endif; ?>
+  <?php if (FLIGHT_DATA == 'demo'): ?><span class="badge bg-sun-300 text-navy-950">Flights in demo mode</span><?php endif; ?>
 </div>
 
 <?php if ($today['hotel_attention'] > 0): ?>
@@ -50,61 +50,61 @@ include '../includes/admin-header.php';
       ['Flight fees this month', naira($today['fees_month']), 'Our service fee on ticketed flights'],
       ['Waiting for us', $today['visas_waiting'] + $today['enquiries'], plural($today['visas_waiting'], 'visa application') . ' · ' . plural($today['enquiries'], 'new enquiry', 'new enquiries')],
   ] as $card): ?>
-    <div class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-ink-900/5">
-      <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-600"><?= $card[0] ?></p>
+    <div class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-navy-900/5">
+      <p class="text-[11px] font-semibold uppercase tracking-wider text-navy-600"><?= $card[0] ?></p>
       <p class="mt-2 font-display text-3xl font-bold num"><?= $card[1] ?></p>
-      <p class="mt-1 text-xs text-ink-600"><?= $card[2] ?></p>
+      <p class="mt-1 text-xs text-navy-600"><?= $card[2] ?></p>
     </div>
   <?php endforeach; ?>
 </div>
 
 <div class="mt-8 grid gap-6 xl:grid-cols-[1.4fr_1fr]">
-  <section class="rounded-2xl bg-white shadow-sm ring-1 ring-ink-900/5">
-    <div class="flex items-center justify-between border-b border-paper-200 px-5 py-4"><h2 class="font-display text-lg font-bold">Latest flight bookings</h2><a class="text-sm link" href="bookings.php">All</a></div>
+  <section class="rounded-2xl bg-white shadow-sm ring-1 ring-navy-900/5">
+    <div class="flex items-center justify-between border-b border-cloud-200 px-5 py-4"><h2 class="font-display text-lg font-bold">Latest flight bookings</h2><a class="text-sm link" href="bookings.php">All</a></div>
     <div class="overflow-x-auto">
       <table class="w-full text-left text-sm">
-        <thead class="text-xs text-ink-600"><tr><th class="px-5 py-2 font-medium">Reference</th><th class="px-3 py-2 font-medium">Customer</th><th class="px-3 py-2 font-medium">Status</th><th class="px-5 py-2 text-right font-medium">Total</th></tr></thead>
-        <tbody class="divide-y divide-paper-200">
+        <thead class="text-xs text-navy-600"><tr><th class="px-5 py-2 font-medium">Reference</th><th class="px-3 py-2 font-medium">Customer</th><th class="px-3 py-2 font-medium">Status</th><th class="px-5 py-2 text-right font-medium">Total</th></tr></thead>
+        <tbody class="divide-y divide-cloud-200">
           <?php foreach ($flights as $b): ?>
-            <tr class="hover:bg-paper-50">
-              <td class="px-5 py-3"><a class="font-mono font-semibold hover:underline" href="booking.php?id=<?= $b['id'] ?>"><?= e($b['booking_ref']) ?></a><br><span class="text-xs text-ink-600"><?= date('j M, H:i', strtotime($b['created_at'])) ?></span></td>
+            <tr class="hover:bg-cloud-50">
+              <td class="px-5 py-3"><a class="font-mono font-semibold hover:underline" href="booking.php?id=<?= $b['id'] ?>"><?= e($b['booking_ref']) ?></a><br><span class="text-xs text-navy-600"><?= date('j M, H:i', strtotime($b['created_at'])) ?></span></td>
               <td class="px-3 py-3"><?= e($b['contact_email']) ?></td>
               <td class="px-3 py-3"><?= status_badge($b['status']) ?></td>
               <td class="px-5 py-3 text-right num"><?= naira($b['total_kobo']) ?></td>
             </tr>
           <?php endforeach; ?>
-          <?php if (!$flights): ?><tr><td colspan="4" class="px-5 py-8 text-center text-ink-600">No flight bookings yet.</td></tr><?php endif; ?>
+          <?php if (!$flights): ?><tr><td colspan="4" class="px-5 py-8 text-center text-navy-600">No flight bookings yet.</td></tr><?php endif; ?>
         </tbody>
       </table>
     </div>
   </section>
 
   <div class="space-y-6">
-    <section class="rounded-2xl bg-white shadow-sm ring-1 ring-ink-900/5">
-      <div class="flex items-center justify-between border-b border-paper-200 px-5 py-4"><h2 class="font-display text-lg font-bold">Visa applications</h2><a class="text-sm link" href="visas.php">All</a></div>
-      <ul class="divide-y divide-paper-200 text-sm">
+    <section class="rounded-2xl bg-white shadow-sm ring-1 ring-navy-900/5">
+      <div class="flex items-center justify-between border-b border-cloud-200 px-5 py-4"><h2 class="font-display text-lg font-bold">Visa applications</h2><a class="text-sm link" href="visas.php">All</a></div>
+      <ul class="divide-y divide-cloud-200 text-sm">
         <?php foreach ($visas as $v): ?>
-          <li><a href="visa.php?id=<?= $v['id'] ?>" class="flex items-center justify-between gap-3 px-5 py-3 hover:bg-paper-50"><span><b><?= e($v['full_name']) ?></b><br><span class="text-xs text-ink-600"><?= e($v['country_name']) ?> · <?= e($v['reference']) ?></span></span><?= status_badge($v['status']) ?></a></li>
+          <li><a href="visa.php?id=<?= $v['id'] ?>" class="flex items-center justify-between gap-3 px-5 py-3 hover:bg-cloud-50"><span><b><?= e($v['full_name']) ?></b><br><span class="text-xs text-navy-600"><?= e($v['country_name']) ?> · <?= e($v['reference']) ?></span></span><?= status_badge($v['status']) ?></a></li>
         <?php endforeach; ?>
-        <?php if (!$visas): ?><li class="px-5 py-6 text-center text-ink-600">No applications yet.</li><?php endif; ?>
+        <?php if (!$visas): ?><li class="px-5 py-6 text-center text-navy-600">No applications yet.</li><?php endif; ?>
       </ul>
     </section>
-    <section class="rounded-2xl bg-white shadow-sm ring-1 ring-ink-900/5">
-      <div class="flex items-center justify-between border-b border-paper-200 px-5 py-4"><h2 class="font-display text-lg font-bold">Tour bookings</h2><a class="text-sm link" href="tour-bookings.php">All</a></div>
-      <ul class="divide-y divide-paper-200 text-sm">
+    <section class="rounded-2xl bg-white shadow-sm ring-1 ring-navy-900/5">
+      <div class="flex items-center justify-between border-b border-cloud-200 px-5 py-4"><h2 class="font-display text-lg font-bold">Tour bookings</h2><a class="text-sm link" href="tour-bookings.php">All</a></div>
+      <ul class="divide-y divide-cloud-200 text-sm">
         <?php foreach ($tours as $t): ?>
-          <li class="flex items-center justify-between gap-3 px-5 py-3"><span><b><?= e($t['lead_name']) ?></b><br><span class="text-xs text-ink-600"><?= e($t['title']) ?> · <?= e($t['booking_ref']) ?></span></span><?= status_badge($t['status']) ?></li>
+          <li class="flex items-center justify-between gap-3 px-5 py-3"><span><b><?= e($t['lead_name']) ?></b><br><span class="text-xs text-navy-600"><?= e($t['title']) ?> · <?= e($t['booking_ref']) ?></span></span><?= status_badge($t['status']) ?></li>
         <?php endforeach; ?>
-        <?php if (!$tours): ?><li class="px-5 py-6 text-center text-ink-600">No tour bookings yet.</li><?php endif; ?>
+        <?php if (!$tours): ?><li class="px-5 py-6 text-center text-navy-600">No tour bookings yet.</li><?php endif; ?>
       </ul>
     </section>
-    <section class="rounded-2xl bg-white shadow-sm ring-1 ring-ink-900/5">
-      <div class="flex items-center justify-between border-b border-paper-200 px-5 py-4"><h2 class="font-display text-lg font-bold">Enquiries</h2><a class="text-sm link" href="enquiries.php">All</a></div>
-      <ul class="divide-y divide-paper-200 text-sm">
+    <section class="rounded-2xl bg-white shadow-sm ring-1 ring-navy-900/5">
+      <div class="flex items-center justify-between border-b border-cloud-200 px-5 py-4"><h2 class="font-display text-lg font-bold">Enquiries</h2><a class="text-sm link" href="enquiries.php">All</a></div>
+      <ul class="divide-y divide-cloud-200 text-sm">
         <?php foreach ($enquiries as $q): ?>
-          <li class="flex items-center justify-between gap-3 px-5 py-3"><span><b><?= e($q['name']) ?></b><br><span class="text-xs text-ink-600"><?= e($q['subject']) ?></span></span><?= status_badge($q['status']) ?></li>
+          <li class="flex items-center justify-between gap-3 px-5 py-3"><span><b><?= e($q['name']) ?></b><br><span class="text-xs text-navy-600"><?= e($q['subject']) ?></span></span><?= status_badge($q['status']) ?></li>
         <?php endforeach; ?>
-        <?php if (!$enquiries): ?><li class="px-5 py-6 text-center text-ink-600">No enquiries yet.</li><?php endif; ?>
+        <?php if (!$enquiries): ?><li class="px-5 py-6 text-center text-navy-600">No enquiries yet.</li><?php endif; ?>
       </ul>
     </section>
   </div>

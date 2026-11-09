@@ -75,32 +75,32 @@ include 'includes/header.php';
       <?php endif; ?>
     </div>
 
-    <article class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-ink-900/5">
-      <div class="relative h-52 bg-ink-800">
+    <article class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-navy-900/5">
+      <div class="relative h-52 bg-navy-800">
         <?php if ($hotel['photo']): ?><img src="<?= e($hotel['photo']) ?>" alt="" class="h-full w-full object-cover"><?php endif; ?>
-        <div class="absolute inset-0 bg-gradient-to-t from-ink-950/90 to-transparent"></div>
-        <div class="absolute bottom-0 p-6 text-paper-50">
-          <p class="text-saffron-300"><?= str_repeat('★', (int) $hotel['rating']) ?></p>
+        <div class="absolute inset-0 bg-gradient-to-t from-navy-950/90 to-transparent"></div>
+        <div class="absolute bottom-0 p-6 text-cloud-50">
+          <p class="text-sun-300"><?= str_repeat('★', (int) $hotel['rating']) ?></p>
           <p class="font-display text-3xl font-extrabold"><?= e($hotel['name']) ?></p>
-          <p class="text-sm text-ink-200"><?= e($hotel['address']) ?></p>
+          <p class="text-sm text-navy-200"><?= e($hotel['address']) ?></p>
         </div>
       </div>
       <dl class="grid gap-5 p-6 sm:grid-cols-3">
-        <div><dt class="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-600">Hotel confirmation</dt><dd class="mt-1 font-mono text-xl font-bold tracking-wider"><?= e($b['hotel_reference'] ?: '—') ?></dd></div>
-        <div><dt class="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-600">Our reference</dt><dd class="mt-1 font-mono text-lg font-semibold"><?= e($ref) ?></dd></div>
-        <div><dt class="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-600">Paid</dt><dd class="mt-1 font-semibold num"><?= in_array($b['status'], ['pending_payment', 'payment_failed', 'expired']) ? '—' : naira($b['total_kobo']) ?></dd></div>
-        <div><dt class="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-600">Check-in</dt><dd class="mt-1 num"><?= date('D j M Y', strtotime($b['check_in_date'])) ?></dd></div>
-        <div><dt class="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-600">Check-out</dt><dd class="mt-1 num"><?= date('D j M Y', strtotime($b['check_out_date'])) ?></dd></div>
-        <div><dt class="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-600">Stay</dt><dd class="mt-1"><?= plural($nights, 'night') ?>, <?= plural($b['rooms'], 'room') ?></dd></div>
-        <div class="sm:col-span-3"><dt class="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-600">Room</dt><dd class="mt-1"><?= e($hotel['room']) ?> · <?= e(board_name($hotel['board'])) ?> · <?= e($hotel['cancellation']) ?></dd></div>
-        <div class="sm:col-span-3"><dt class="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-600">Guests</dt>
+        <div><dt class="text-[11px] uppercase tracking-wider text-navy-600 font-semibold">Hotel confirmation</dt><dd class="mt-1 font-mono text-xl font-bold tracking-wider"><?= e($b['hotel_reference'] ?: '—') ?></dd></div>
+        <div><dt class="text-[11px] uppercase tracking-wider text-navy-600 font-semibold">Our reference</dt><dd class="mt-1 font-mono text-lg font-semibold"><?= e($ref) ?></dd></div>
+        <div><dt class="text-[11px] uppercase tracking-wider text-navy-600 font-semibold">Paid</dt><dd class="mt-1 font-semibold num"><?= in_array($b['status'], ['pending_payment', 'payment_failed', 'expired']) ? '—' : naira($b['total_kobo']) ?></dd></div>
+        <div><dt class="text-[11px] uppercase tracking-wider text-navy-600 font-semibold">Check-in</dt><dd class="mt-1 num"><?= date('D j M Y', strtotime($b['check_in_date'])) ?></dd></div>
+        <div><dt class="text-[11px] uppercase tracking-wider text-navy-600 font-semibold">Check-out</dt><dd class="mt-1 num"><?= date('D j M Y', strtotime($b['check_out_date'])) ?></dd></div>
+        <div><dt class="text-[11px] uppercase tracking-wider text-navy-600 font-semibold">Stay</dt><dd class="mt-1"><?= plural($nights, 'night') ?>, <?= plural($b['rooms'], 'room') ?></dd></div>
+        <div class="sm:col-span-3"><dt class="text-[11px] uppercase tracking-wider text-navy-600 font-semibold">Room</dt><dd class="mt-1"><?= e($hotel['room']) ?> · <?= e(board_name($hotel['board'])) ?> · <?= e($hotel['cancellation']) ?></dd></div>
+        <div class="sm:col-span-3"><dt class="text-[11px] uppercase tracking-wider text-navy-600 font-semibold">Guests</dt>
           <dd class="mt-1"><?= e(implode(', ', array_map(function ($g) { return $g['given_name'] . ' ' . strtoupper($g['family_name']); }, $guests['names']))) ?></dd></div>
       </dl>
       <?php if ($b['status'] == 'confirmed'): ?>
-        <div class="border-t border-paper-200 px-6 py-4 print:hidden"><button onclick="window.print()" class="btn btn-dark"><?= icon('document', 'size-5') ?> Print confirmation</button></div>
+        <div class="border-t border-cloud-200 px-6 py-4 print:hidden"><button onclick="window.print()" class="btn btn-dark"><?= icon('document', 'size-5') ?> Print confirmation</button></div>
       <?php endif; ?>
     </article>
-    <p class="text-sm text-ink-700 print:hidden">Questions about your stay? <a class="link" href="contact.php">Contact us</a> and quote <?= e($ref) ?>.</p>
+    <p class="text-sm text-navy-700 print:hidden">Questions about your stay? <a class="link" href="contact.php">Contact us</a> and quote <?= e($ref) ?>.</p>
   </div>
 </section>
 <?php include 'includes/footer.php'; ?>

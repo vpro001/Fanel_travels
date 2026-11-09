@@ -75,18 +75,18 @@ $title = $tour['title'];
 $description = $tour['summary'];
 $page = 'tours';
 include 'includes/header.php';
-$field = 'mt-1 block w-full rounded-lg border-0 bg-paper-50 px-3.5 py-3 text-base text-ink-900 ring-1 ring-ink-300 focus:outline-none focus:ring-2 focus:ring-saffron-500';
-$label = 'block font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-600';
+$field = 'mt-1 block w-full rounded-lg border-0 bg-cloud-50 px-3.5 py-3 text-base text-navy-900 ring-1 ring-navy-300 focus:outline-none focus:ring-2 focus:ring-sun-500';
+$label = 'block font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-navy-600';
 ?>
 
-<section class="relative isolate overflow-hidden bg-ink-950 text-paper-50">
+<section class="relative isolate overflow-hidden bg-navy-950 text-cloud-50">
   <?php if ($tour['cover_image']): ?><?= photo($tour['cover_image'], $tour['destination'], 'hero-photo absolute inset-0 -z-20 h-full w-full object-cover', false, [480, 800]) ?><?php endif; ?>
-  <div class="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(10,20,32,0.3)_0%,rgba(10,20,32,0.6)_50%,#0a1420_100%)]"></div>
+  <div class="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(6,20,46,0.3)_0%,rgba(6,20,46,0.6)_50%,#0a1420_100%)]"></div>
   <div class="container-page pt-28 pb-12 sm:pt-48 sm:pb-16">
-    <a href="tours.php" class="font-mono text-xs uppercase tracking-[0.2em] text-ink-200 hover:text-saffron-300">← All holidays</a>
-    <p class="mt-4 eyebrow text-saffron-300"><?= e($tour['destination']) ?> · <?= plural($tour['duration_days'], 'day') ?> · <?= plural($tour['duration_nights'], 'night') ?></p>
+    <a href="tours.php" class="text-xs uppercase tracking-wider text-navy-200 hover:text-sun-300 font-semibold">← All holidays</a>
+    <p class="mt-4 eyebrow text-sun-300"><?= e($tour['destination']) ?> · <?= plural($tour['duration_days'], 'day') ?> · <?= plural($tour['duration_nights'], 'night') ?></p>
     <h1 class="mt-3 max-w-3xl text-5xl font-extrabold leading-[0.95] tracking-[-0.035em] sm:text-7xl"><?= e($tour['title']) ?></h1>
-    <p class="mt-4 max-w-2xl text-lg text-ink-100"><?= e($tour['summary']) ?></p>
+    <p class="mt-4 max-w-2xl text-lg text-navy-100"><?= e($tour['summary']) ?></p>
   </div>
 </section>
 
@@ -94,7 +94,7 @@ $label = 'block font-mono text-[11px] font-semibold uppercase tracking-[0.16em] 
   <div class="grid gap-10 lg:grid-cols-[1.5fr_1fr]">
     <div class="space-y-12">
       <div>
-        <p class="text-lg leading-relaxed text-ink-800"><?= nl2br(e($tour['description'])) ?></p>
+        <p class="text-lg leading-relaxed text-navy-800"><?= nl2br(e($tour['description'])) ?></p>
       </div>
 
       <?php if ($itinerary): ?>
@@ -102,11 +102,11 @@ $label = 'block font-mono text-[11px] font-semibold uppercase tracking-[0.16em] 
         <h2 class="text-3xl font-extrabold">Day by day</h2>
         <ol class="mt-6 space-y-0">
           <?php foreach ($itinerary as $day): ?>
-            <li class="grid grid-cols-[4rem_1fr] gap-4 border-t border-paper-200 py-5">
-              <p class="font-mono text-sm font-semibold text-saffron-700">Day <?= (int) $day['day'] ?></p>
+            <li class="grid grid-cols-[4rem_1fr] gap-4 border-t border-cloud-200 py-5">
+              <p class="font-mono text-sm font-semibold text-sun-700">Day <?= (int) $day['day'] ?></p>
               <div>
                 <p class="font-display text-xl font-bold"><?= e($day['title']) ?></p>
-                <p class="mt-1 text-ink-700"><?= e($day['body']) ?></p>
+                <p class="mt-1 text-navy-700"><?= e($day['body']) ?></p>
               </div>
             </li>
           <?php endforeach; ?>
@@ -123,20 +123,20 @@ $label = 'block font-mono text-[11px] font-semibold uppercase tracking-[0.16em] 
             <?php endforeach; ?>
           </ul>
         </div>
-        <div class="rounded-2xl bg-paper-100 p-6">
+        <div class="rounded-2xl bg-cloud-100 p-6">
           <p class="font-display text-xl font-bold">Not included</p>
-          <ul class="mt-3 space-y-2 text-sm text-ink-700">
+          <ul class="mt-3 space-y-2 text-sm text-navy-700">
             <?php foreach (array_filter(preg_split('/\r?\n/', (string) $tour['exclusions'])) as $line): ?>
-              <li class="flex gap-2"><span class="mt-2 size-1.5 shrink-0 rounded-full bg-ink-400"></span> <?= e($line) ?></li>
+              <li class="flex gap-2"><span class="mt-2 size-1.5 shrink-0 rounded-full bg-navy-400"></span> <?= e($line) ?></li>
             <?php endforeach; ?>
           </ul>
         </div>
       </div>
 
       <!-- Questions -->
-      <div id="ask" class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-ink-900/5">
+      <div id="ask" class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-navy-900/5">
         <h2 class="text-2xl font-extrabold">Have a question?</h2>
-        <p class="mt-1 text-ink-700">Different dates, a private group, or something you'd like to change? Ask and we'll reply by email.</p>
+        <p class="mt-1 text-navy-700">Different dates, a private group, or something you'd like to change? Ask and we'll reply by email.</p>
         <?php if (isset($errors['enquiry'])): ?><p class="mt-3 rounded-lg bg-bad-100 p-3 text-sm text-bad-700"><?= e($errors['enquiry']) ?></p><?php endif; ?>
         <form method="post" action="tour.php?slug=<?= e($tour['slug']) ?>#ask" class="mt-4 grid gap-3 sm:grid-cols-2">
           <?= csrf_field() ?><input type="hidden" name="action" value="enquiry">
@@ -151,17 +151,17 @@ $label = 'block font-mono text-[11px] font-semibold uppercase tracking-[0.16em] 
 
     <!-- Booking -->
     <aside class="lg:sticky lg:top-24 lg:self-start">
-      <form method="post" action="tour.php?slug=<?= e($tour['slug']) ?>#book" id="book" class="overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-ink-900/5" novalidate>
+      <form method="post" action="tour.php?slug=<?= e($tour['slug']) ?>#book" id="book" class="overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-navy-900/5" novalidate>
         <?= csrf_field() ?>
-        <div class="bg-ink-950 p-6 text-paper-50">
-          <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-ink-300">From</p>
+        <div class="bg-navy-950 p-6 text-cloud-50">
+          <p class="text-[11px] uppercase tracking-wider text-navy-300 font-semibold">From</p>
           <p class="font-display text-4xl font-bold num"><?= naira($tour['price_kobo']) ?></p>
-          <p class="text-sm text-ink-300"><?= e($tour['price_basis']) ?></p>
+          <p class="text-sm text-navy-300"><?= e($tour['price_basis']) ?></p>
         </div>
         <div class="space-y-4 p-6">
           <?php if (isset($errors['form'])): ?><p class="rounded-lg bg-bad-100 p-3 text-sm text-bad-700"><?= e($errors['form']) ?></p><?php endif; ?>
           <?php if (!$departures): ?>
-            <p class="text-ink-700">New dates are coming soon. <a class="link" href="#ask">Ask us</a> to be the first to know.</p>
+            <p class="text-navy-700">New dates are coming soon. <a class="link" href="#ask">Ask us</a> to be the first to know.</p>
           <?php else: ?>
             <fieldset>
               <legend class="<?= $label ?>">Departure date</legend>
@@ -169,7 +169,7 @@ $label = 'block font-mono text-[11px] font-semibold uppercase tracking-[0.16em] 
                 <?php foreach ($departures as $d): $left = $d['seats_total'] - $d['seats_booked']; $price = $d['price_kobo_override'] ?: $tour['price_kobo']; ?>
                   <label class="relative block">
                     <input type="radio" name="departure" value="<?= $d['id'] ?>" data-price="<?= $price ?>" class="peer sr-only" <?= $left < 1 ? 'disabled' : '' ?> <?= $f['departure'] == $d['id'] ? 'checked' : '' ?>>
-                    <span class="flex items-center justify-between rounded-lg px-4 py-3 ring-1 ring-ink-300 peer-checked:bg-ink-950 peer-checked:text-paper-50 peer-checked:ring-ink-950 peer-disabled:opacity-50 peer-focus-visible:outline peer-focus-visible:outline-3 peer-focus-visible:outline-saffron-500">
+                    <span class="flex items-center justify-between rounded-lg px-4 py-3 ring-1 ring-navy-300 peer-checked:bg-navy-950 peer-checked:text-cloud-50 peer-checked:ring-navy-950 peer-disabled:opacity-50 peer-focus-visible:outline peer-focus-visible:outline-3 peer-focus-visible:outline-sun-500">
                       <span class="font-semibold num"><?= date('j M', strtotime($d['start_date'])) ?> – <?= date('j M Y', strtotime($d['end_date'])) ?></span>
                       <span class="text-xs <?= $left <= 4 ? 'font-semibold' : 'opacity-75' ?>"><?= $left < 1 ? 'Full' : plural($left, 'place') . ' left' ?></span>
                     </span>
@@ -191,25 +191,25 @@ $label = 'block font-mono text-[11px] font-semibold uppercase tracking-[0.16em] 
               <div class="mt-2 grid grid-cols-2 gap-2">
                 <?php foreach (['deposit' => $tour['deposit_pct'] . '% deposit now', 'full' => 'Pay in full'] as $k => $text): ?>
                   <label class="relative"><input type="radio" name="option" value="<?= $k ?>" class="peer sr-only" <?= $f['option'] == $k ? 'checked' : '' ?>>
-                    <span class="block rounded-lg px-3 py-3 text-center text-sm font-semibold ring-1 ring-ink-300 peer-checked:bg-ink-950 peer-checked:text-paper-50 peer-checked:ring-ink-950"><?= $text ?></span></label>
+                    <span class="block rounded-lg px-3 py-3 text-center text-sm font-semibold ring-1 ring-navy-300 peer-checked:bg-navy-950 peer-checked:text-cloud-50 peer-checked:ring-navy-950"><?= $text ?></span></label>
                 <?php endforeach; ?>
               </div>
             </fieldset>
             <?php else: ?><input type="hidden" name="option" value="full"><?php endif; ?>
 
-            <div class="space-y-3 border-t border-dashed border-paper-300 pt-4">
+            <div class="space-y-3 border-t border-dashed border-cloud-300 pt-4">
               <div><label class="<?= $label ?>" for="name">Lead traveller</label><input id="name" name="name" autocomplete="name" class="<?= $field ?>" value="<?= e($f['name']) ?>"><?= isset($errors['name']) ? '<p class="field-error">' . e($errors['name']) . '</p>' : '' ?></div>
               <div><label class="<?= $label ?>" for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" class="<?= $field ?>" value="<?= e($f['email']) ?>"><?= isset($errors['email']) ? '<p class="field-error">' . e($errors['email']) . '</p>' : '' ?></div>
               <div><label class="<?= $label ?>" for="phone">Phone</label><input id="phone" name="phone" type="tel" autocomplete="tel" class="<?= $field ?> num" value="<?= e($f['phone']) ?>"><?= isset($errors['phone']) ? '<p class="field-error">' . e($errors['phone']) . '</p>' : '' ?></div>
               <div><label class="<?= $label ?>" for="notes">Anything we should know? <span class="normal-case tracking-normal font-normal">(optional)</span></label><textarea id="notes" name="notes" rows="2" class="<?= $field ?>"><?= e($f['notes']) ?></textarea></div>
             </div>
 
-            <div class="rounded-xl bg-paper-100 p-4 text-sm">
-              <div class="flex justify-between"><span class="text-ink-700">Total</span><b class="num" id="total">–</b></div>
+            <div class="rounded-xl bg-cloud-100 p-4 text-sm">
+              <div class="flex justify-between"><span class="text-navy-700">Total</span><b class="num" id="total">–</b></div>
               <div class="mt-1 flex justify-between font-semibold"><span>To pay now</span><span class="num" id="now">–</span></div>
             </div>
             <button class="btn btn-primary w-full py-4 text-base"><?= icon('card', 'size-5') ?> Book and pay securely</button>
-            <p class="text-center text-xs text-ink-600">Card, bank transfer or USSD through Paystack.</p>
+            <p class="text-center text-xs text-navy-600">Card, bank transfer or USSD through Paystack.</p>
           <?php endif; ?>
         </div>
       </form>

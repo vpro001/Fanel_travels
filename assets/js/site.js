@@ -20,63 +20,30 @@ if ('IntersectionObserver' in window && !reduceMotion) {
   revealItems.forEach(function (el) { el.classList.add('is-visible'); });
 }
 
-// ---------- Departures board: letters flip into place like an airport board ----------
-var board = document.getElementById('departures');
-if (board) {
-  var letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-
-  // Turn each word on the board into separate letter tiles
-  board.querySelectorAll('[data-flap]').forEach(function (el) {
-    var text = el.textContent.trim();
-    el.setAttribute('aria-label', text);   // screen readers read the word, not the tiles
-    el.textContent = '';
-    text.split('').forEach(function (ch) {
-      var tile = document.createElement('span');
-      tile.className = 'flap';
-      tile.setAttribute('aria-hidden', 'true');
-      tile.dataset.final = ch;
-      tile.textContent = ch;   // start readable; the animation scrambles and settles it
-      el.appendChild(tile);
+// ---------- Poster viewer: tap a flyer to see it large ----------
+var viewer = document.getElementById('poster-viewer');
+if (viewer && viewer.showModal) {
+  document.querySelectorAll('[data-poster]').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      var img = viewer.querySelector('img');
+      img.src = link.getAttribute('href');
+      img.alt = link.dataset.caption;
+      viewer.querySelector('[data-caption]').textContent = link.dataset.caption;
+      viewer.querySelector('[data-link]').href = link.dataset.link;
+      viewer.showModal();
     });
   });
-
-  function runBoard() {
-    var tiles = board.querySelectorAll('.flap');
-    tiles.forEach(function (tile, i) {
-      var flips = 4 + Math.floor(Math.random() * 8) + Math.floor(i / 12);
-      var count = 0;
-      var timer = setInterval(function () {
-        count++;
-        if (count >= flips || tile.dataset.final === ' ') {
-          tile.textContent = tile.dataset.final;
-          clearInterval(timer);
-        } else {
-          tile.textContent = letters[Math.floor(Math.random() * letters.length)];
-        }
-        tile.classList.remove('flip');
-        void tile.offsetWidth;   // restart the flip animation
-        tile.classList.add('flip');
-      }, 70);
-    });
-  }
-
-  if (!reduceMotion && 'IntersectionObserver' in window) {
-    var boardWatcher = new IntersectionObserver(function (entries) {
-      if (entries[0].isIntersecting) {
-        runBoard();
-        boardWatcher.disconnect();
-      }
-    }, { threshold: 0.3 });
-    boardWatcher.observe(board);
-  }
-
-  // Live Lagos time on the board (Lagos is UTC+1 all year)
-  var clock = document.getElementById('lagos-time');
-  if (clock) {
-    var showTime = function () {
-      clock.textContent = new Date().toLocaleTimeString('en-GB', { timeZone: 'Africa/Lagos', hour: '2-digit', minute: '2-digit' });
-    };
-    showTime();
-    setInterval(showTime, 15000);
-  }
+  // Clicking the dark area around the poster closes it
+  viewer.addEventListener('click', function (e) {
+    if (e.target === viewer) viewer.close();
+  });
 }
+
+// ---------- Arrow buttons that scroll a poster row ----------
+document.querySelectorAll('[data-scroll]').forEach(function (button) {
+  button.addEventListener('click', function () {
+    var row = document.querySelector(button.dataset.scroll);
+    row.scrollBy({ left: button.dataset.dir * row.clientWidth * 0.8, behavior: reduceMotion ? 'auto' : 'smooth' });
+  });
+});

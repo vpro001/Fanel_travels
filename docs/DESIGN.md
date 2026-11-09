@@ -1,110 +1,60 @@
 # Design system — Fanel Travels LTD
 
-Tokens live in one place: the `<style type="text/tailwindcss">` block in `includes/header.php` (Tailwind v4 `@theme`). This file explains them. If you change a colour there, change it in `bin/contrast.php` too and re-run `php bin/contrast.php`.
+Version 3 (2026-11-09). Built from the Fanel logo: a blue globe with an orange swoosh and the line "Connecting You to the World".
 
 ## Point of view
 
-A Lagos travel desk, not a template. The look is deep ink navy, warm paper backgrounds, and one saffron accent. The search box is the hero, and there are no stock beach photos. Prices are set in tabular figures so columns of fares line up. The copy is plain and warm, the way a good agent talks on the phone.
-
-**Never:** purple or indigo gradients, glassmorphism, blobs, emoji as icons, three identical feature cards, `rounded-3xl`, grey-on-grey text, invented counters ("10,000+ happy travellers"), fake reviews.
+A bright, friendly Port Harcourt agency rather than an airline-terminal look. Royal navy and globe blue carry trust; the orange swoosh marks the one thing to do next. Shapes are soft (pill buttons, rounded cards), and real people and real flyers from the Fanel visa desk do the selling.
 
 ## Colour tokens
 
-| Token | Hex | Use |
-|---|---|---|
-| `ink-950` | `#0a1420` | Footer background, text on saffron |
-| `ink-900` | `#0f1f33` | Header/hero background, body text, dark buttons |
-| `ink-800` | `#183049` | Hover on dark, links |
-| `ink-700` | `#24425f` | Secondary text |
-| `ink-600` | `#36597a` | Labels, captions |
-| `ink-500` | `#557595` | Placeholders, input borders |
-| `ink-300` | `#afc0d1` | Muted text **on dark only**; dividers |
-| `ink-200` | `#d3dde7` | Secondary text on dark |
-| `ink-100` | `#e9eef3` | Neutral badge, skeletons, hover fills |
-| `saffron-300` | `#f6c873` | Accent on dark, primary hover, demo banner |
-| `saffron-400` | `#f0b048` | **Primary buttons** (with `ink-950` text) |
-| `saffron-500` | `#e39a26` | Focus ring, link underline |
-| `saffron-700` | `#94600f` | Eyebrow text on light backgrounds |
-| `paper-50` | `#fcfaf6` | Page background |
-| `paper-100` | `#f6f1e7` | Alternate section background |
-| `paper-200` | `#ece3d2` | Borders on paper |
-| `ok-700` / `ok-100` | `#1f6b47` / `#dcefe4` | Confirmed, paid |
-| `warn-700` / `warn-100` | `#8c5b0c` / `#fbecd0` | Pending, awaiting action |
-| `bad-700` / `bad-100` | `#a53a26` / `#f8e0da` | Failed, refused, errors |
+Defined in `includes/head-assets.php` (`@theme`).
 
-Rules: saffron never carries text on a light background except `saffron-700`. Secondary text on light backgrounds uses `ink-600` or darker; `ink-500` is for placeholders only.
+| Token | Use |
+|---|---|
+| `navy-50…950` | Text (`navy-900`), muted text (`navy-500/600`), header (`navy-900`), footer (`navy-950`), dark sections |
+| `brand-50…800` | Globe blue: primary buttons (`brand-600`), links (`brand-700`), active tabs, focus rings (`brand-500`) |
+| `sun-50…800` | Logo orange: the main call to action (`btn-accent`, `sun-500` with `navy-950` text), the top contact bar, eyebrow dots, highlights. Orange text on white uses `sun-700` for contrast |
+| `cloud-50…300` | Cool light backgrounds and borders |
+| `ok` / `warn` / `bad` | Status only, always with text |
 
-### Contrast (WCAG AA), from `php bin/contrast.php`, 2026-11-07
-
-All 26 pairs pass. Lowest results: `ink-500` placeholder on white 4.81:1, `warn-700` on `warn-100` 4.98:1, `saffron-700` on paper 5.11:1. Body text is 15.94:1 and the primary button is 9.71:1. Input borders (`ink-500`) are 4.81:1, which meets the 3:1 needed for form controls.
+Never put white text on `sun-500` (contrast too low); use `navy-950`.
 
 ## Typography
 
-- **Display:** Bricolage Grotesque (variable 200–800), `font-display`. Used for headings and big prices.
-- **Text:** IBM Plex Sans 400/500/600/700, `font-sans` (the default).
-- Both are self-hosted from `public/assets/fonts/` under the SIL OFL 1.1 licence, which is included in that folder. Latin-ext files load only when a page contains ₦.
-- **Prices, times, references:** add `num` (tabular figures).
-
-| Role | Classes |
-|---|---|
-| Hero heading | `text-3xl sm:text-5xl font-bold leading-tight` |
-| Page heading (h1) | `text-2xl sm:text-3xl font-bold` |
-| Section heading (h2) | `text-xl sm:text-2xl font-bold` |
-| Card title (h3) | `text-lg font-semibold` |
-| Body | `text-base` (16px; never smaller for paragraphs) |
-| Small / meta | `text-sm` |
-| Label / eyebrow | `text-xs font-semibold uppercase tracking-wide` |
-| Big price | `font-display text-2xl font-semibold num` |
+- Headings: **Outfit** (variable, self-hosted). It has no ₦ glyph, so the font stack falls back to Plus Jakarta Sans for that one character.
+- Body, prices and forms: **Plus Jakarta Sans** (variable, latin + latin-ext; latin-ext contains ₦).
+- Booking references only: IBM Plex Mono.
+- Eyebrow labels: `.eyebrow` (small, bold, uppercase, with an orange dot).
+- `.swoosh` draws the logo's orange curve under a highlighted word (used once, in the homepage headline).
 
 ## Spacing and layout
 
-- Tailwind's 4px scale. Page gutter: `px-4` (16px) on phones, `sm:px-6`. Content width: `max-w-6xl` (`.container-page`).
-- Sections: `py-10 sm:py-14`. Card padding: `p-4 sm:p-5`. Gap between cards: `gap-4`.
-- Radius: `rounded-md` for controls, `rounded-lg` for cards. Nothing larger.
-- Mobile first. Check every page at 360px. Touch targets are at least 44px tall: buttons are `py-2.5` plus line height, and fields are `py-2.5`.
+- `.container-page`: `max-w-7xl`, gutters `px-4 / sm:px-6 / lg:px-8`.
+- Homepage sections: `py-20 sm:py-28`. Inner pages: `py-10 sm:py-14`.
+- Radius: `rounded-full` buttons and chips, `rounded-xl` fields, `rounded-2xl` cards, `rounded-3xl` feature panels.
+- Mobile first. Check every page at 360px; touch targets at least 44px.
 
 ## Components
 
-Each one is a set of Tailwind classes, defined in `includes/header.php` (`@layer components`) or written inline. Combine base and variant classes, e.g. `class="btn btn-primary"`. Tailwind v4 cannot `@apply` one custom class inside another.
-
 | Component | Classes / file | Notes |
 |---|---|---|
-| Button | `btn` + `btn-primary` / `btn-dark` / `btn-ghost` | One primary action per view |
-| Text input | `field-label` on the label, `field` on the input | Errors: `field-error` text under the field, and `aria-invalid="true"` |
-| Search tabs | `includes/search-box.php` + `assets/js/search.js` | Real `role="tablist"`, arrow-key navigation, each tab is its own GET form |
-| Airport autocomplete | `data-airport` inputs, `api/airport-suggest.php` | Shows city, airport name, IATA code; keyboard navigable; hidden input holds the code |
-| Passenger/cabin picker | `<details>` popover in the search box | Adults 1–9, children 0–8, infants ≤ adults |
-| Flight card | Phase 2 (`flight-results.php`) | Airline, times, duration, stops, bags, ₦ total |
-| Hotel card | Phase 5 | Photo, name, rating, nightly + total ₦ |
-| Status badge | `badge` + `bg-ok-100 text-ok-700` etc. | Text always states the status; colour is never the only signal |
-| Stepper | Phase 3 booking steps | `ol` with `aria-current="step"` |
-| Table | Admin, Phase 4 | `text-sm`, zebra `odd:bg-paper-50`, stacks into cards under `sm` |
-| Card | `card` | White, `rounded-lg`, hairline ring |
-| WhatsApp button | `includes/footer.php` | Fixed bottom-right, `wa.me` link, labelled |
+| Button | `btn` + `btn-accent` (orange, main action) / `btn-primary` (blue) / `btn-dark` / `btn-ghost` | One orange action per view |
+| Text input | `field-label` + `field` | Errors: `field-error` and `aria-invalid="true"` |
+| Card | `card` | White, soft navy shadow, hairline ring |
+| Header | `includes/header.php` | Orange contact bar (address, hours, phone, email) + navy bar with the logo and pill nav |
+| Footer | `includes/footer.php` | Navy-950 with an orange swoosh edge, full logo, services, contact |
+| Search box | `includes/search-box.php` + `assets/js/search.js` | White rounded card, pill tabs with icons, soft field boxes |
+| Poster gallery | `includes/posters.php` (`poster_card()`, `poster_viewer()`) | Sideways-scrolling row of Fanel flyers (`.snap-row .snap-row-page`); tapping opens a `<dialog>` viewer (`assets/js/site.js`) |
+| Floating contact | `includes/footer.php` | WhatsApp when the number is set in admin, otherwise "Call us" |
+| Status badge | `badge` + `bg-ok-100 text-ok-700` etc. | Text always states the status |
 
 ## Icons
 
-Inline SVG from `public/assets/icons/*.svg` via `icon('name')`, 24×24, `stroke="currentColor"`. No icon fonts and no emoji.
+Inline SVG from `assets/icons/*.svg` via `icon('name')`, 24×24, `stroke="currentColor"`. Added in v3: `bed`, `palm`, `passport`, `shield`, `compass`, `close`.
 
 ## Images
 
-No stock photos in the hero. Tour cards use the package's own photo when the agency uploads one. Until then they use a typographic panel (destination name on an ink background). Real photos must be WebP, at most 1200px wide, and `loading="lazy"` below the fold.
-
-## Visual language (v2, 2026-11-07)
-
-The brand borrows from real travel objects instead of generic web patterns:
-
-| Motif | Where | How it's built |
-|---|---|---|
-| **Boarding pass** | The search box on every page | `includes/search-box.php`: a white ticket with notches cut where it "tears" (CSS mask on a background layer, so dropdowns aren't clipped), a dashed perforation, a stub holding the main button and a decorative barcode. Fields are "cells" with tiny mono labels. |
-| **Split-flap departures board** | Homepage, popular routes | `#departures` in `index.php` + `assets/js/site.js`. Letters flip into place when the board scrolls into view. Distances are real great-circle distances from the airport coordinates. Screen readers get the word via `aria-label`; the tiles are `aria-hidden`. |
-| **Passport stamp** | Homepage visa section | Inline SVG with text on a circular path ("Fanel Visa Desk · Port Harcourt"). Decorative, `aria-hidden`. |
-| **Editorial numbering** | Destination cards, visa steps, hero list | `01`, `02`… in IBM Plex Mono. |
-
-**Type:** Bricolage Grotesque ExtraBold at large sizes with tight tracking (`tracking-[-0.035em]`, `leading-[0.95]`) for headlines; IBM Plex Sans for text; **IBM Plex Mono** (500/600, self-hosted, OFL) for eyebrows, codes, labels and the board (`.eyebrow`, `font-mono`).
-
-**Photos:** full-bleed heroes with a dark gradient (stronger on phones for contrast), a slow 24-second zoom (`.hero-photo`), and image cards that scale up slightly on hover.
-
-**Motion:** sections fade and rise as they scroll in (`.reveal`, optional `--delay` for stagger). Everything is switched off under `prefers-reduced-motion`. A 4-second safety net shows all sections even if the scroll observer never fires.
-
-**Layout:** wider container (`max-w-7xl`), asymmetric 12-column grids (7/5, then 4/4/4), generous section spacing (`py-16 sm:py-24`).
+- `assets/img/fanel/`: supplied by Fanel. `21.jpeg` is the logo; `logo-header.webp`, `logo-900.webp`, `logo-mark.png` and `favicon.ico` are cut out from it on a transparent background (they need a dark background behind them). The visa and holiday flyers have `-480/-800.webp` versions named by destination.
+- **Do not use `03.jpeg` (Ethiopia) or `06.jpeg` (South Africa)**: they carry another agency's name ("The Flyzone Tourism") and its office addresses. `05.jpeg` duplicates `04.jpeg`.
+- Other photos in `assets/img/` are Unsplash (see `IMAGE_CREDITS.md`). WebP, two widths, `loading="lazy"` below the fold.

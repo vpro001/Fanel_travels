@@ -8,20 +8,20 @@ $title = $search['error'] ? 'Hotels' : 'Hotels in ' . $search['city'];
 $page = 'hotels';
 include 'includes/header.php';
 ?>
-<section class="relative isolate overflow-hidden bg-ink-950 text-paper-50">
+<section class="relative isolate overflow-hidden bg-navy-950 text-cloud-50">
   <div class="absolute inset-0 -z-10 opacity-20 [background-image:radial-gradient(circle_at_1px_1px,#afc0d1_1px,transparent_0)] [background-size:22px_22px]" aria-hidden="true"></div>
   <div class="container-page py-8 sm:py-10">
     <?php if ($search['error']): ?>
       <h1 class="text-3xl font-extrabold">Let's fix your search</h1>
-      <p class="mt-1 text-ink-200"><?= e($search['error']) ?></p>
+      <p class="mt-1 text-navy-200"><?= e($search['error']) ?></p>
     <?php else: ?>
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p class="eyebrow text-saffron-300">Hotels · <?= plural($search['nights'], 'night') ?></p>
+          <p class="eyebrow text-sun-300">Hotels · <?= plural($search['nights'], 'night') ?></p>
           <h1 class="mt-2 text-3xl font-extrabold tracking-[-0.03em] sm:text-5xl"><?= e($search['city']) ?></h1>
-          <p class="mt-2 text-sm text-ink-200"><?= date('D j M', strtotime($search['check_in'])) ?> – <?= date('D j M Y', strtotime($search['check_out'])) ?> · <?= plural($search['rooms'], 'room') ?> · <?= plural($search['adults'], 'adult') ?><?= $search['children'] ? ', ' . plural($search['children'], 'child', 'children') : '' ?></p>
+          <p class="mt-2 text-sm text-navy-200"><?= date('D j M', strtotime($search['check_in'])) ?> – <?= date('D j M Y', strtotime($search['check_out'])) ?> · <?= plural($search['rooms'], 'room') ?> · <?= plural($search['adults'], 'adult') ?><?= $search['children'] ? ', ' . plural($search['children'], 'child', 'children') : '' ?></p>
         </div>
-        <button type="button" onclick="var b=document.getElementById('search-again'); b.hidden=!b.hidden" class="btn ring-1 ring-inset ring-ink-500 hover:bg-ink-800">Change search</button>
+        <button type="button" onclick="var b=document.getElementById('search-again'); b.hidden=!b.hidden" class="btn ring-1 ring-inset ring-navy-500 hover:bg-navy-800">Change search</button>
       </div>
     <?php endif; ?>
     <div id="search-again" class="mt-6" <?= $search['error'] ? '' : 'hidden' ?>>
@@ -33,42 +33,42 @@ include 'includes/header.php';
 <?php if (!$search['error']): ?>
 <section class="container-page py-6 sm:py-8">
   <div class="grid gap-6 lg:grid-cols-[16rem_1fr]">
-    <aside class="h-fit rounded-xl bg-white p-5 ring-1 ring-paper-200 lg:sticky lg:top-24" id="hotel-filters">
+    <aside class="h-fit rounded-xl bg-white p-5 ring-1 ring-cloud-200 lg:sticky lg:top-24" id="hotel-filters">
       <div class="flex items-center justify-between"><p class="font-display text-lg font-bold">Filters</p><button type="button" id="reset" class="text-sm underline underline-offset-4">Reset</button></div>
       <fieldset class="mt-5">
         <legend class="field-label">Stars</legend>
         <div class="mt-2 flex flex-wrap gap-2">
           <?php foreach ([5, 4, 3] as $s): ?>
             <label class="cursor-pointer"><input type="checkbox" name="stars" value="<?= $s ?>" class="peer sr-only">
-              <span class="block rounded-md px-3 py-2 text-sm font-semibold ring-1 ring-ink-300 peer-checked:bg-ink-900 peer-checked:text-paper-50 peer-checked:ring-ink-900 peer-focus-visible:outline peer-focus-visible:outline-3 peer-focus-visible:outline-saffron-500"><?= $s ?> ★</span></label>
+              <span class="block rounded-md px-3 py-2 text-sm font-semibold ring-1 ring-navy-300 peer-checked:bg-navy-900 peer-checked:text-cloud-50 peer-checked:ring-navy-900 peer-focus-visible:outline peer-focus-visible:outline-3 peer-focus-visible:outline-sun-500"><?= $s ?> ★</span></label>
           <?php endforeach; ?>
         </div>
       </fieldset>
       <fieldset class="mt-6">
         <legend class="field-label">Maximum price for the stay</legend>
-        <input type="range" id="max-price" class="mt-3 w-full accent-ink-900">
+        <input type="range" id="max-price" class="mt-3 w-full accent-navy-900">
         <p class="mt-1 text-sm font-semibold num" id="max-price-text"></p>
       </fieldset>
     </aside>
 
     <div class="min-w-0">
       <div class="flex flex-wrap items-center justify-between gap-3">
-        <p class="text-sm text-ink-700" id="count" aria-live="polite">Looking for hotels…</p>
+        <p class="text-sm text-navy-700" id="count" aria-live="polite">Looking for hotels…</p>
         <label class="flex items-center gap-2 text-sm">Sort by
-          <select id="sort" class="rounded-md border-0 bg-white px-3 py-2 ring-1 ring-ink-300">
+          <select id="sort" class="rounded-md border-0 bg-white px-3 py-2 ring-1 ring-navy-300">
             <option value="price">Lowest price</option><option value="score">Guest rating</option><option value="stars">Stars</option>
           </select>
         </label>
       </div>
-      <div id="message" class="mt-4 hidden rounded-xl bg-white p-8 text-center ring-1 ring-paper-200">
-        <p class="font-display text-lg font-bold" id="message-title"></p><p class="mt-1 text-ink-700" id="message-text"></p>
+      <div id="message" class="mt-4 hidden rounded-xl bg-white p-8 text-center ring-1 ring-cloud-200">
+        <p class="font-display text-lg font-bold" id="message-title"></p><p class="mt-1 text-navy-700" id="message-text"></p>
         <a class="btn btn-dark mt-4" href="contact.php">Ask us to find a hotel</a>
       </div>
       <div id="hotels" class="mt-4 space-y-4" data-url="api/hotel-search.php?<?= e(hotel_search_query($search)) ?>">
         <?php for ($i = 0; $i < 3; $i++): ?>
-          <div class="grid animate-pulse overflow-hidden rounded-2xl bg-white ring-1 ring-ink-900/5 sm:grid-cols-[17rem_1fr]">
-            <div class="aspect-[4/3] bg-ink-100 sm:aspect-auto sm:h-56"></div>
-            <div class="space-y-3 p-5"><div class="h-4 w-24 rounded bg-ink-100"></div><div class="h-6 w-2/3 rounded bg-ink-100"></div><div class="h-4 w-1/2 rounded bg-ink-100"></div><div class="mt-10 h-10 w-40 rounded bg-ink-100"></div></div>
+          <div class="grid animate-pulse overflow-hidden rounded-2xl bg-white ring-1 ring-navy-900/5 sm:grid-cols-[17rem_1fr]">
+            <div class="aspect-[4/3] bg-navy-100 sm:aspect-auto sm:h-56"></div>
+            <div class="space-y-3 p-5"><div class="h-4 w-24 rounded bg-navy-100"></div><div class="h-6 w-2/3 rounded bg-navy-100"></div><div class="h-4 w-1/2 rounded bg-navy-100"></div><div class="mt-10 h-10 w-40 rounded bg-navy-100"></div></div>
           </div>
         <?php endfor; ?>
       </div>

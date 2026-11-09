@@ -33,22 +33,22 @@ include 'includes/header.php';
 ?>
 
 <!-- Search summary -->
-<section class="relative isolate overflow-hidden bg-ink-950 text-paper-50">
+<section class="relative isolate overflow-hidden bg-navy-950 text-cloud-50">
   <div class="absolute inset-0 -z-10 opacity-20 [background-image:radial-gradient(circle_at_1px_1px,#afc0d1_1px,transparent_0)] [background-size:22px_22px]" aria-hidden="true"></div>
   <div class="container-page py-8 sm:py-10">
     <?php if ($search['error']): ?>
       <h1 class="text-2xl font-bold">Let's fix your search</h1>
-      <p class="mt-1 text-ink-200"><?= e($search['error']) ?></p>
+      <p class="mt-1 text-navy-200"><?= e($search['error']) ?></p>
     <?php else: ?>
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p class="eyebrow text-saffron-300"><?= e($first['origin']) ?> <?= $search['trip'] == 'return' ? '⇄' : '→' ?> <?= e($first['destination']) ?> · <?= e($cabin_names[$search['cabin']]) ?></p>
+          <p class="eyebrow text-sun-300"><?= e($first['origin']) ?> <?= $search['trip'] == 'return' ? '⇄' : '→' ?> <?= e($first['destination']) ?> · <?= e($cabin_names[$search['cabin']]) ?></p>
           <h1 class="mt-2 flex flex-wrap items-center gap-x-4 text-3xl font-extrabold tracking-[-0.03em] sm:text-5xl">
-            <?= e($from_city) ?> <?= icon('arrow-right', 'size-7 text-saffron-400') ?> <?= e($to_city) ?>
+            <?= e($from_city) ?> <?= icon('arrow-right', 'size-7 text-sun-400') ?> <?= e($to_city) ?>
           </h1>
-          <p class="mt-2 text-sm text-ink-200"><?= e($dates) ?> · <?= e($people) ?><?= $search['trip'] == 'return' ? ' · Return trip' : '' ?></p>
+          <p class="mt-2 text-sm text-navy-200"><?= e($dates) ?> · <?= e($people) ?><?= $search['trip'] == 'return' ? ' · Return trip' : '' ?></p>
         </div>
-        <button type="button" id="change-search" class="btn ring-1 ring-inset ring-ink-500 hover:bg-ink-800">Change search</button>
+        <button type="button" id="change-search" class="btn ring-1 ring-inset ring-navy-500 hover:bg-navy-800">Change search</button>
       </div>
     <?php endif; ?>
     <div id="search-again" class="mt-5" <?= $search['error'] ? '' : 'hidden' ?>>
@@ -66,19 +66,19 @@ include 'includes/header.php';
   <div class="grid gap-6 lg:grid-cols-[17rem_1fr]">
 
     <!-- ============ Filters ============ -->
-    <aside id="filters" class="fixed inset-0 z-50 hidden overflow-y-auto bg-ink-950/50 lg:static lg:z-auto lg:block lg:overflow-visible lg:bg-transparent">
-      <div class="ml-auto min-h-full w-full max-w-sm bg-paper-50 p-5 lg:sticky lg:top-4 lg:min-h-0 lg:max-w-none lg:rounded-xl lg:bg-white lg:p-5 lg:ring-1 lg:ring-paper-200">
+    <aside id="filters" class="fixed inset-0 z-50 hidden overflow-y-auto bg-navy-950/50 lg:static lg:z-auto lg:block lg:overflow-visible lg:bg-transparent">
+      <div class="ml-auto min-h-full w-full max-w-sm bg-cloud-50 p-5 lg:sticky lg:top-4 lg:min-h-0 lg:max-w-none lg:rounded-xl lg:bg-white lg:p-5 lg:ring-1 lg:ring-cloud-200">
         <div class="flex items-center justify-between">
           <p class="font-display text-lg font-bold">Filters</p>
-          <button type="button" id="reset-filters" class="text-sm font-medium text-ink-700 underline underline-offset-4">Reset</button>
+          <button type="button" id="reset-filters" class="text-sm font-medium text-navy-700 underline underline-offset-4">Reset</button>
         </div>
 
         <fieldset class="mt-5">
           <legend class="field-label">Stops</legend>
           <div class="mt-2 space-y-1.5 text-sm">
-            <label class="flex items-center gap-2"><input type="radio" name="stops" value="9" checked class="size-4 accent-ink-900"> Any number of stops</label>
-            <label class="flex items-center gap-2"><input type="radio" name="stops" value="0" class="size-4 accent-ink-900"> Direct only</label>
-            <label class="flex items-center gap-2"><input type="radio" name="stops" value="1" class="size-4 accent-ink-900"> 1 stop at most</label>
+            <label class="flex items-center gap-2"><input type="radio" name="stops" value="9" checked class="size-4 accent-navy-900"> Any number of stops</label>
+            <label class="flex items-center gap-2"><input type="radio" name="stops" value="0" class="size-4 accent-navy-900"> Direct only</label>
+            <label class="flex items-center gap-2"><input type="radio" name="stops" value="1" class="size-4 accent-navy-900"> 1 stop at most</label>
           </div>
         </fieldset>
 
@@ -88,7 +88,7 @@ include 'includes/header.php';
             <?php foreach ([['0-6', 'Night', '00:00–05:59'], ['6-12', 'Morning', '06:00–11:59'], ['12-18', 'Afternoon', '12:00–17:59'], ['18-24', 'Evening', '18:00–23:59']] as $t): ?>
               <label class="cursor-pointer">
                 <input type="checkbox" name="time" value="<?= $t[0] ?>" class="peer sr-only">
-                <span class="block rounded-md px-3 py-2 ring-1 ring-ink-300 peer-checked:bg-ink-900 peer-checked:text-paper-50 peer-checked:ring-ink-900 peer-focus-visible:outline-3 peer-focus-visible:outline-saffron-500">
+                <span class="block rounded-md px-3 py-2 ring-1 ring-navy-300 peer-checked:bg-navy-900 peer-checked:text-cloud-50 peer-checked:ring-navy-900 peer-focus-visible:outline-3 peer-focus-visible:outline-sun-500">
                   <b class="block"><?= $t[1] ?></b><span class="text-xs opacity-80 num"><?= $t[2] ?></span>
                 </span>
               </label>
@@ -98,7 +98,7 @@ include 'includes/header.php';
 
         <fieldset class="mt-6">
           <legend class="field-label">Maximum price</legend>
-          <input type="range" id="max-price" class="mt-3 w-full accent-ink-900" min="0" max="0" step="1">
+          <input type="range" id="max-price" class="mt-3 w-full accent-navy-900" min="0" max="0" step="1">
           <p class="mt-1 text-sm font-semibold num" id="max-price-text"></p>
         </fieldset>
 
@@ -114,22 +114,22 @@ include 'includes/header.php';
     <!-- ============ Results ============ -->
     <div class="min-w-0">
       <!-- Sort -->
-      <div class="grid grid-cols-3 overflow-hidden rounded-xl bg-white ring-1 ring-paper-200" role="group" aria-label="Sort flights">
-        <button type="button" class="sort px-3 py-3 text-left aria-pressed:bg-ink-900 aria-pressed:text-paper-50" data-sort="price" aria-pressed="true">
+      <div class="grid grid-cols-3 overflow-hidden rounded-xl bg-white ring-1 ring-cloud-200" role="group" aria-label="Sort flights">
+        <button type="button" class="sort px-3 py-3 text-left aria-pressed:bg-navy-900 aria-pressed:text-cloud-50" data-sort="price" aria-pressed="true">
           <span class="block text-sm font-semibold">Cheapest</span><span class="block text-xs opacity-80 num" id="sort-price">–</span>
         </button>
-        <button type="button" class="sort border-x border-paper-200 px-3 py-3 text-left aria-pressed:bg-ink-900 aria-pressed:text-paper-50" data-sort="minutes" aria-pressed="false">
+        <button type="button" class="sort border-x border-cloud-200 px-3 py-3 text-left aria-pressed:bg-navy-900 aria-pressed:text-cloud-50" data-sort="minutes" aria-pressed="false">
           <span class="block text-sm font-semibold">Fastest</span><span class="block text-xs opacity-80 num" id="sort-minutes">–</span>
         </button>
-        <button type="button" class="sort px-3 py-3 text-left aria-pressed:bg-ink-900 aria-pressed:text-paper-50" data-sort="best" aria-pressed="false">
+        <button type="button" class="sort px-3 py-3 text-left aria-pressed:bg-navy-900 aria-pressed:text-cloud-50" data-sort="best" aria-pressed="false">
           <span class="block text-sm font-semibold">Best value</span><span class="block text-xs opacity-80">Price and time</span>
         </button>
       </div>
 
       <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
-        <p class="text-sm text-ink-700" id="result-count" aria-live="polite">Searching over 300 airlines…</p>
+        <p class="text-sm text-navy-700" id="result-count" aria-live="polite">Searching over 300 airlines…</p>
         <div class="flex items-center gap-3">
-          <p class="hidden text-xs text-ink-600" id="price-timer"></p>
+          <p class="hidden text-xs text-navy-600" id="price-timer"></p>
           <button type="button" id="open-filters" class="btn btn-ghost lg:hidden"><?= icon('filter', 'size-4') ?> Filters</button>
         </div>
       </div>
@@ -142,9 +142,9 @@ include 'includes/header.php';
       </div>
 
       <!-- Error or no results -->
-      <div id="message" class="mt-4 hidden rounded-xl bg-white p-6 text-center ring-1 ring-paper-200">
+      <div id="message" class="mt-4 hidden rounded-xl bg-white p-6 text-center ring-1 ring-cloud-200">
         <p class="font-display text-lg font-bold" id="message-title">No flights found</p>
-        <p class="mt-1 text-ink-700" id="message-text"></p>
+        <p class="mt-1 text-navy-700" id="message-text"></p>
         <div class="mt-4 flex flex-wrap justify-center gap-3">
           <button type="button" class="btn btn-dark" onclick="document.getElementById('change-search').click(); window.scrollTo(0, 0)">Change search</button>
           <a class="btn btn-ghost" href="contact.php">Ask us to find fares</a>
@@ -156,14 +156,14 @@ include 'includes/header.php';
            data-url="api/flight-search.php?<?= e($_SERVER['QUERY_STRING']) ?>">
         <?php for ($i = 0; $i < 4; $i++): ?>
           <div class="skeleton card rounded-xl p-5">
-            <div class="flex animate-pulse items-center gap-3"><div class="size-8 rounded-md bg-ink-100"></div><div class="h-4 w-40 rounded bg-ink-100"></div></div>
+            <div class="flex animate-pulse items-center gap-3"><div class="size-8 rounded-md bg-navy-100"></div><div class="h-4 w-40 rounded bg-navy-100"></div></div>
             <div class="mt-5 grid animate-pulse grid-cols-[4rem_1fr_4rem_8rem] items-center gap-4">
-              <div class="h-7 rounded bg-ink-100"></div><div class="h-2 rounded bg-ink-100"></div><div class="h-7 rounded bg-ink-100"></div><div class="h-10 rounded bg-ink-100"></div>
+              <div class="h-7 rounded bg-navy-100"></div><div class="h-2 rounded bg-navy-100"></div><div class="h-7 rounded bg-navy-100"></div><div class="h-10 rounded bg-navy-100"></div>
             </div>
           </div>
         <?php endfor; ?>
       </div>
-      <p id="no-match" class="mt-4 hidden rounded-xl bg-white p-6 text-center text-ink-700 ring-1 ring-paper-200">No flights match these filters. <button type="button" class="link" onclick="document.getElementById('reset-filters').click()">Reset filters</button></p>
+      <p id="no-match" class="mt-4 hidden rounded-xl bg-white p-6 text-center text-navy-700 ring-1 ring-cloud-200">No flights match these filters. <button type="button" class="link" onclick="document.getElementById('reset-filters').click()">Reset filters</button></p>
     </div>
   </div>
 </section>

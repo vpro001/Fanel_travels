@@ -142,7 +142,7 @@ function send_hotel_email($booking_id)
     $b = db_one("SELECT * FROM hotel_bookings WHERE id = ?", [$booking_id]);
     $hotel = json_decode($b['accommodation_json'], true);
     $link = SITE_URL . '/hotel-booking.php?ref=' . urlencode($b['booking_ref']) . '&email=' . urlencode($b['contact_email']);
-    $html = '<div style="font-family:Arial,sans-serif;color:#0f1f33;max-width:600px">'
+    $html = '<div style="font-family:Arial,sans-serif;color:#0a1f44;max-width:600px">'
         . '<h1 style="font-size:22px">Your hotel is booked</h1>'
         . '<p><b>' . e($hotel['name']) . '</b><br>' . e($hotel['address']) . '</p>'
         . '<p>Check-in ' . nice_date($b['check_in_date']) . ' · Check-out ' . nice_date($b['check_out_date']) . ' · ' . plural($b['rooms'], 'room') . '</p>'

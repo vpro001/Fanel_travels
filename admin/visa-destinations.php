@@ -54,11 +54,11 @@ include '../includes/admin-header.php';
   <h1 class="text-3xl font-extrabold">Visa destinations</h1>
   <a href="visa-destinations.php?new=1" class="btn btn-dark">+ New destination</a>
 </div>
-<p class="mt-2 max-w-2xl text-sm text-ink-700">These show on the Visa pages. Keep each requirement list checked against the embassy's current rules.</p>
+<p class="mt-2 max-w-2xl text-sm text-navy-700">These show on the Visa pages. Keep each requirement list checked against the embassy's current rules.</p>
 
 <?php if ($show_form): ?>
   <?php if ($errors): ?><div class="mt-5 rounded-xl bg-bad-100 p-4 text-sm text-bad-700"><?php foreach ($errors as $er): ?><p><?= e($er) ?></p><?php endforeach; ?></div><?php endif; ?>
-  <form method="post" action="visa-destinations.php<?= $id ? '?id=' . $id : '' ?>" class="mt-6 grid gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-ink-900/5 lg:grid-cols-2">
+  <form method="post" action="visa-destinations.php<?= $id ? '?id=' . $id : '' ?>" class="mt-6 grid gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-navy-900/5 lg:grid-cols-2">
     <?= csrf_field() ?>
     <div><label class="field-label" for="country_name">Country</label><input id="country_name" name="country_name" class="field" value="<?= e($e['country_name']) ?>"></div>
     <div class="grid grid-cols-2 gap-3">
@@ -74,25 +74,25 @@ include '../includes/admin-header.php';
     </div>
     <fieldset class="lg:col-span-2"><legend class="field-label">Visa types</legend>
       <div class="mt-2 flex flex-wrap gap-4 text-sm">
-        <?php foreach ($types as $k => $l): ?><label class="flex items-center gap-2"><input type="checkbox" name="types[]" value="<?= $k ?>" class="size-4 accent-ink-900" <?= in_array($k, explode(',', $e['visa_types'])) ? 'checked' : '' ?>> <?= $l ?></label><?php endforeach; ?>
+        <?php foreach ($types as $k => $l): ?><label class="flex items-center gap-2"><input type="checkbox" name="types[]" value="<?= $k ?>" class="size-4 accent-navy-900" <?= in_array($k, explode(',', $e['visa_types'])) ? 'checked' : '' ?>> <?= $l ?></label><?php endforeach; ?>
       </div>
     </fieldset>
-    <label class="flex items-center gap-2 text-sm lg:col-span-2"><input type="checkbox" name="is_active" value="1" class="size-4 accent-ink-900" <?= $e['is_active'] ? 'checked' : '' ?>> Show on the site</label>
+    <label class="flex items-center gap-2 text-sm lg:col-span-2"><input type="checkbox" name="is_active" value="1" class="size-4 accent-navy-900" <?= $e['is_active'] ? 'checked' : '' ?>> Show on the site</label>
     <div class="flex gap-3 lg:col-span-2"><button class="btn btn-dark">Save</button><a class="btn btn-ghost" href="visa-destinations.php">Cancel</a></div>
   </form>
 <?php endif; ?>
 
-<div class="mt-6 overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-ink-900/5">
+<div class="mt-6 overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-navy-900/5">
   <table class="w-full text-left text-sm">
-    <thead class="border-b border-paper-200 text-xs text-ink-600"><tr><th class="px-5 py-3 font-medium">Country</th><th class="px-3 py-3 font-medium">Fee</th><th class="px-3 py-3 font-medium">Processing</th><th class="px-3 py-3 font-medium">Applications</th><th class="px-3 py-3 font-medium">On site</th><th class="px-5 py-3"></th></tr></thead>
-    <tbody class="divide-y divide-paper-200">
+    <thead class="border-b border-cloud-200 text-xs text-navy-600"><tr><th class="px-5 py-3 font-medium">Country</th><th class="px-3 py-3 font-medium">Fee</th><th class="px-3 py-3 font-medium">Processing</th><th class="px-3 py-3 font-medium">Applications</th><th class="px-3 py-3 font-medium">On site</th><th class="px-5 py-3"></th></tr></thead>
+    <tbody class="divide-y divide-cloud-200">
       <?php foreach ($all as $d): ?>
-        <tr class="hover:bg-paper-50">
-          <td class="px-5 py-3 font-semibold"><?= e($d['country_name']) ?> <span class="font-mono text-xs text-ink-500"><?= e($d['country_code']) ?></span></td>
+        <tr class="hover:bg-cloud-50">
+          <td class="px-5 py-3 font-semibold"><?= e($d['country_name']) ?> <span class="font-mono text-xs text-navy-500"><?= e($d['country_code']) ?></span></td>
           <td class="px-3 py-3 num"><?= naira($d['service_fee_kobo']) ?></td>
-          <td class="px-3 py-3 text-ink-700"><?= e($d['processing_time']) ?></td>
+          <td class="px-3 py-3 text-navy-700"><?= e($d['processing_time']) ?></td>
           <td class="px-3 py-3"><?= (int) $d['apps'] ?></td>
-          <td class="px-3 py-3"><?= $d['is_active'] ? '<span class="badge bg-ok-100 text-ok-700">Shown</span>' : '<span class="badge bg-ink-100 text-ink-700">Hidden</span>' ?></td>
+          <td class="px-3 py-3"><?= $d['is_active'] ? '<span class="badge bg-ok-100 text-ok-700">Shown</span>' : '<span class="badge bg-navy-100 text-navy-700">Hidden</span>' ?></td>
           <td class="px-5 py-3 text-right"><a class="link" href="visa-destinations.php?id=<?= $d['id'] ?>">Edit</a></td>
         </tr>
       <?php endforeach; ?>

@@ -142,7 +142,7 @@ $section = 'tours';
 include '../includes/admin-header.php';
 $label = 'field-label';
 ?>
-<a href="tours.php" class="text-sm text-ink-600 hover:text-ink-900">← Tour packages</a>
+<a href="tours.php" class="text-sm text-navy-600 hover:text-navy-900">← Tour packages</a>
 <div class="mt-2 flex flex-wrap items-center justify-between gap-3">
   <h1 class="text-3xl font-extrabold"><?= $id ? e($t['title']) : 'New package' ?></h1>
   <?php if ($id && $t['is_published']): ?><a href="../tour.php?slug=<?= e($t['slug']) ?>" target="_blank" class="link text-sm">View on the site ↗</a><?php endif; ?>
@@ -154,7 +154,7 @@ $label = 'field-label';
 
 <form method="post" enctype="multipart/form-data" class="mt-6 grid gap-6 xl:grid-cols-[1.5fr_1fr]">
   <?= csrf_field() ?><input type="hidden" name="action" value="save">
-  <section class="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-ink-900/5">
+  <section class="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-navy-900/5">
     <div class="grid gap-4 sm:grid-cols-2">
       <div class="sm:col-span-2"><label class="<?= $label ?>" for="title">Title</label><input id="title" name="title" class="field" value="<?= e($t['title']) ?>"></div>
       <div><label class="<?= $label ?>" for="destination">Destination</label><input id="destination" name="destination" class="field" value="<?= e($t['destination']) ?>" placeholder="e.g. Zanzibar"></div>
@@ -171,7 +171,7 @@ $label = 'field-label';
   </section>
 
   <section class="space-y-4">
-    <div class="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-ink-900/5">
+    <div class="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-navy-900/5">
       <div class="grid grid-cols-2 gap-3">
         <div><label class="<?= $label ?>" for="duration_days">Days</label><input id="duration_days" type="number" min="1" name="duration_days" class="field" value="<?= (int) $t['duration_days'] ?>"></div>
         <div><label class="<?= $label ?>" for="duration_nights">Nights</label><input id="duration_nights" type="number" min="0" name="duration_nights" class="field" value="<?= (int) $t['duration_nights'] ?>"></div>
@@ -182,29 +182,29 @@ $label = 'field-label';
         <div><label class="<?= $label ?>" for="sort_order">Order</label><input id="sort_order" type="number" name="sort_order" class="field" value="<?= (int) $t['sort_order'] ?>"></div>
       </div>
       <div class="space-y-2 text-sm">
-        <label class="flex items-center gap-2"><input type="checkbox" name="is_published" value="1" class="size-4 accent-ink-900" <?= $t['is_published'] ? 'checked' : '' ?>> Published on the site</label>
-        <label class="flex items-center gap-2"><input type="checkbox" name="is_featured" value="1" class="size-4 accent-ink-900" <?= $t['is_featured'] ? 'checked' : '' ?>> Featured on the homepage</label>
+        <label class="flex items-center gap-2"><input type="checkbox" name="is_published" value="1" class="size-4 accent-navy-900" <?= $t['is_published'] ? 'checked' : '' ?>> Published on the site</label>
+        <label class="flex items-center gap-2"><input type="checkbox" name="is_featured" value="1" class="size-4 accent-navy-900" <?= $t['is_featured'] ? 'checked' : '' ?>> Featured on the homepage</label>
       </div>
     </div>
-    <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-ink-900/5">
+    <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-navy-900/5">
       <label class="<?= $label ?>" for="photo">Cover photo</label>
       <?php if ($t['cover_image']):
           $img = file_exists(__DIR__ . '/../assets/img/' . $t['cover_image'] . '-480.webp') ? $t['cover_image'] . '-480.webp' : $t['cover_image'] . '-480.jpg'; ?>
         <img src="../assets/img/<?= e($img) ?>" alt="" class="mt-2 aspect-[4/3] w-full rounded-lg object-cover">
       <?php endif; ?>
-      <input id="photo" type="file" name="photo" accept=".jpg,.jpeg,.png" class="mt-2 block w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-ink-900 file:px-3 file:py-2 file:text-paper-50">
-      <p class="mt-1 text-xs text-ink-600">A landscape photo from the trip works best. It's cropped to 4:3.</p>
+      <input id="photo" type="file" name="photo" accept=".jpg,.jpeg,.png" class="mt-2 block w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-navy-900 file:px-3 file:py-2 file:text-cloud-50">
+      <p class="mt-1 text-xs text-navy-600">A landscape photo from the trip works best. It's cropped to 4:3.</p>
     </div>
     <button class="btn btn-primary w-full py-3.5">Save package</button>
   </section>
 </form>
 
 <?php if ($id): ?>
-<section id="dates" class="mt-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-ink-900/5">
+<section id="dates" class="mt-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-navy-900/5">
   <h2 class="font-display text-xl font-bold">Departure dates</h2>
   <table class="mt-4 w-full text-left text-sm">
-    <thead class="text-xs text-ink-600"><tr><th class="py-2 font-medium">Dates</th><th class="py-2 font-medium">Seats</th><th class="py-2 font-medium">Price</th><th class="py-2 font-medium">Status</th><th class="py-2"></th></tr></thead>
-    <tbody class="divide-y divide-paper-200">
+    <thead class="text-xs text-navy-600"><tr><th class="py-2 font-medium">Dates</th><th class="py-2 font-medium">Seats</th><th class="py-2 font-medium">Price</th><th class="py-2 font-medium">Status</th><th class="py-2"></th></tr></thead>
+    <tbody class="divide-y divide-cloud-200">
       <?php foreach ($departures as $d): ?>
         <tr>
           <td class="py-2.5 num"><?= nice_date($d['start_date']) ?> – <?= nice_date($d['end_date']) ?></td>
@@ -214,16 +214,16 @@ $label = 'field-label';
           <td class="py-2.5 text-right">
             <form method="post" class="inline-flex gap-1" onsubmit="return this.status.value !== 'cancelled' || confirm('Cancel this departure? Anyone booked on it must be contacted.')">
               <?= csrf_field() ?><input type="hidden" name="action" value="departure_status"><input type="hidden" name="departure_id" value="<?= $d['id'] ?>">
-              <select name="status" class="rounded-md border-0 bg-paper-50 px-2 py-1 text-sm ring-1 ring-ink-300"><?php foreach (['open', 'closed', 'cancelled'] as $s): ?><option <?= $d['status'] == $s ? 'selected' : '' ?>><?= $s ?></option><?php endforeach; ?></select>
+              <select name="status" class="rounded-md border-0 bg-cloud-50 px-2 py-1 text-sm ring-1 ring-navy-300"><?php foreach (['open', 'closed', 'cancelled'] as $s): ?><option <?= $d['status'] == $s ? 'selected' : '' ?>><?= $s ?></option><?php endforeach; ?></select>
               <button class="btn btn-ghost px-3 py-1">Set</button>
             </form>
           </td>
         </tr>
       <?php endforeach; ?>
-      <?php if (!$departures): ?><tr><td colspan="5" class="py-4 text-ink-600">No dates yet. Customers can only send enquiries until you add one.</td></tr><?php endif; ?>
+      <?php if (!$departures): ?><tr><td colspan="5" class="py-4 text-navy-600">No dates yet. Customers can only send enquiries until you add one.</td></tr><?php endif; ?>
     </tbody>
   </table>
-  <form method="post" class="mt-5 grid gap-3 rounded-xl bg-paper-100 p-4 sm:grid-cols-[1fr_8rem_1fr_auto] sm:items-end">
+  <form method="post" class="mt-5 grid gap-3 rounded-xl bg-cloud-100 p-4 sm:grid-cols-[1fr_8rem_1fr_auto] sm:items-end">
     <?= csrf_field() ?><input type="hidden" name="action" value="add_departure">
     <div><label class="<?= $label ?>" for="start_date">Start date</label><input id="start_date" type="date" name="start_date" min="<?= date('Y-m-d', strtotime('+1 day')) ?>" class="field"></div>
     <div><label class="<?= $label ?>" for="seats">Seats</label><input id="seats" type="number" name="seats" min="1" value="16" class="field"></div>

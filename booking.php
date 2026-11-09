@@ -89,17 +89,17 @@ include 'includes/header.php';
 ?>
 <?php if ($working): ?><meta http-equiv="refresh" content="8"><?php endif; ?>
 
-<section class="bg-ink-950 text-paper-50 print:hidden">
+<section class="bg-navy-950 text-cloud-50 print:hidden">
   <div class="container-page py-6">
-    <ol class="flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-xs font-semibold uppercase tracking-[0.15em]">
-      <li class="flex items-center gap-2 text-ink-300"><span class="flex size-6 items-center justify-center rounded-full bg-ok-700 text-white"><?= icon('check', 'size-3.5') ?></span> Flight</li>
-      <li class="h-px w-6 bg-ink-600"></li>
-      <li class="flex items-center gap-2 text-ink-300"><span class="flex size-6 items-center justify-center rounded-full bg-ok-700 text-white"><?= icon('check', 'size-3.5') ?></span> Travellers</li>
-      <li class="h-px w-6 bg-ink-600"></li>
+    <ol class="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs font-semibold uppercase tracking-wider">
+      <li class="flex items-center gap-2 text-navy-300"><span class="flex size-6 items-center justify-center rounded-full bg-ok-700 text-white"><?= icon('check', 'size-3.5') ?></span> Flight</li>
+      <li class="h-px w-6 bg-navy-600"></li>
+      <li class="flex items-center gap-2 text-navy-300"><span class="flex size-6 items-center justify-center rounded-full bg-ok-700 text-white"><?= icon('check', 'size-3.5') ?></span> Travellers</li>
+      <li class="h-px w-6 bg-navy-600"></li>
       <?php $paid = !in_array($status, ['pending_payment', 'payment_failed', 'expired']); ?>
-      <li class="flex items-center gap-2 <?= $paid ? 'text-ink-300' : 'text-saffron-300' ?>"><span class="flex size-6 items-center justify-center rounded-full <?= $paid ? 'bg-ok-700 text-white' : 'bg-saffron-400 text-ink-950' ?>"><?= $paid ? icon('check', 'size-3.5') : '3' ?></span> Payment</li>
-      <li class="h-px w-6 bg-ink-600"></li>
-      <li class="flex items-center gap-2 <?= $status == 'confirmed' ? 'text-ok-100' : ($paid ? 'text-saffron-300' : 'text-ink-300') ?>"><span class="flex size-6 items-center justify-center rounded-full <?= $status == 'confirmed' ? 'bg-ok-700 text-white' : 'ring-1 ring-ink-500' ?>"><?= $status == 'confirmed' ? icon('check', 'size-3.5') : '4' ?></span> Ticket</li>
+      <li class="flex items-center gap-2 <?= $paid ? 'text-navy-300' : 'text-sun-300' ?>"><span class="flex size-6 items-center justify-center rounded-full <?= $paid ? 'bg-ok-700 text-white' : 'bg-sun-400 text-navy-950' ?>"><?= $paid ? icon('check', 'size-3.5') : '3' ?></span> Payment</li>
+      <li class="h-px w-6 bg-navy-600"></li>
+      <li class="flex items-center gap-2 <?= $status == 'confirmed' ? 'text-ok-100' : ($paid ? 'text-sun-300' : 'text-navy-300') ?>"><span class="flex size-6 items-center justify-center rounded-full <?= $status == 'confirmed' ? 'bg-ok-700 text-white' : 'ring-1 ring-navy-500' ?>"><?= $status == 'confirmed' ? icon('check', 'size-3.5') : '4' ?></span> Ticket</li>
     </ol>
   </div>
 </section>
@@ -123,56 +123,56 @@ include 'includes/header.php';
     </div>
 
     <!-- The itinerary, printable -->
-    <article class="mt-6 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-ink-900/5 print:shadow-none print:ring-0">
-      <header class="flex flex-wrap items-start justify-between gap-6 bg-ink-950 p-6 text-paper-50 sm:p-8 print:bg-white print:text-ink-950">
+    <article class="mt-6 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-navy-900/5 print:shadow-none print:ring-0">
+      <header class="flex flex-wrap items-start justify-between gap-6 bg-navy-950 p-6 text-cloud-50 sm:p-8 print:bg-white print:text-navy-950">
         <div>
-          <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-saffron-300 print:text-ink-600">Itinerary · <?= e(SITE_NAME) ?></p>
+          <p class="text-[11px] uppercase tracking-wider text-sun-300 print:text-navy-600 font-semibold">Itinerary · <?= e(SITE_NAME) ?></p>
           <p class="mt-2 font-display text-3xl font-extrabold"><?= e($trip[0]['from_city']) ?> → <?= e($trip[0]['to_city']) ?></p>
-          <p class="mt-1 text-sm text-ink-300 print:text-ink-700"><?= e($offer['owner']['name']) ?> · <?= plural(count($passengers), 'traveller') ?></p>
+          <p class="mt-1 text-sm text-navy-300 print:text-navy-700"><?= e($offer['owner']['name']) ?> · <?= plural(count($passengers), 'traveller') ?></p>
         </div>
         <div class="grid grid-cols-2 gap-6 text-right">
           <div>
-            <p class="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-300 print:text-ink-600">Airline reference</p>
-            <p class="mt-1 font-mono text-2xl font-semibold tracking-[0.2em] <?= $booking['pnr'] ? 'text-saffron-300 print:text-ink-950' : 'text-ink-500' ?>"><?= e($booking['pnr'] ?: '——————') ?></p>
+            <p class="text-[10px] uppercase tracking-wider text-navy-300 print:text-navy-600 font-semibold">Airline reference</p>
+            <p class="mt-1 font-mono text-2xl font-semibold tracking-[0.2em] <?= $booking['pnr'] ? 'text-sun-300 print:text-navy-950' : 'text-navy-500' ?>"><?= e($booking['pnr'] ?: '——————') ?></p>
           </div>
           <div>
-            <p class="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-300 print:text-ink-600">Our reference</p>
+            <p class="text-[10px] uppercase tracking-wider text-navy-300 print:text-navy-600 font-semibold">Our reference</p>
             <p class="mt-1 font-mono text-lg font-semibold tracking-wider"><?= e($ref) ?></p>
           </div>
         </div>
       </header>
 
-      <div class="divide-y divide-dashed divide-paper-300">
+      <div class="divide-y divide-dashed divide-cloud-300">
         <?php foreach ($trip as $s): ?>
           <div class="grid gap-4 p-6 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:p-8">
             <div>
-              <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-600"><?= date('D j M Y', strtotime($s['depart'])) ?></p>
+              <p class="text-[11px] uppercase tracking-wider text-navy-600 font-semibold"><?= date('D j M Y', strtotime($s['depart'])) ?></p>
               <p class="mt-1 font-display text-4xl font-bold num"><?= substr($s['depart'], 11, 5) ?></p>
-              <p class="font-semibold"><?= e($s['from_city']) ?> <span class="font-mono text-ink-600">(<?= e($s['from']) ?>)</span></p>
+              <p class="font-semibold"><?= e($s['from_city']) ?> <span class="font-mono text-navy-600">(<?= e($s['from']) ?>)</span></p>
             </div>
-            <div class="text-center text-sm text-ink-600">
-              <?= icon('plane', 'mx-auto size-5 text-saffron-600') ?>
+            <div class="text-center text-sm text-navy-600">
+              <?= icon('plane', 'mx-auto size-5 text-sun-600') ?>
               <p class="mt-1 num"><?= minutes_text($s['minutes']) ?></p>
               <p><?= $s['stops'] ? plural($s['stops'], 'stop') . ' · ' . e(implode(', ', $s['via'])) : 'Direct' ?></p>
             </div>
             <div class="sm:text-right">
-              <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-600"><?= date('D j M Y', strtotime($s['arrive'])) ?></p>
+              <p class="text-[11px] uppercase tracking-wider text-navy-600 font-semibold"><?= date('D j M Y', strtotime($s['arrive'])) ?></p>
               <p class="mt-1 font-display text-4xl font-bold num"><?= substr($s['arrive'], 11, 5) ?></p>
-              <p class="font-semibold"><?= e($s['to_city']) ?> <span class="font-mono text-ink-600">(<?= e($s['to']) ?>)</span></p>
+              <p class="font-semibold"><?= e($s['to_city']) ?> <span class="font-mono text-navy-600">(<?= e($s['to']) ?>)</span></p>
             </div>
           </div>
         <?php endforeach; ?>
       </div>
 
-      <div class="border-t border-paper-200 p-6 sm:p-8">
-        <p class="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-600">Travellers</p>
+      <div class="border-t border-cloud-200 p-6 sm:p-8">
+        <p class="text-[11px] font-semibold uppercase tracking-wider text-navy-600">Travellers</p>
         <table class="mt-3 w-full text-left text-sm">
-          <thead class="text-ink-600"><tr><th class="py-2 font-medium">Name</th><th class="py-2 font-medium">Type</th><th class="py-2 text-right font-medium">E-ticket number</th></tr></thead>
-          <tbody class="divide-y divide-paper-200">
+          <thead class="text-navy-600"><tr><th class="py-2 font-medium">Name</th><th class="py-2 font-medium">Type</th><th class="py-2 text-right font-medium">E-ticket number</th></tr></thead>
+          <tbody class="divide-y divide-cloud-200">
             <?php foreach ($passengers as $p): ?>
               <tr>
                 <td class="py-2.5 font-semibold"><?= e(strtoupper($p['family_name'])) ?> / <?= e(strtoupper($p['given_name'])) ?> <?= e(strtoupper($p['title'])) ?></td>
-                <td class="py-2.5 text-ink-700"><?= ['adult' => 'Adult', 'child' => 'Child', 'infant_without_seat' => 'Infant'][$p['type']] ?></td>
+                <td class="py-2.5 text-navy-700"><?= ['adult' => 'Adult', 'child' => 'Child', 'infant_without_seat' => 'Infant'][$p['type']] ?></td>
                 <td class="py-2.5 text-right font-mono num"><?= e($p['ticket_number'] ?: '—') ?></td>
               </tr>
             <?php endforeach; ?>
@@ -180,10 +180,10 @@ include 'includes/header.php';
         </table>
       </div>
 
-      <div class="flex flex-wrap items-end justify-between gap-6 border-t border-paper-200 bg-paper-50 p-6 sm:p-8">
+      <div class="flex flex-wrap items-end justify-between gap-6 border-t border-cloud-200 bg-cloud-50 p-6 sm:p-8">
         <dl class="space-y-1 text-sm">
-          <div class="flex gap-6"><dt class="w-40 text-ink-700">Airline fare and taxes</dt><dd class="num"><?= naira($booking['base_kobo']) ?></dd></div>
-          <div class="flex gap-6"><dt class="w-40 text-ink-700">Our service fee</dt><dd class="num"><?= naira($booking['markup_kobo']) ?></dd></div>
+          <div class="flex gap-6"><dt class="w-40 text-navy-700">Airline fare and taxes</dt><dd class="num"><?= naira($booking['base_kobo']) ?></dd></div>
+          <div class="flex gap-6"><dt class="w-40 text-navy-700">Our service fee</dt><dd class="num"><?= naira($booking['markup_kobo']) ?></dd></div>
           <div class="flex gap-6 text-base font-bold"><dt class="w-40"><?= $paid ? 'Total paid' : 'Total' ?></dt><dd class="num"><?= naira($booking['total_kobo']) ?></dd></div>
         </dl>
         <div class="flex gap-3 print:hidden">
@@ -194,7 +194,7 @@ include 'includes/header.php';
         </div>
       </div>
     </article>
-    <p class="mt-4 text-xs text-ink-600">Arrive at the airport at least 1 hour before local flights and 3 hours before international flights. Bring a valid ID (passport, national ID card or driver's licence) for local flights; for international trips, check the passport, visa and health rules for every country on your trip.</p>
+    <p class="mt-4 text-xs text-navy-600">Arrive at the airport at least 1 hour before local flights and 3 hours before international flights. Bring a valid ID (passport, national ID card or driver's licence) for local flights; for international trips, check the passport, visa and health rules for every country on your trip.</p>
   </div>
 </section>
 <?php include 'includes/footer.php'; ?>

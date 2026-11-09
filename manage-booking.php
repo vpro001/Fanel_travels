@@ -25,15 +25,15 @@ include 'includes/header.php';
 ?>
 <section class="container-page py-16 sm:py-24">
   <div class="mx-auto max-w-lg">
-    <p class="eyebrow text-saffron-700">Manage booking</p>
+    <p class="eyebrow text-sun-700">Manage booking</p>
     <h1 class="mt-3 text-4xl font-extrabold sm:text-5xl">Find your booking</h1>
-    <p class="mt-3 text-ink-700">Use the reference from your confirmation email (FNF- for flights, FNH- for hotels, FNT- for tours) and the email address you booked with.</p>
+    <p class="mt-3 text-navy-700">Use the reference from your confirmation email (FNF- for flights, FNH- for hotels, FNT- for tours) and the email address you booked with.</p>
 
     <?php if ($error): ?>
       <p class="mt-6 rounded-xl bg-bad-100 p-4 text-sm text-bad-700" role="alert"><?= e($error) ?></p>
     <?php endif; ?>
 
-    <form method="get" class="mt-8 space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-ink-900/5">
+    <form method="get" class="mt-8 space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-navy-900/5">
       <div>
         <label class="field-label" for="ref">Booking reference</label>
         <input id="ref" name="ref" class="field font-mono uppercase tracking-wider" placeholder="FNF-XXXXXXXX or FNT-XXXXXXXX" value="<?= e($ref) ?>" required>
@@ -44,7 +44,7 @@ include 'includes/header.php';
       </div>
       <button class="btn btn-dark w-full py-3">Find booking</button>
     </form>
-    <p class="mt-4 text-sm text-ink-600">Applied for a visa? <a class="link" href="visa-track.php">Track your visa application</a>.</p>
+    <p class="mt-4 text-sm text-navy-600">Applied for a visa? <a class="link" href="visa-track.php">Track your visa application</a>.</p>
   </div>
 </section>
 <?php include 'includes/footer.php'; ?>

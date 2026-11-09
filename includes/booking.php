@@ -231,7 +231,7 @@ function send_booking_email($booking_id)
     $trip = json_decode($b['itinerary_json'], true);
     $link = SITE_URL . '/booking.php?ref=' . urlencode($b['booking_ref']) . '&email=' . urlencode($b['contact_email']);
 
-    $html = '<div style="font-family:Arial,sans-serif;color:#0f1f33;max-width:600px">'
+    $html = '<div style="font-family:Arial,sans-serif;color:#0a1f44;max-width:600px">'
         . '<h1 style="font-size:22px">Your flight is booked</h1>'
         . '<p>Airline booking reference (PNR): <b style="font-size:20px;letter-spacing:2px">' . e($b['pnr']) . '</b><br>'
         . 'Our reference: ' . e($b['booking_ref']) . '</p>';
