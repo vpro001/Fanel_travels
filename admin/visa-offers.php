@@ -2,11 +2,14 @@
 require '../includes/init.php';
 require '../includes/admin.php';
 require '../includes/posters.php';
+require '../includes/visa.php';
 
 // Visa and holiday posts: the flyers shown on the homepage and the Visa page.
 $id = (int) get('id');
 $edit = $id ? db_one("SELECT * FROM visa_offers WHERE id = ?", [$id]) : null;
-$destinations = db_all("SELECT id, country_name, is_active FROM visa_destinations ORDER BY sort_order, country_name");
+$destinations = db_all("SELECT id, country_name, visa_types, is_active FROM visa_destinations ORDER BY sort_order, country_name");
+$dest_by_id = array_column($destinations, null, 'id');
+$type_names = visa_type_names();
 $errors = [];
 
 // Save an uploaded flyer as 800px and 480px wide JPEGs in assets/img/offers/ (keeps its shape)
@@ -71,13 +74,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'title' => substr(post('title'), 0, 150),
         'summary' => substr(post('summary'), 0, 500) ?: null,
         'destination_id' => (int) post('destination_id') ?: null,
+        'visa_type' => isset($type_names[post('visa_type')]) ? post('visa_type') : null,
         'expires_on' => valid_date(post('expires_on')) ? post('expires_on') : null,
         'sort_order' => (int) post('sort_order'),
         'is_active' => post('is_active') ? 1 : 0,
     ];
-    if ($data['kind'] == 'holiday') $data['destination_id'] = null;
     if (strlen($data['title']) < 3) $errors[] = 'Give the post a title, e.g. "Qatar work visa".';
-    if ($data['destination_id'] && !in_array($data['destination_id'], array_column($destinations, 'id'))) $data['destination_id'] = null;
+    if ($data['kind'] == 'holiday') {
+        $data['destination_id'] = null;
+        $data['visa_type'] = null;
+    } elseif (post('destination_id') == 'several') {
+        // A flyer for several countries: visitors pick one on the Visa page
+        $data['destination_id'] = null;
+        $data['visa_type'] = null;
+    } elseif (!$data['destination_id'] || !isset($dest_by_id[$data['destination_id']])) {
+        $errors[] = 'Choose the country people apply for. If it isn\'t in the list, add it in Visa destinations first.';
+    } elseif ($data['visa_type'] && !in_array($data['visa_type'], explode(',', $dest_by_id[$data['destination_id']]['visa_types']))) {
+        $errors[] = $dest_by_id[$data['destination_id']]['country_name'] . ' is not set up for ' . strtolower($type_names[$data['visa_type']]) . ' visas. Add that type in Visa destinations, or choose another.';
+    } elseif (!$dest_by_id[$data['destination_id']]['is_active']) {
+        $errors[] = $dest_by_id[$data['destination_id']]['country_name'] . ' is hidden in Visa destinations, so nobody could apply. Show it there first.';
+    }
     if (!$id && empty($_FILES['image']['name'])) $errors[] = 'Choose the flyer image.';
 
     $new_image = null;
@@ -105,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 $all = db_all("SELECT o.*, d.country_name FROM visa_offers o LEFT JOIN visa_destinations d ON d.id = o.destination_id ORDER BY o.kind = 'holiday', o.sort_order, o.id DESC");
 $show_form = $edit || get('new') || $errors;
-$e = $edit ?: ['kind' => get('kind') == 'holiday' ? 'holiday' : 'visa', 'title' => '', 'summary' => '', 'image' => '', 'destination_id' => null, 'expires_on' => null, 'sort_order' => 100, 'is_active' => 1];
+$e = $edit ?: ['kind' => get('kind') == 'holiday' ? 'holiday' : 'visa', 'title' => '', 'summary' => '', 'image' => '', 'destination_id' => null, 'visa_type' => null, 'expires_on' => null, 'sort_order' => 100, 'is_active' => 1];
 
 $title = 'Visa & holiday posts';
 $section = 'visa-offers';
@@ -118,7 +134,7 @@ include '../includes/admin-header.php';
     <a href="visa-offers.php?new=1&kind=holiday" class="btn btn-ghost">+ New holiday post</a>
   </div>
 </div>
-<p class="mt-2 max-w-3xl text-sm text-navy-700">Flyers for visa opportunities and holidays. Visa posts show on the homepage and the Visa page, holiday posts on the homepage. The first three (lowest order numbers) also appear at the top of the homepage. Link a visa post to a country to give it an "Apply online" button; otherwise visitors get "Ask us", which opens the contact form with the post's title filled in.</p>
+<p class="mt-2 max-w-3xl text-sm text-navy-700">Flyers for visa opportunities and holidays. Visa posts show on the homepage and the Visa page, holiday posts on the homepage. The first three (lowest order numbers) also appear at the top of the homepage. Every visa post opens the online application for its country, with the visa type already chosen. Holiday posts link to the holidays page.</p>
 
 <?php if ($show_form): ?>
   <?php if ($errors): ?><div class="mt-5 rounded-xl bg-bad-100 p-4 text-sm text-bad-700"><?php foreach ($errors as $er): ?><p><?= e($er) ?></p><?php endforeach; ?></div><?php endif; ?>
@@ -144,10 +160,17 @@ include '../includes/admin-header.php';
       <div class="sm:col-span-2"><label class="field-label" for="title">Title</label><input id="title" name="title" maxlength="150" class="field" value="<?= e($e['title']) ?>" placeholder="e.g. Qatar work visa"></div>
       <div class="sm:col-span-2"><label class="field-label" for="summary">Details <span class="font-normal text-navy-500">(optional, shown when the flyer is opened)</span></label>
         <textarea id="summary" name="summary" rows="3" maxlength="500" class="field" placeholder="e.g. Two-year work permit, processing in about 4 weeks. Open to men and women."><?= e($e['summary']) ?></textarea></div>
-      <div><label class="field-label" for="destination_id">Apply online for <span class="font-normal text-navy-500">(visa posts)</span></label>
+      <div><label class="field-label" for="destination_id">People apply for <span class="font-normal text-navy-500">(visa posts)</span></label>
         <select id="destination_id" name="destination_id" class="field">
-          <option value="">Not linked: show "Ask us"</option>
+          <option value="">Choose the country</option>
           <?php foreach ($destinations as $d): ?><option value="<?= $d['id'] ?>" <?= $e['destination_id'] == $d['id'] ? 'selected' : '' ?>><?= e($d['country_name']) ?><?= $d['is_active'] ? '' : ' (hidden)' ?></option><?php endforeach; ?>
+          <option value="several" <?= $id && $e['kind'] == 'visa' && !$e['destination_id'] ? 'selected' : '' ?>>Several countries: they choose on the Visa page</option>
+        </select>
+        <p class="mt-1 text-xs text-navy-600">Country missing? <a class="link" href="visa-destinations.php?new=1">Add it in Visa destinations</a> first.</p></div>
+      <div><label class="field-label" for="visa_type">Visa type</label>
+        <select id="visa_type" name="visa_type" class="field">
+          <option value="">Let them choose</option>
+          <?php foreach ($type_names as $k => $l): ?><option value="<?= $k ?>" <?= $e['visa_type'] == $k ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?>
         </select></div>
       <div><label class="field-label" for="expires_on">Take down after <span class="font-normal text-navy-500">(optional)</span></label><input id="expires_on" type="date" name="expires_on" class="field" value="<?= e($e['expires_on']) ?>"></div>
       <div><label class="field-label" for="sort_order">Order <span class="font-normal text-navy-500">(lower shows first)</span></label><input id="sort_order" type="number" name="sort_order" class="field" value="<?= (int) $e['sort_order'] ?>"></div>
@@ -171,7 +194,7 @@ include '../includes/admin-header.php';
         <div class="min-w-0 flex-1">
           <p class="font-semibold leading-snug"><?= e($o['title']) ?></p>
           <p class="mt-0.5 text-xs text-navy-600">
-            <?= $o['country_name'] ? 'Apply online: ' . e($o['country_name']) : '"Ask us" link' ?> · order <?= (int) $o['sort_order'] ?>
+            <?= $o['kind'] == 'holiday' ? 'Links to holidays' : ($o['country_name'] ? 'Application: ' . e($o['country_name']) . ($o['visa_type'] ? ', ' . e(strtolower($type_names[$o['visa_type']] ?? $o['visa_type'])) : '') : 'Several countries') ?> · order <?= (int) $o['sort_order'] ?>
             <?= $o['expires_on'] ? '<br>Until ' . e(nice_date($o['expires_on'])) : '' ?>
           </p>
           <div class="mt-2 flex flex-wrap items-center gap-2">

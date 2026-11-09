@@ -336,6 +336,7 @@ CREATE TABLE `visa_applications` (
   `reference` varchar(20) NOT NULL,
   `user_id` int(10) unsigned DEFAULT NULL,
   `destination_id` int(10) unsigned NOT NULL,
+  `offer_id` int(10) unsigned DEFAULT NULL,
   `visa_type` enum('tourist','business','visit','student','transit','work','residence','other') NOT NULL,
   `service` enum('application','support','visit') NOT NULL DEFAULT 'application',
   `full_name` varchar(120) NOT NULL,
@@ -365,7 +366,9 @@ CREATE TABLE `visa_applications` (
   KEY `fk_va_user` (`user_id`),
   KEY `fk_va_staff` (`assigned_to`),
   KEY `ix_va_travel` (`travel_date`),
+  KEY `fk_va_offer` (`offer_id`),
   CONSTRAINT `fk_va_dest` FOREIGN KEY (`destination_id`) REFERENCES `visa_destinations` (`id`),
+  CONSTRAINT `fk_va_offer` FOREIGN KEY (`offer_id`) REFERENCES `visa_offers` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_va_staff` FOREIGN KEY (`assigned_to`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_va_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -429,6 +432,7 @@ CREATE TABLE `visa_offers` (
   `summary` varchar(500) DEFAULT NULL,
   `image` varchar(100) NOT NULL,
   `destination_id` int(10) unsigned DEFAULT NULL,
+  `visa_type` varchar(20) DEFAULT NULL,
   `expires_on` date DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `sort_order` smallint(6) NOT NULL DEFAULT 100,

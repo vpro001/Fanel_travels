@@ -13,7 +13,11 @@ $type_names = visa_type_names();
 $types = array_intersect_key($type_names, array_flip(explode(',', $country['visa_types'])));
 $checklist = visa_checklist_lines($country);
 
-$f = ['service' => 'application', 'visa_type' => key($types), 'full_name' => '', 'email' => '', 'phone' => '', 'passport_number' => '', 'travel_date' => '', 'return_date' => '', 'purpose' => ''];
+// Came from a visa post (flyer)? Remember it, and start with its visa type.
+$offer = (int) get('offer') ? db_one("SELECT * FROM visa_offers WHERE id = ? AND kind = 'visa' AND destination_id = ?", [(int) get('offer'), $country['id']]) : null;
+$start_type = isset($types[get('type')]) ? get('type') : ($offer && isset($types[$offer['visa_type']]) ? $offer['visa_type'] : key($types));
+
+$f = ['service' => 'application', 'visa_type' => $start_type, 'full_name' => '', 'email' => '', 'phone' => '', 'passport_number' => '', 'travel_date' => '', 'return_date' => '', 'purpose' => ''];
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -65,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'reference' => $reference,
             'user_id' => user_id_or_null(),
             'destination_id' => $country['id'],
+            'offer_id' => $offer ? $offer['id'] : null,
             'visa_type' => $f['visa_type'],
             'service' => $f['service'],
             'full_name' => substr($f['full_name'], 0, 120),
@@ -113,6 +118,14 @@ function show_error($errors, $key) { return isset($errors[$key]) ? '<p class="fi
 </section>
 
 <section class="container-page py-10 sm:py-14">
+  <?php if ($offer): require_once 'includes/posters.php'; ?>
+    <div class="mx-auto mb-6 flex max-w-3xl items-center gap-4 rounded-2xl bg-cloud-100 p-3 pr-5">
+      <img src="<?= e(offer_image_url($offer['image'], 480)) ?>" alt="" class="size-20 shrink-0 rounded-xl object-cover">
+      <div><p class="text-xs font-semibold uppercase tracking-wider text-sun-700">You're applying for</p>
+        <p class="font-display text-lg font-semibold"><?= e($offer['title']) ?></p>
+        <?php if ($offer['summary']): ?><p class="text-sm text-navy-600"><?= e($offer['summary']) ?></p><?php endif; ?></div>
+    </div>
+  <?php endif; ?>
   <form method="post" enctype="multipart/form-data" novalidate class="mx-auto max-w-3xl space-y-6">
     <?= csrf_field() ?>
     <?php if ($errors): ?>

@@ -16,7 +16,7 @@ $name = '';
 $email = '';
 $phone = '';
 $topic = isset($topics[get('topic')]) ? get('topic') : 'general';
-$message = get('about') != '' ? 'I am interested in: ' . substr(get('about'), 0, 150) . "\n\n" : '';
+$message = '';
 $errors = [];
 
 // ---------- Form sent ----------

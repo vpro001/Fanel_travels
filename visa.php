@@ -63,7 +63,7 @@ include 'includes/header.php';
         </div>
         <div class="space-y-3 bg-white/5 p-6">
           <a class="btn btn-primary w-full py-3.5 text-base" href="visa-apply.php?country=<?= e($country['slug']) ?>">Start your application <?= icon('arrow-right', 'size-5') ?></a>
-          <a class="btn w-full py-3 ring-1 ring-inset ring-white/20 hover:bg-white/10" href="contact.php">Ask a question first</a>
+          <a class="btn w-full py-3 ring-1 ring-inset ring-white/20 hover:bg-white/10" href="tel:<?= preg_replace('/\D/', '', setting('contact_phone')) ?>"><?= icon('phone', 'size-4') ?> Questions? Call <?= e(contact('phone')) ?></a>
         </div>
       </div>
       <p class="mt-3 text-xs text-navy-600">The embassy makes the final decision on every visa. We can't guarantee an approval, but we'll make sure your application is complete and well prepared.</p>
@@ -72,7 +72,7 @@ include 'includes/header.php';
 </section>
 <?php endif; ?>
 
-<section class="<?= $country ? 'bg-cloud-100' : '' ?>">
+<section id="countries" class="scroll-mt-24 <?= $country ? 'bg-cloud-100' : '' ?>">
   <div class="container-page py-12 sm:py-16">
     <h2 class="text-2xl font-extrabold sm:text-3xl"><?= $country ? 'Other destinations' : 'Where are you going?' ?></h2>
     <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -90,7 +90,7 @@ include 'includes/header.php';
         </a>
       <?php endforeach; ?>
     </div>
-    <p class="mt-6 text-sm text-navy-700">Already applied? <a class="link" href="visa-track.php">Track your application</a>. Going somewhere else? <a class="link" href="contact.php">Ask us</a>.</p>
+    <p class="mt-6 text-sm text-navy-700">Already applied? <a class="link" href="visa-track.php">Track your application</a>. Going somewhere not listed? Call us on <a class="link" href="tel:<?= preg_replace('/\D/', '', setting('contact_phone')) ?>"><?= e(contact('phone')) ?></a> and we'll set up your application.</p>
   </div>
 </section>
 
@@ -100,10 +100,10 @@ include 'includes/header.php';
   <div class="container-page flex flex-wrap items-end justify-between gap-4">
     <div>
       <p class="eyebrow text-sun-700">From our visa desk</p>
-      <h2 class="mt-3 text-2xl font-bold sm:text-3xl">More visas we process</h2>
-      <p class="mt-2 max-w-xl text-navy-600">Tourist, work and residence visas beyond the countries above. Tap a flyer to see it in full, then ask us about it.</p>
+      <h2 class="mt-3 text-2xl font-bold sm:text-3xl">Visa opportunities</h2>
+      <p class="mt-2 max-w-xl text-navy-600">Tourist, work and residence visas. Tap a flyer to see it in full, then apply online.</p>
     </div>
-    <a class="btn btn-primary" href="contact.php?topic=visa">Ask about a visa</a>
+    <a class="btn btn-primary" href="#countries">See all countries</a>
   </div>
   <div class="snap-row snap-row-page mt-8 flex gap-5 overflow-x-auto pb-4">
     <?php foreach ($visa_posts as $o) echo poster_card($o); ?>

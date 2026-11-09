@@ -32,7 +32,7 @@ if (viewer && viewer.showModal) {
       viewer.querySelector('[data-caption]').textContent = link.dataset.caption;
       var button = viewer.querySelector('[data-link]');
       button.href = link.dataset.link;
-      button.textContent = link.dataset.linkText || 'Ask us';
+      button.textContent = link.dataset.linkText || 'Apply now';
       var summary = viewer.querySelector('[data-summary]');
       summary.textContent = link.dataset.summary || '';
       summary.hidden = !link.dataset.summary;

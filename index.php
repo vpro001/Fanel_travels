@@ -144,7 +144,7 @@ include 'includes/header.php';
       <div class="max-w-2xl">
         <p class="eyebrow text-sun-700">From our visa desk</p>
         <h2 class="mt-4 text-4xl font-bold leading-tight sm:text-5xl">Visas we're processing now</h2>
-        <p class="mt-4 text-lg text-navy-600">Tourist, work and residence visas. Tap a flyer to see it in full, or ask us about your destination.</p>
+        <p class="mt-4 text-lg text-navy-600">Tourist, work and residence visas. Tap a flyer to see it in full, then apply online and track every step.</p>
       </div>
       <div class="flex gap-2 <?= $visa_posts ? '' : 'hidden' ?>" aria-hidden="true">
         <button type="button" data-scroll="#visa-posters" data-dir="-1" class="flex size-12 items-center justify-center rounded-full bg-white text-navy-900 shadow-sm ring-1 ring-navy-900/10 hover:bg-navy-900 hover:text-white" tabindex="-1"><?= icon('arrow-right', 'size-5 rotate-180') ?></button>

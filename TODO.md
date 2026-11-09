@@ -232,4 +232,7 @@ Demo target: Monday (internal review) → Tuesday (client presentation)
 - [x] Thailand and Malaysia added from Fanel's flyers
 - [x] Tested end to end locally (apply, validation, staff actions, uploads, download access, Paystack test checkout, payment confirmation run twice)
 - [ ] Set `ADMIN_EMAIL` in `config.php` so the office gets the alerts
-- [x] Visa and holiday flyers are posts in the database (`visa_offers`), managed in Admin → Visa & holiday posts: upload, title, details, link to a visa destination ("Apply online") or "Ask us" (contact form pre-filled), take-down date, order, show/hide, delete. The homepage hero, visa gallery, holiday ideas and the Visa page all read from it
+- [x] Visa and holiday flyers are posts in the database (`visa_offers`), managed in Admin → Visa & holiday posts: upload, title, details, link to a visa destination and visa type (every visa post opens the online application; a multi-country flyer opens the list of countries), take-down date, order, show/hide, delete. The homepage hero, visa gallery, holiday ideas and the Visa page all read from it
+- [x] Applications remember the post they came from (`visa_applications.offer_id`), shown to staff
+- [x] Visa destinations for every country on Fanel's flyers (Qatar, Kenya, East Africa, Uganda, Indonesia, Mexico, Kuwait, Oman, Morocco, China)
+- [ ] **Client input:** full requirements, document checklists and service fees for those new countries (they start with passport page + photo only and "Confirmed after review")

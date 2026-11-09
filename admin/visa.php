@@ -177,6 +177,8 @@ $item_text = ['missing' => 'Missing', 'received' => 'To check', 'accepted' => 'A
   <?php endif; ?>
 </div>
 <p class="mt-1 text-navy-700"><?= e($app['country_name']) ?> · <?= e(visa_type_names()[$app['visa_type']] ?? $app['visa_type']) ?> visa · <?= e(visa_service_names()[$app['service']][0]) ?> · applied <?= date('j M Y', strtotime($app['created_at'])) ?></p>
+<?php $from_offer = $app['offer_id'] ? db_one("SELECT title FROM visa_offers WHERE id = ?", [$app['offer_id']]) : null; ?>
+<?php if ($from_offer): ?><p class="mt-1 text-sm text-navy-600">Applied from the post <a class="link" href="visa-offers.php?id=<?= (int) $app['offer_id'] ?>"><?= e($from_offer['title']) ?></a></p><?php endif; ?>
 
 <div class="mt-6 grid gap-6 xl:grid-cols-[1.5fr_1fr]">
   <div class="space-y-6">
